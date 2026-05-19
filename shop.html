@@ -366,7 +366,7 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
             <span class="cart-badge" id="cartBadge">0</span>
           </a>
         </li>
-        <li><a href="#" class="nav-book" id="navBook">Booking Request</a></li>
+        <li><a href="index.html#book" class="nav-book" id="navBook">Booking Request</a></li>
       </ul>
     </div>
   </div>
@@ -1466,8 +1466,9 @@ document.getElementById('btnSubmit').onclick = e => {
 
 // ===== CART EVENT LISTENERS =====
 document.getElementById('navCart').addEventListener('click', e => { e.preventDefault(); openCart(); });
-document.getElementById('navBook').addEventListener('click', e => { e.preventDefault(); openCart(); });
-document.getElementById('stickyBook').addEventListener('click', openCart);
+// Booking Request CTA → opens the homepage booking modal
+document.getElementById('navBook').addEventListener('click', e => { e.preventDefault(); window.location.href = 'index.html#book'; });
+document.getElementById('stickyBook').addEventListener('click', () => { window.location.href = 'index.html#book'; });
 
 // Hydrate badge for persisted cart, and open drawer if arriving via #cart
 refreshBadge();
