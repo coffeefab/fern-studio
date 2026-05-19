@@ -419,44 +419,7 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
       <div class="eyebrow">What Clients Say</div>
       <h2 style="color:var(--forest)">Loved by Indy hosts</h2>
     </div>
-    <div class="reviews-grid">
-      <div class="review-card reveal">
-        <div class="review-qdot">"</div>
-        <p class="review-text">The flower wall was absolutely gorgeous. Exactly what I envisioned. Setup was flawless and the team was so professional.</p>
-        <div class="review-stars">★★★★★</div>
-        <div class="review-author">
-          <div class="review-av">SM</div>
-          <div>
-            <div class="review-name">Sarah M.</div>
-            <div class="review-event">Wedding · Newfields</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal" style="transition-delay:.1s">
-        <div class="review-qdot">"</div>
-        <p class="review-text">Used Fern Studio for our daughter's baby shower and couldn't be happier. The arch was stunning and delivery was right on time.</p>
-        <div class="review-stars">★★★★★</div>
-        <div class="review-author">
-          <div class="review-av">LK</div>
-          <div>
-            <div class="review-name">Leah K.</div>
-            <div class="review-event">Baby Shower · Carmel, IN</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card reveal" style="transition-delay:.2s">
-        <div class="review-qdot">"</div>
-        <p class="review-text">Booked the neon sign and tables. Everything arrived clean, styled, and beautiful. Will absolutely use Fern Studio again.</p>
-        <div class="review-stars">★★★★★</div>
-        <div class="review-author">
-          <div class="review-av">JT</div>
-          <div>
-            <div class="review-name">Jordan T.</div>
-            <div class="review-event">Birthday Party · Fishers, IN</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="reviews-grid" id="shopReviewsGrid"></div>
   </div>
 </section>
 
@@ -1581,6 +1544,38 @@ const revealObserver = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ===== RANDOM REVIEWS (matches homepage pool) =====
+const REVIEWS = [
+  { text: "I HIGHLY recommend Fernando Martinez w/ Fern Studio Event Rentals. He did an AMAZING job at my daughter's wedding reception!! If I could give 10 stars I would!!! We ordered the \"GLAM\" flower wall. It did not disappoint. And he even hung our custom neon sign for us himself.", name: "Chrystal Wall", initials: "CW", event: "Google review" },
+  { text: "The flower wall was absolutely gorgeous and was such a hit at our reception! Price point was so much better than a lot in the area and the wall itself was super natural looking. Fernando was extremely responsive and right on time. We will definitely be using them in the future!", name: "Cara Esparza", initials: "CE", event: "Google review" },
+  { text: "Absolutely stunning! The flower arch and flower wall completely transformed the wedding space. They were breathtaking and truly unforgettable. Everything was set up perfectly and right on time. Highly recommend.", name: "Jenny Gilliland", initials: "JG", event: "Google review" },
+  { text: "Met up with Fernando. Very nice young man! A handshake is very important to him. He delivered exactly what I ordered and helped load it on my trailer. The chairs were perfect. Light weight but sturdy. They are legit and I would do business with them again.", name: "Eric Murphy", initials: "EM", event: "Google review" },
+  { text: "I had a very nice experience with Fernando and his company. My pickup was scheduled for Thanksgiving, and he went above and beyond by allowing me to pick up the chairs and table a day early at no extra charge. The service was professional, flexible, and genuinely considerate.", name: "Imani Frazier", initials: "IF", event: "Google review" },
+  { text: "I truly recommend Fern Studio to anyone! Their rental items are high quality and reasonably priced, and they were incredibly responsive and flexible with our changing needs and schedule. I'll definitely be renting from them again!", name: "Ivonne Siguientes", initials: "IS", event: "Google review" },
+  { text: "Such professional and friendly service! Beautiful arrangements, and will be working with them again! My clients loved this setup.", name: "Bri Elizabeth Photography", initials: "BE", event: "Google review" },
+];
+
+(function renderShopReviews(){
+  const grid = document.getElementById('shopReviewsGrid');
+  if (!grid) return;
+  // Shuffle and take 3
+  const picks = [...REVIEWS].sort(() => Math.random() - .5).slice(0, 3);
+  grid.innerHTML = picks.map((r, i) => `
+    <div class="review-card reveal" style="transition-delay:${i * 0.1}s">
+      <div class="review-qdot">"</div>
+      <p class="review-text">${r.text.replace(/"/g, '&quot;')}</p>
+      <div class="review-stars">★★★★★</div>
+      <div class="review-author">
+        <div class="review-av">${r.initials}</div>
+        <div>
+          <div class="review-name">${r.name}</div>
+          <div class="review-event">${r.event}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+})();
 
 // ===== INIT =====
 loadProducts();
