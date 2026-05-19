@@ -57,6 +57,11 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .nav .wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
 .nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
 .nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-toggle{display:none;background:none;border:none;width:38px;height:38px;padding:0;cursor:pointer;position:relative;z-index:101}
+.nav-toggle span{display:block;width:22px;height:2px;background:var(--forest);margin:5px auto;border-radius:2px;transition:transform .3s ease,opacity .25s ease}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open span:nth-child(2){opacity:0}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
 .nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
 .nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
@@ -98,6 +103,9 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .widget-items-section{margin-top:.85rem;padding-top:.85rem;border-top:1px solid rgba(28,27,20,.07)}
 .widget-items-lbl{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);margin-bottom:.5rem;font-weight:500}
 .widget-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:.55rem;margin-bottom:.7rem}
+.widget-chips .widget-chip.is-hidden{display:none}
+.widget-show-more{width:100%;padding:.55rem;background:transparent;color:var(--forest);border:1.5px solid rgba(28,27,20,.14);border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),border-color var(--t),color var(--t)}
+.widget-show-more:hover{background:var(--forest);color:var(--ivory);border-color:var(--forest)}
 .widget-chip{position:relative;aspect-ratio:1/1;border-radius:var(--r8);overflow:hidden;background:var(--cream);cursor:pointer;border:2px solid transparent;transition:transform var(--t),border-color var(--t),box-shadow var(--t);user-select:none}
 .widget-chip:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(28,27,20,.13)}
 .widget-chip img{width:100%;height:100%;object-fit:cover;display:block}
@@ -417,7 +425,15 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
   .foot-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:768px){
-  .nav-links{display:none}
+  .nav-toggle{display:block}
+  .nav-links{position:absolute;top:100%;left:0;right:0;background:rgba(247,244,239,.98);backdrop-filter:blur(16px);flex-direction:column;align-items:stretch;gap:0;padding:0 clamp(1.5rem,5vw,4.5rem);box-shadow:0 8px 24px rgba(28,27,20,.1);border-top:1px solid rgba(28,27,20,.06);max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .3s ease,padding .35s ease;pointer-events:none}
+  .nav-links.open{max-height:80vh;opacity:1;padding-top:.6rem;padding-bottom:1.2rem;pointer-events:auto}
+  .nav-links li{width:100%}
+  .nav-links a:not(.nav-book){display:block;padding:.85rem 0;border-bottom:1px solid rgba(28,27,20,.07);font-size:.85rem;letter-spacing:.13em}
+  .nav-links .nav-cart-btn{padding:.85rem 0!important;font-size:.85rem!important;border-bottom:1px solid rgba(28,27,20,.07)}
+  .nav-links .nav-cart-btn .cart-badge{position:static;margin-left:.4rem}
+  .nav-links .nav-book{display:block;text-align:center;margin-top:.75rem;padding:.9rem 1rem!important}
+  .nav-links-hidden{display:none}
   .avail-row{grid-template-columns:1fr;gap:.6rem}
   .steps-grid{grid-template-columns:1fr;gap:2.5rem}
   .cats-grid{grid-template-columns:1fr 1fr;grid-template-rows:260px auto auto;gap:.8rem}
@@ -448,7 +464,8 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
   <div class="wrap">
     <div class="nav-inner">
       <a href="#" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
-      <ul class="nav-links">
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
         <li><a href="shop.html">Rentals</a></li>
         <li><a href="packages.html">Packages</a></li>
         <li><a href="collab.html">Collab</a></li>
@@ -487,11 +504,12 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
           <div class="widget-date-row">
             <span class="widget-date-lbl">Event date</span>
             <input type="date" id="hDate" class="widget-date-input">
-            <button class="widget-check-full" onclick="checkWidgetAvail()">Check date →</button>
           </div>
           <div class="widget-items-section" id="wItemsSection" style="display:none">
             <div class="widget-items-lbl">Tap the floral installations you want for this date</div>
             <div class="widget-chips" id="wChips"></div>
+            <button class="widget-show-more" id="wShowMore" type="button" style="display:none">Show more</button>
+            <button class="widget-check-full" onclick="checkWidgetAvail()" style="margin-top:.9rem">Check date →</button>
           </div>
           <div class="avail-results" id="hRes"></div>
           <div class="widget-trust">Reply within 24 hours · No obligation · Free quote</div>
@@ -1092,18 +1110,36 @@ function renderWidgetChips() {
 
   if (container.querySelector('.widget-chip')) return;
 
-  container.innerHTML = items.map(p => {
+  const VISIBLE_LIMIT = 6;
+  container.innerHTML = items.map((p, idx) => {
     const label = shortName(p.name);
     const img = p.photo_url
       ? `<img src="${escHtml(p.photo_url)}" alt="${escHtml(p.name)}" loading="lazy">`
       : `<div class="chip-noimg">✦</div>`;
-    return `<div class="widget-chip" role="button" tabindex="0"
+    const hiddenCls = idx >= VISIBLE_LIMIT ? ' is-hidden' : '';
+    return `<div class="widget-chip${hiddenCls}" role="button" tabindex="0"
       data-id="${p.id}" data-name="${escHtml(p.name)}" data-short="${escHtml(label)}" data-cat="${p.category}" data-price="${p.base_price_in_cents || 0}" data-photo="${escHtml(p.photo_url || '')}">
       ${img}
       <span class="chip-status" data-chip-status></span>
       <span class="chip-label">${label}</span>
     </div>`;
   }).join('');
+
+  // Show "Show more" button only if there are hidden chips
+  const showMoreBtn = document.getElementById('wShowMore');
+  if (showMoreBtn) {
+    const hiddenCount = Math.max(0, items.length - VISIBLE_LIMIT);
+    if (hiddenCount > 0) {
+      showMoreBtn.style.display = 'block';
+      showMoreBtn.textContent = `Show ${hiddenCount} more`;
+      showMoreBtn.onclick = () => {
+        container.querySelectorAll('.widget-chip.is-hidden').forEach(c => c.classList.remove('is-hidden'));
+        showMoreBtn.style.display = 'none';
+      };
+    } else {
+      showMoreBtn.style.display = 'none';
+    }
+  }
 
   container.addEventListener('click', e => {
     const chip = e.target.closest('.widget-chip');
@@ -1402,6 +1438,26 @@ document.getElementById('btnSubmit').onclick = e => {
 window.addEventListener('scroll', () => {
   document.getElementById('nav').classList.toggle('solid', window.scrollY > 60);
 }, { passive: true });
+
+// ===== MOBILE NAV TOGGLE =====
+(function(){
+  const toggle = document.getElementById('navToggle');
+  const links  = document.getElementById('navLinks');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', () => {
+    const isOpen = toggle.classList.toggle('open');
+    links.classList.toggle('open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  // Close menu when any link inside is tapped
+  links.addEventListener('click', e => {
+    if (e.target.closest('a')) {
+      toggle.classList.remove('open');
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
 
 // ===== PRODUCT CATALOG =====
 const BOOQABLE_KEY = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a';
