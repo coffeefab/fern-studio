@@ -1,0 +1,18 @@
+[build]
+  functions = "netlify/functions"
+  publish   = "."
+
+# Clean URLs — serve index.html at the root
+[[redirects]]
+  from   = "/"
+  to     = "/index.html"
+  status = 200
+
+# Route /api/* to Netlify Functions
+[[redirects]]
+  from   = "/api/:function"
+  to     = "/.netlify/functions/:function"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"

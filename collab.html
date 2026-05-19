@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Collaborate · Fern Studio Event Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#383410;
+  --forest-mid:#4A4418;
+  --sage:#4A5C40;
+  --sage-light:#7A8F6A;
+  --cream:#EDE8DF;
+  --ivory:#F7F4EF;
+  --gold:#B5924A;
+  --gold-warm:#CBA86A;
+  --blush-tint:#F0E6E6;
+  --warm-stone:#E8E0D5;
+  --charcoal:#1C1B14;
+  --stone:#6B6358;
+  --mist:#B0A898;
+  --white:#FFFFFF;
+  --err:#A83232;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);
+  --shadow-md:0 8px 24px rgba(28,27,20,.11);
+  --t:.32s cubic-bezier(.4,0,.2,1);
+  --r4:4px;--r8:8px;
+}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.05;letter-spacing:-.012em}
+h1{font-size:clamp(2.4rem,5vw,4rem)}
+h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+
+/* ===== NAV (same as index/shop) ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav .wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+.nav-cart-btn{background:none;border:none;display:inline-flex;align-items:center;gap:.45rem;font-family:'Jost',sans-serif;font-size:.73rem;font-weight:300;line-height:1;letter-spacing:.13em;text-transform:uppercase;color:var(--stone)!important;cursor:pointer;transition:color var(--t);padding:0;position:relative}
+.nav-cart-btn:hover{color:var(--gold)!important}
+.cart-badge{background:var(--sage);color:var(--ivory);font-size:.56rem;font-weight:700;min-width:15px;height:15px;border-radius:50%;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1;position:absolute;top:-.55rem;right:-.65rem}
+
+/* ===== PAGE HEADER ===== */
+.page-hd{background:var(--cream);padding:7rem 0 3rem;text-align:center}
+.page-hd h1{color:var(--forest);margin-bottom:1.25rem}
+.page-hd-intro{max-width:60ch;margin:0 auto;color:var(--stone);font-size:.98rem;line-height:1.85}
+.page-hd-intro p{margin-bottom:.7rem}
+.page-hd-intro p:last-child{margin-bottom:0}
+
+/* ===== FORM ===== */
+.form-section{padding:3.5rem 0 5rem;background:var(--ivory)}
+.form-wrap{max-width:720px;margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem)}
+.field{margin-bottom:1.85rem}
+.field-label{display:block;font-size:.92rem;color:var(--charcoal);font-weight:400;margin-bottom:.3rem}
+.field-label .req{color:var(--mist);font-size:.78rem;margin-left:.25rem}
+.field-help{font-size:.78rem;color:var(--mist);margin-bottom:.55rem;line-height:1.55}
+.field input[type=text],
+.field input[type=email],
+.field input[type=tel],
+.field input[type=url],
+.field textarea,
+.field select{
+  width:100%;
+  padding:.85rem 1.1rem;
+  border:none;
+  border-radius:2rem;
+  background:var(--white);
+  font-family:'Jost',sans-serif;
+  font-size:.95rem;
+  color:var(--charcoal);
+  outline:none;
+  transition:box-shadow var(--t);
+  box-shadow:0 0 0 1px rgba(28,27,20,.04);
+}
+.field input:focus,.field textarea:focus,.field select:focus{box-shadow:0 0 0 2px var(--sage)}
+.field textarea{min-height:140px;resize:vertical;border-radius:1.4rem;line-height:1.65}
+.field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%231C1B14' d='M6 8 0 0h12z'/></svg>");background-repeat:no-repeat;background-position:right 1.2rem center;padding-right:2.6rem}
+
+/* Pill-style radio / checkbox */
+.pill-group{display:flex;flex-wrap:wrap;gap:.65rem}
+.pill-group input{position:absolute;opacity:0;pointer-events:none}
+.pill{display:inline-block;padding:.55rem 1.4rem;border-radius:2rem;border:1.5px solid var(--charcoal);background:transparent;font-family:'Jost',sans-serif;font-size:.88rem;color:var(--charcoal);cursor:pointer;transition:background var(--t),color var(--t),border-color var(--t);user-select:none}
+.pill:hover{background:rgba(28,27,20,.04)}
+.pill-group input:checked + .pill{background:var(--forest);border-color:var(--forest);color:var(--ivory)}
+.pill-group input:focus-visible + .pill{box-shadow:0 0 0 2px var(--sage)}
+
+/* Submit */
+.submit-btn{background:var(--forest);color:var(--ivory);border:none;padding:.95rem 2.2rem;border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t)}
+.submit-btn:hover{background:var(--sage);transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.6;cursor:default;transform:none}
+
+/* Success state */
+.form-success{display:none;text-align:center;padding:3rem 1rem;background:var(--white);border-radius:var(--r8);box-shadow:var(--shadow-sm)}
+.form-success.show{display:block}
+.form-success h2{color:var(--forest);margin-bottom:.6rem}
+.form-success p{color:var(--stone);max-width:42ch;margin:0 auto;font-size:.95rem;line-height:1.75}
+
+/* Honeypot — hide from real users */
+.honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* ===== FOOTER ===== */
+footer{background:var(--forest);padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4)}
+
+@media(max-width:900px){
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2.2rem}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-links li:last-child,.nav-links li:nth-last-child(2),.nav-links li:nth-last-child(3){display:none}
+}
+@media(max-width:600px){
+  .pill-group{gap:.5rem}
+  .pill{padding:.5rem 1.1rem;font-size:.82rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
+      <ul class="nav-links">
+        <li><a href="shop.html">Rentals</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="collab.html">Collab</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li>
+          <a href="shop.html#cart" class="nav-cart-btn" id="navCart" aria-label="Cart">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Cart
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+        </li>
+        <li><a href="shop.html#cart" class="nav-book">Booking Request</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<section class="page-hd">
+  <div class="wrap">
+    <div class="eyebrow">Partnerships</div>
+    <h1>Let's work together</h1>
+    <div class="page-hd-intro">
+      <p>We love collaborating with aligned vendors and creative partners.</p>
+      <p>Because our installations require transportation, labor, and inventory allocation, we review each partnership opportunity thoughtfully to ensure it creates real value for everyone involved.</p>
+      <p>If you're interested in working together, please share a few details below.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="form-section">
+  <div class="form-wrap">
+
+    <form id="collabForm" name="collab" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" netlify>
+      <input type="hidden" name="form-name" value="collab">
+      <p class="honeypot"><label>Don't fill this out: <input name="bot-field"></label></p>
+
+      <div class="field">
+        <label class="field-label" for="firstName">First name <span class="req">(required)</span></label>
+        <input type="text" id="firstName" name="firstName" required autocomplete="given-name">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="email">Email <span class="req">(required)</span></label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" autocomplete="tel">
+      </div>
+
+      <div class="field">
+        <span class="field-label">What do you do? <span class="req">(required)</span></span>
+        <div class="pill-group" role="radiogroup" aria-label="What do you do">
+          <input type="radio" id="role-planner" name="role" value="Event Planner" required>
+          <label for="role-planner" class="pill">Event Planner</label>
+          <input type="radio" id="role-photographer" name="role" value="Photographer">
+          <label for="role-photographer" class="pill">Photographer</label>
+          <input type="radio" id="role-venue" name="role" value="Venue">
+          <label for="role-venue" class="pill">Venue</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="social">Social media page</label>
+        <input type="url" id="social" name="social" placeholder="http://" autocomplete="url">
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="collabType">Collaboration type <span class="req">(required)</span></label>
+        <div class="field-help">What type of collaboration are you interested in?</div>
+        <select id="collabType" name="collabType" required>
+          <option value="">Select an option</option>
+          <option value="Styled shoot / editorial">Styled shoot / editorial</option>
+          <option value="Brand partnership">Brand partnership</option>
+          <option value="Sponsored event">Sponsored event</option>
+          <option value="Vendor cross promotion">Vendor cross promotion</option>
+          <option value="Trade / barter">Trade / barter</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="proposal">Describe the collaboration you're proposing <span class="req">(required)</span></label>
+        <div class="field-help">Please include what you're offering and what you're requesting from Fern.</div>
+        <textarea id="proposal" name="proposal" required></textarea>
+      </div>
+
+      <div class="field">
+        <span class="field-label">What level of setup are you requesting? <span class="req">(required)</span></span>
+        <div class="pill-group" role="group" aria-label="Setup level">
+          <input type="checkbox" id="setup-floral" name="setupLevel" value="Floral Installation">
+          <label for="setup-floral" class="pill">Floral Installation</label>
+          <input type="checkbox" id="setup-drapery" name="setupLevel" value="Drapery Backdrop">
+          <label for="setup-drapery" class="pill">Drapery Backdrop</label>
+          <input type="checkbox" id="setup-seating" name="setupLevel" value="Statement Seating/Accent Pieces">
+          <label for="setup-seating" class="pill">Statement Seating/Accent Pieces</label>
+          <input type="checkbox" id="setup-other" name="setupLevel" value="Other">
+          <label for="setup-other" class="pill">Other</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field-label">Is this for a public-facing event? <span class="req">(required)</span></span>
+        <div class="pill-group" role="radiogroup" aria-label="Public facing event">
+          <input type="radio" id="public-yes" name="publicFacing" value="Yes" required>
+          <label for="public-yes" class="pill">Yes</label>
+          <input type="radio" id="public-no" name="publicFacing" value="No">
+          <label for="public-no" class="pill">No</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="whyFern">Why Fern Event Rentals?</label>
+        <input type="text" id="whyFern" name="whyFern">
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+    </form>
+
+    <div class="form-success" id="formSuccess" role="status" aria-live="polite">
+      <h2>Thanks for reaching out</h2>
+      <p>We've received your collaboration proposal and will be in touch within a few business days.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER (matches other pages) -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="fernlogo.png" alt="Fern Studio"></div>
+        <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+      </div>
+      <div>
+        <div class="foot-head">Rentals</div>
+        <ul class="foot-links">
+          <li><a href="shop.html">Browse all rentals</a></li>
+          <li><a href="index.html#rentals">Flower Walls</a></li>
+          <li><a href="index.html#rentals">Floral Arches</a></li>
+          <li><a href="index.html#rentals">LED Signs</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-head">Company</div>
+        <ul class="foot-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="index.html#reviews">Reviews</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="terms.html">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-head">Contact</div>
+        <ul class="foot-links">
+          <li><a href="https://maps.app.goo.gl/EycGHMzLkPrmpNa98" target="_blank" rel="noopener">Indianapolis, IN</a></li>
+          <li><a href="tel:+13174429621">(317) 442-9621</a></li>
+          <li><a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/fern.eventrentals/" target="_blank" rel="noopener">@fern.eventrentals</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+      <span><a href="terms.html">Terms</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Cart badge — read from localStorage so nav stays in sync with shop.html
+(function syncCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  if (!badge) return;
+  const update = () => {
+    let count = 0;
+    try {
+      const s = localStorage.getItem('fern_cart_v1');
+      const cart = s ? JSON.parse(s) : [];
+      if (Array.isArray(cart)) count = cart.reduce((sum, i) => sum + (i.qty || 0), 0);
+    } catch (e) {}
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  };
+  update();
+  window.addEventListener('storage', e => { if (e.key === 'fern_cart_v1') update(); });
+})();
+
+// Nav background on scroll
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// Form submission — submits to Netlify Forms via fetch so the page doesn't redirect
+const form = document.getElementById('collabForm');
+const successEl = document.getElementById('formSuccess');
+const submitBtn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending…';
+
+  const data = new FormData(form);
+  // Collect multi-value setupLevel as a single string
+  const setupValues = data.getAll('setupLevel');
+  data.delete('setupLevel');
+  if (setupValues.length) data.append('setupLevel', setupValues.join(', '));
+
+  const body = new URLSearchParams(data).toString();
+
+  try {
+    const res = await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
+    if (!res.ok && res.status !== 200) throw new Error(`HTTP ${res.status}`);
+    form.style.display = 'none';
+    successEl.classList.add('show');
+    window.scrollTo({ top: successEl.offsetTop - 120, behavior: 'smooth' });
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit';
+    alert('Something went wrong. Please email byfernstudio@gmail.com directly.');
+  }
+});
+</script>
+</body>
+</html>

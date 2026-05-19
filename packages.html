@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Packages · Fern Studio Event Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#383410;
+  --forest-mid:#4A4418;
+  --sage:#4A5C40;
+  --sage-light:#7A8F6A;
+  --cream:#EDE8DF;
+  --ivory:#F7F4EF;
+  --gold:#B5924A;
+  --gold-warm:#CBA86A;
+  --gold-pale:#E8D9B5;
+  --blush:#C9A0A0;
+  --blush-tint:#F0E6E6;
+  --warm-stone:#E8E0D5;
+  --charcoal:#1C1B14;
+  --stone:#6B6358;
+  --mist:#B0A898;
+  --white:#FFFFFF;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);
+  --shadow-md:0 8px 24px rgba(28,27,20,.11);
+  --shadow-lg:0 20px 60px rgba(28,27,20,.16);
+  --t:.32s cubic-bezier(.4,0,.2,1);
+  --r4:4px;--r8:8px;
+}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.05;letter-spacing:-.012em}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
+
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav .wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+.nav-cart-btn{background:none;border:none;display:inline-flex;align-items:center;gap:.45rem;font-family:'Jost',sans-serif;font-size:.73rem;font-weight:300;line-height:1;letter-spacing:.13em;text-transform:uppercase;color:var(--stone)!important;cursor:pointer;transition:color var(--t);padding:0;position:relative}
+.nav-cart-btn:hover{color:var(--gold)!important}
+.cart-badge{background:var(--sage);color:var(--ivory);font-size:.56rem;font-weight:700;min-width:15px;height:15px;border-radius:50%;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1;position:absolute;top:-.55rem;right:-.65rem}
+
+/* ===== HERO ===== */
+.pkg-hero{padding:8rem 0 5rem;background:var(--ivory);position:relative;overflow:hidden}
+.pkg-hero-inner{position:relative;z-index:1;text-align:center;max-width:780px;margin:0 auto}
+.pkg-hero h1{color:var(--forest);margin-bottom:1.3rem}
+.pkg-hero h1 em{font-style:italic;color:var(--gold);font-weight:400}
+.pkg-hero-sub{color:var(--stone);font-size:1rem;line-height:1.85;max-width:54ch;margin:0 auto}
+
+/* ===== PACKAGE ROWS (editorial alternating) ===== */
+.pkg-row{padding:5rem 0;position:relative;overflow:hidden}
+.pkg-row.bg-ivory{background:var(--ivory)}
+.pkg-row.bg-cream{background:var(--cream)}
+.pkg-row.bg-blush{background:var(--blush-tint)}
+
+.pkg-row-inner{display:grid;grid-template-columns:5fr 6fr;gap:clamp(2rem,5vw,5rem);align-items:center;position:relative;z-index:1}
+.pkg-row.reverse .pkg-row-inner{grid-template-columns:6fr 5fr}
+.pkg-row.reverse .pkg-media{order:2}
+.pkg-row.reverse .pkg-content{order:1}
+
+/* Media — photo with offset decoration */
+.pkg-media{position:relative}
+.pkg-photo{position:relative;border-radius:var(--r8);overflow:hidden;aspect-ratio:4/5;box-shadow:var(--shadow-lg);z-index:2}
+.pkg-photo img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.4,0,.2,1)}
+.pkg-photo:hover img{transform:scale(1.04)}
+
+/* Floating number tag, top-right of photo */
+.pkg-num{position:absolute;top:1.2rem;right:1.2rem;background:rgba(247,244,239,.94);backdrop-filter:blur(8px);padding:.45rem .9rem;border-radius:2rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:var(--forest);letter-spacing:.04em;z-index:3;box-shadow:0 4px 14px rgba(28,27,20,.12)}
+
+/* Content side */
+.pkg-content{position:relative}
+.pkg-number{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(3.5rem,7vw,5.5rem);font-weight:300;color:var(--gold);line-height:1;margin-bottom:.4rem;opacity:.45;letter-spacing:-.02em}
+.pkg-tagline{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.95rem;font-weight:500}
+.pkg-name{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);color:var(--forest);margin-bottom:1rem;font-weight:400}
+.pkg-name em{font-style:italic}
+.pkg-desc{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--stone);font-size:1.18rem;line-height:1.6;margin-bottom:1.6rem;max-width:42ch}
+
+.pkg-price-row{display:flex;align-items:baseline;gap:.7rem;margin-bottom:1.6rem;padding-bottom:1.4rem;border-bottom:1px solid rgba(28,27,20,.12)}
+.pkg-price-lbl{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);font-weight:500}
+.pkg-price{font-family:'Cormorant Garamond',serif;font-size:2.3rem;color:var(--forest);font-weight:500;line-height:1}
+.pkg-price-unit{font-size:.74rem;color:var(--mist);letter-spacing:.06em}
+
+.pkg-included-lbl{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);font-weight:500;margin-bottom:.85rem}
+.pkg-items{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.pkg-items .item{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .95rem;background:rgba(255,255,255,.55);border:1px solid rgba(28,27,20,.07);border-radius:2rem;font-size:.82rem;color:var(--charcoal);font-weight:400}
+.pkg-items .item::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0}
+.pkg-row.bg-ivory .pkg-items .item{background:var(--white)}
+
+.pkg-cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem}
+.pkg-cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--forest);color:var(--ivory);padding:.92rem 1.85rem;border-radius:var(--r4);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
+.pkg-cta:hover{background:var(--sage);transform:translateY(-1px)}
+.pkg-cta-quiet{font-size:.78rem;color:var(--sage);text-decoration:underline;text-underline-offset:3px;transition:color var(--t)}
+.pkg-cta-quiet:hover{color:var(--forest)}
+
+/* ===== CUSTOM CTA ===== */
+.custom-cta{background:var(--forest);color:var(--ivory);padding:5rem 0;text-align:center;position:relative;overflow:hidden}
+.custom-cta .eyebrow{color:var(--gold-warm);justify-content:center}
+.custom-cta .eyebrow::before{background:var(--gold-warm)}
+.custom-cta h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);color:var(--ivory);margin-bottom:.8rem;font-weight:400}
+.custom-cta h2 em{color:var(--gold-warm);font-style:italic}
+.custom-cta p{color:rgba(247,244,239,.7);font-size:.98rem;max-width:52ch;margin:0 auto 2rem;line-height:1.8}
+.btn-link{display:inline-flex;align-items:center;gap:.55rem;background:var(--gold);color:var(--white)!important;padding:.95rem 2rem;border-radius:var(--r4);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
+.btn-link:hover{background:var(--ivory);color:var(--forest)!important;transform:translateY(-1px)}
+
+/* ===== FOOTER ===== */
+footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4)}
+
+/* ===== IMAGE LIGHTBOX ===== */
+.pkg-photo{cursor:zoom-in}
+.pkg-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,27,20,0) 60%,rgba(28,27,20,.18) 100%);opacity:0;transition:opacity var(--t);pointer-events:none}
+.pkg-photo:hover::after{opacity:1}
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(28,27,20,.92);display:flex;align-items:center;justify-content:center;padding:2rem;opacity:0;pointer-events:none;transition:opacity .35s ease;backdrop-filter:blur(6px)}
+.lightbox.is-open{opacity:1;pointer-events:auto}
+.lightbox-img{max-width:min(94vw,1400px);max-height:90vh;width:auto;height:auto;object-fit:contain;border-radius:6px;box-shadow:0 30px 80px rgba(0,0,0,.6);transform:scale(.96);transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.lightbox.is-open .lightbox-img{transform:scale(1)}
+.lightbox-close{position:absolute;top:1.4rem;right:1.4rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--ivory);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background var(--t),transform var(--t)}
+.lightbox-close:hover{background:rgba(255,255,255,.2);transform:rotate(90deg)}
+.lightbox-close svg{width:18px;height:18px}
+
+@media(max-width:900px){
+  .pkg-row{padding:3.5rem 0}
+  .pkg-row-inner,.pkg-row.reverse .pkg-row-inner{grid-template-columns:1fr;gap:2.5rem}
+  .pkg-row.reverse .pkg-media{order:1}
+  .pkg-row.reverse .pkg-content{order:2}
+  .pkg-photo{aspect-ratio:5/4;max-width:560px;margin:0 auto}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2.2rem}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+}
+@media(max-width:600px){
+  .pkg-hero{padding:6.5rem 0 3.5rem}
+  .pkg-name{font-size:1.75rem}
+  .pkg-desc{font-size:1.05rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
+      <ul class="nav-links">
+        <li><a href="shop.html">Rentals</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="collab.html">Collab</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li>
+          <a href="shop.html#cart" class="nav-cart-btn" id="navCart" aria-label="Cart">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Cart
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+        </li>
+        <li><a href="shop.html#cart" class="nav-book">Booking Request</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pkg-hero">
+  <div class="wrap">
+    <div class="pkg-hero-inner">
+      <div class="eyebrow" style="justify-content:center">Curated bundles</div>
+      <h1>Set the scene in<br><em>one decision.</em></h1>
+      <p class="pkg-hero-sub">Five pre-styled packages built around the moments worth photographing. Each one is delivered, set up, and broken down by our team. Pick a look, pick a date.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGE 1 -->
+<section class="pkg-row bg-cream">
+  <div class="wrap">
+    <div class="pkg-row-inner">
+      <div class="pkg-media">
+        <div class="pkg-photo">
+          <img src="ceremony-edit.png" alt="The Ceremony Edit">
+        </div>
+      </div>
+      <div class="pkg-content">
+        <div class="pkg-number">No. 01</div>
+        <div class="pkg-tagline">Ceremony</div>
+        <h2 class="pkg-name">The Ceremony <em>Edit</em></h2>
+        <p class="pkg-desc">Everything you need for a clean, elegant ceremony space.</p>
+        <div class="pkg-price-row">
+          <span class="pkg-price-lbl">From</span>
+          <span class="pkg-price">$680</span>
+          <span class="pkg-price-unit">/ event</span>
+        </div>
+        <div class="pkg-included-lbl">What's included</div>
+        <div class="pkg-items">
+          <span class="item">Flower arch</span>
+          <span class="item">Pipe and drape backdrop</span>
+          <span class="item">50 garden / resin chairs</span>
+          <span class="item">Floral spray</span>
+        </div>
+        <div class="pkg-cta-row">
+          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20The%20Ceremony%20Edit">Reserve this look →</a>
+          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGE 2 -->
+<section class="pkg-row bg-ivory reverse">
+  <div class="wrap">
+    <div class="pkg-row-inner">
+      <div class="pkg-media">
+        <div class="pkg-photo">
+          <img src="sweetheart-table.png" alt="The Sweetheart Table">
+        </div>
+      </div>
+      <div class="pkg-content">
+        <div class="pkg-number">No. 02</div>
+        <div class="pkg-tagline">Couple's focal point</div>
+        <h2 class="pkg-name">The Sweetheart <em>Table</em></h2>
+        <p class="pkg-desc">A romantic setup designed to highlight the couple.</p>
+        <div class="pkg-price-row">
+          <span class="pkg-price-lbl">From</span>
+          <span class="pkg-price">$360</span>
+          <span class="pkg-price-unit">/ event</span>
+        </div>
+        <div class="pkg-included-lbl">What's included</div>
+        <div class="pkg-items">
+          <span class="item">Flower wall</span>
+          <span class="item">6 foot table</span>
+          <span class="item">Luxe linen</span>
+          <span class="item">Floral spray</span>
+          <span class="item">2 resin chairs</span>
+          <span class="item">'You + Me' LED sign</span>
+        </div>
+        <div class="pkg-cta-row">
+          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20The%20Sweetheart%20Table">Reserve this look →</a>
+          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGE 4 -->
+<section class="pkg-row bg-ivory reverse">
+  <div class="wrap">
+    <div class="pkg-row-inner">
+      <div class="pkg-media">
+        <div class="pkg-photo">
+          <img src="baby-shower.png" alt="Baby Shower Package">
+        </div>
+      </div>
+      <div class="pkg-content">
+        <div class="pkg-number">No. 04</div>
+        <div class="pkg-tagline">Baby Shower</div>
+        <h2 class="pkg-name">The <em>Oh Baby</em></h2>
+        <p class="pkg-desc">A polished setup for mingling and cocktail hour.</p>
+        <div class="pkg-price-row">
+          <span class="pkg-price-lbl">From</span>
+          <span class="pkg-price">$355</span>
+          <span class="pkg-price-unit">/ event</span>
+        </div>
+        <div class="pkg-included-lbl">What's included</div>
+        <div class="pkg-items">
+          <span class="item">One flower wall</span>
+          <span class="item">Peacock chair</span>
+          <span class="item">'Oh Baby' LED sign</span>
+          <span class="item">Baby block lettering</span>
+        </div>
+        <div class="pkg-cta-row">
+          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20Baby%20Shower%20Package">Reserve this look →</a>
+          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGE 5 -->
+<section class="pkg-row bg-cream">
+  <div class="wrap">
+    <div class="pkg-row-inner">
+      <div class="pkg-media">
+        <div class="pkg-photo">
+          <img src="essentials.png" alt="The Essentials">
+        </div>
+      </div>
+      <div class="pkg-content">
+        <div class="pkg-number">No. 05</div>
+        <div class="pkg-tagline">Foundations</div>
+        <h2 class="pkg-name">The <em>Essentials</em></h2>
+        <p class="pkg-desc">A simple and functional setup for small gatherings.</p>
+        <div class="pkg-price-row">
+          <span class="pkg-price-lbl">From</span>
+          <span class="pkg-price">$160</span>
+          <span class="pkg-price-unit">/ event</span>
+        </div>
+        <div class="pkg-included-lbl">What's included</div>
+        <div class="pkg-items">
+          <span class="item">5 round tables</span>
+          <span class="item">40 standard white chairs</span>
+          <span class="item">4 cocktail tables &amp; covers</span>
+        </div>
+        <div class="pkg-cta-row">
+          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20The%20Essentials">Reserve this look →</a>
+          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGE 6 -->
+<section class="pkg-row bg-ivory reverse">
+  <div class="wrap">
+    <div class="pkg-row-inner">
+      <div class="pkg-media">
+        <div class="pkg-photo">
+          <img src="signature-backdrop.png" alt="Signature Backdrop">
+        </div>
+      </div>
+      <div class="pkg-content">
+        <div class="pkg-number">No. 06</div>
+        <div class="pkg-tagline">Showstopper</div>
+        <h2 class="pkg-name">Signature <em>Backdrop</em></h2>
+        <p class="pkg-desc">A statement combination to elevate ceremonies and photo moments.</p>
+        <div class="pkg-price-row">
+          <span class="pkg-price-lbl">From</span>
+          <span class="pkg-price">$530</span>
+          <span class="pkg-price-unit">/ event</span>
+        </div>
+        <div class="pkg-included-lbl">What's included</div>
+        <div class="pkg-items">
+          <span class="item">Flower wall or drapery</span>
+          <span class="item">Floral arch</span>
+          <span class="item">Rug</span>
+          <span class="item">LED sign</span>
+        </div>
+        <div class="pkg-cta-row">
+          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20Signature%20Backdrop">Reserve this look →</a>
+          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CUSTOM CTA -->
+<section class="custom-cta">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="eyebrow">Something different?</div>
+    <h2>Build something <em>just for you.</em></h2>
+    <p>Mix and match from our full inventory, or tell us what you're picturing. We'll put together a custom quote within a day.</p>
+    <a href="collab.html" class="btn-link">Tell us about your event →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand"><img src="fernlogo.png" alt="Fern Studio"></div>
+        <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+      </div>
+      <div>
+        <div class="foot-head">Rentals</div>
+        <ul class="foot-links">
+          <li><a href="shop.html">Browse all rentals</a></li>
+          <li><a href="packages.html">Packages</a></li>
+          <li><a href="index.html#rentals">Flower Walls</a></li>
+          <li><a href="index.html#rentals">Floral Arches</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-head">Company</div>
+        <ul class="foot-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="index.html#reviews">Reviews</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="terms.html">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-head">Contact</div>
+        <ul class="foot-links">
+          <li><a href="https://maps.app.goo.gl/EycGHMzLkPrmpNa98" target="_blank" rel="noopener">Indianapolis, IN</a></li>
+          <li><a href="tel:+13174429621">(317) 442-9621</a></li>
+          <li><a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/fern.eventrentals/" target="_blank" rel="noopener">@fern.eventrentals</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+      <span><a href="terms.html">Terms</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+// Cart badge sync
+(function syncCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  if (!badge) return;
+  const update = () => {
+    let count = 0;
+    try {
+      const s = localStorage.getItem('fern_cart_v1');
+      const cart = s ? JSON.parse(s) : [];
+      if (Array.isArray(cart)) count = cart.reduce((sum, i) => sum + (i.qty || 0), 0);
+    } catch (e) {}
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  };
+  update();
+  window.addEventListener('storage', e => { if (e.key === 'fern_cart_v1') update(); });
+})();
+
+// Nav background on scroll
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// Image lightbox — click any package photo to enlarge
+(function setupLightbox(){
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightboxImg');
+  const lbClose = document.getElementById('lightboxClose');
+  if (!lb || !lbImg) return;
+
+  const open = (src, alt) => {
+    lbImg.src = src;
+    lbImg.alt = alt || '';
+    lb.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    lb.classList.remove('is-open');
+    document.body.style.overflow = '';
+  };
+
+  document.querySelectorAll('.pkg-photo img').forEach(img => {
+    img.addEventListener('click', () => open(img.src, img.alt));
+  });
+  lbClose.addEventListener('click', close);
+  lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fern Studio — Event Rentals Indianapolis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* === Dark Forest Luxury + Dusty Petal palette === */
+  --forest:#1C1B14;          /* Midnight Forest — primary */
+  --forest-mid:#2E3323;      /* deep forest tint for gradients */
+  --sage:#4A5C40;            /* Deep Fern — secondary */
+  --sage-light:#7A8F6A;      /* lighter fern for accents */
+  --cream:#EDE8DF;           /* warm section backgrounds (derived from Warm Stone) */
+  --ivory:#F7F4EF;           /* Antique White — background */
+  --gold:#B5924A;            /* Burnished Gold — accent */
+  --gold-warm:#CBA86A;       /* lighter gold for eyebrows, hovers */
+  --gold-pale:#E8D9B5;       /* very light gold tint */
+  --blush:#C9A0A0;           /* Dusty Petal — floral accent (badges, bg tints only) */
+  --blush-tint:#F0E6E6;      /* ultra-light dusty petal for section bg fills */
+  --blush-deep:#A87878;      /* deeper dusty petal */
+  --warm-stone:#E8E0D5;      /* Warm Stone — neutral mid */
+  --charcoal:#1C1B14;        /* Midnight Forest for body text */
+  --stone:#6B6358;           /* mid-tone body text */
+  --mist:#B0A898;            /* light text / placeholders */
+  --white:#FFFFFF;
+  --err:#A83232;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);
+  --shadow-md:0 8px 24px rgba(28,27,20,.11);
+  --shadow-lg:0 20px 60px rgba(28,27,20,.16);
+  --t:.32s cubic-bezier(.4,0,.2,1);
+  --r4:4px;--r8:8px;--r16:16px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+
+/* --- TYPE --- */
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.18}
+h1{font-size:clamp(2.8rem,6vw,5.5rem)}
+h2{font-size:clamp(2rem,4vw,3.6rem)}
+h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
+
+/* --- UTILS --- */
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+.eyebrow::before{content:'';display:block;width:1.6rem;height:1px;background:currentColor}
+.section-lead{color:var(--stone);font-size:.95rem;line-height:1.8;max-width:52ch;margin-top:.75rem}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+
+/* ===== HERO (split layout) ===== */
+.hero{background:var(--ivory);min-height:100vh;display:flex;align-items:center;overflow:hidden;padding:7rem 0 4rem}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+/* Left column */
+.hero-left{opacity:0;animation:fadeUp .8s .1s forwards}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--warm-stone);padding:.38rem .9rem;border-radius:2rem;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);margin-bottom:2rem;font-weight:500}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0}
+.hero h1{color:var(--forest);font-weight:400;font-size:clamp(3.2rem,5.5vw,5.5rem);line-height:1.05;margin-bottom:1.4rem}
+.hero h1 em{font-style:italic;color:var(--gold);font-weight:400;display:block}
+.hero-sub{color:var(--stone);font-size:.95rem;line-height:1.8;max-width:48ch;margin-bottom:2rem}
+.hero-sub strong{color:var(--charcoal);font-weight:500}
+/* Widget card */
+.hero-widget-card{background:var(--white);border-radius:14px;padding:1.4rem 1.6rem;box-shadow:0 4px 28px rgba(28,27,20,.09),0 0 0 1px rgba(28,27,20,.05);margin-bottom:1.5rem;max-width:440px}
+.widget-label{display:flex;align-items:center;gap:.4rem;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem;font-weight:500}
+.hero-avail-row{display:grid;grid-template-columns:1fr 1fr auto;gap:.5rem;align-items:center}
+.hero-avail-row input,.hero-avail-row select{padding:.6rem .75rem;border:1.5px solid rgba(28,27,20,.12);border-radius:8px;font-family:'Jost',sans-serif;font-size:.84rem;color:var(--charcoal);background:var(--ivory);outline:none;transition:border-color var(--t);appearance:none;-webkit-appearance:none;width:100%}
+.hero-avail-row input:focus,.hero-avail-row select:focus{border-color:var(--sage)}
+.btn-check-pill{background:var(--forest);color:var(--ivory);border:none;padding:.6rem 1.2rem;border-radius:2rem;font-family:'Jost',sans-serif;font-size:.76rem;font-weight:500;white-space:nowrap;cursor:pointer;transition:background var(--t);letter-spacing:.04em}
+.btn-check-pill:hover{background:var(--sage)}
+.widget-trust{font-size:.72rem;color:var(--mist);margin-top:.8rem;line-height:1.5}
+.widget-trust::before{content:'✓ ';color:var(--sage)}
+/* Social proof row */
+.hero-proof-row{display:flex;align-items:center;gap:.65rem;font-size:.82rem;color:var(--stone)}
+.proof-stars{color:var(--gold);letter-spacing:.06em;font-size:.9rem}
+/* Right column: photo */
+.hero-right{position:relative;display:flex;align-items:center;justify-content:flex-end;opacity:0;animation:fadeUp .8s .3s forwards}
+.deco-circle{position:absolute;border-radius:50%;z-index:0;pointer-events:none}
+.deco-blush{width:clamp(130px,14vw,200px);height:clamp(130px,14vw,200px);background:var(--blush);opacity:.65;top:-20px;right:-20px}
+.deco-sage{width:clamp(100px,11vw,155px);height:clamp(100px,11vw,155px);background:var(--sage);opacity:.45;bottom:60px;left:-10px}
+.hero-photo-wrap{position:relative;z-index:1;width:100%}
+.hero-photo{border-radius:20px;overflow:hidden;aspect-ratio:3/4;position:relative}
+.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center}
+.photo-caption{position:absolute;bottom:1.2rem;left:1.2rem;background:rgba(28,27,20,.5);backdrop-filter:blur(8px);padding:.38rem .9rem;border-radius:2rem;color:var(--ivory);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.88rem;letter-spacing:.02em}
+.bookings-badge{position:absolute;bottom:1rem;right:-1rem;background:var(--white);border-radius:2rem;padding:.45rem 1rem;display:flex;align-items:center;gap:.45rem;font-size:.74rem;color:var(--charcoal);font-weight:400;box-shadow:0 4px 18px rgba(28,27,20,.13);white-space:nowrap}
+.bookings-dot{width:7px;height:7px;border-radius:50%;background:var(--sage);flex-shrink:0}
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;gap:3rem}
+  .hero-right{justify-content:center}
+  .hero-photo{aspect-ratio:4/3;max-width:560px;margin:0 auto}
+  .deco-blush{top:-10px;right:10px}
+  .bookings-badge{right:.5rem}
+}
+@media(max-width:600px){
+  .hero{padding:6rem 0 3rem}
+  .hero-photo{aspect-ratio:4/3}
+  .hero-widget-card{max-width:100%}
+  .hero-avail-row{grid-template-columns:1fr 1fr;gap:.4rem}
+  .btn-check-pill{grid-column:1/-1;text-align:center;padding:.6rem}
+}
+
+/* ===== AVAILABILITY WIDGET ===== */
+.avail-card{background:rgba(247,244,239,.97);backdrop-filter:blur(20px);border-radius:var(--r8);padding:1.75rem 2rem;max-width:580px;box-shadow:var(--shadow-lg),0 0 0 1px rgba(181,146,74,.16)}
+.avail-card-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:500;color:var(--forest);margin-bottom:1.2rem}
+.avail-row{display:grid;grid-template-columns:1fr 1fr auto;gap:.75rem;align-items:end}
+.afield label{display:block;font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);margin-bottom:.38rem;font-weight:500}
+.afield input,.afield select{width:100%;padding:.68rem .9rem;border:1.5px solid rgba(28,27,20,.15);border-radius:var(--r4);background:var(--ivory);color:var(--charcoal);font-family:'Jost',sans-serif;font-size:.88rem;outline:none;transition:border-color var(--t);appearance:none;-webkit-appearance:none}
+.afield input:focus,.afield select:focus{border-color:var(--sage)}
+.btn-check{padding:.68rem 1.4rem;background:var(--forest);color:var(--ivory);border:none;border-radius:var(--r4);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;white-space:nowrap;transition:background var(--t),transform var(--t)}
+.btn-check:hover{background:var(--sage);transform:translateY(-1px)}
+.avail-results{display:none;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(28,27,20,.08)}
+.avail-results.open{display:block}
+.status-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:.65rem}
+.status-pill{display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .9rem;border-radius:2rem;font-size:.76rem;font-weight:500;letter-spacing:.04em}
+.status-pill.available{background:rgba(74,92,64,.1);color:var(--sage)}
+.status-pill.limited{background:rgba(181,146,74,.12);color:var(--gold)}
+.status-pill.booked{background:rgba(168,50,50,.08);color:var(--err)}
+.spill-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.status-msg{font-size:.8rem;color:var(--stone);line-height:1.65;margin-bottom:.9rem}
+.items-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.5rem;margin-bottom:1rem}
+.inv-chip{padding:.55rem .7rem;border:1px solid rgba(28,27,20,.08);border-radius:var(--r4);background:var(--ivory)}
+.inv-chip-name{font-size:.65rem;letter-spacing:.06em;color:var(--mist);margin-bottom:.25rem;text-transform:uppercase}
+.inv-chip-val{font-size:.76rem;font-weight:500}
+.inv-chip-val.available{color:var(--sage)}
+.inv-chip-val.limited{color:var(--gold)}
+.inv-chip-val.booked{color:var(--err)}
+.btn-quote{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:var(--white);padding:.72rem 1.65rem;border-radius:var(--r4);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border:none;transition:background var(--t),transform var(--t),box-shadow var(--t)}
+.btn-quote:hover{background:var(--sage);transform:translateY(-2px);box-shadow:0 8px 22px rgba(74,92,64,.28)}
+.btn-quote.dim{background:var(--stone);cursor:default}
+.btn-quote.dim:hover{background:var(--stone);transform:none;box-shadow:none}
+.momentum-tag{font-size:.7rem;color:var(--mist);letter-spacing:.04em}
+
+/* ===== TRUST BAR ===== */
+.trust-bar{background:var(--ivory);border-top:1px solid rgba(28,27,20,.06);border-bottom:1px solid rgba(28,27,20,.06);padding:1.2rem 0}
+.trust-inner{display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap}
+.trust-item{display:flex;align-items:center;gap:.55rem;font-size:.78rem;color:var(--stone);letter-spacing:.03em}
+.trust-icon{color:var(--gold);font-size:.85rem}
+
+/* ===== SECTIONS ===== */
+section{padding:clamp(4rem,8vw,7.5rem) 0}
+
+/* ===== CATEGORIES ===== */
+.cats-section{background:var(--cream)}
+.cats-header{margin-bottom:3.5rem}
+.cats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:260px 260px;gap:1.2rem}
+.cat-card{position:relative;overflow:hidden;border-radius:var(--r8);cursor:pointer}
+.cat-card:nth-child(1){grid-column:1;grid-row:1/3}
+.cat-card:nth-child(2){grid-column:2;grid-row:1}
+.cat-card:nth-child(3){grid-column:3;grid-row:1}
+.cat-card:nth-child(4){grid-column:2;grid-row:2}
+.cat-card:nth-child(5){grid-column:3;grid-row:2}
+.cat-card img{width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.4,0,.2,1)}
+.cat-card:hover img{transform:scale(1.06)}
+.cat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(28,27,20,.84) 0%,transparent 55%);display:flex;align-items:flex-end;padding:1.75rem}
+.cat-sub{font-size:.67rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:.3rem}
+.cat-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--ivory);line-height:1.15}
+.cat-arrow{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid rgba(255,255,255,.28);border-radius:50%;color:var(--ivory);font-size:.85rem;margin-top:.7rem;transition:background var(--t),border-color var(--t)}
+.cat-card:hover .cat-arrow{background:var(--gold);border-color:var(--gold)}
+
+/* ===== STEPS ===== */
+.steps-section{background:var(--ivory)}
+.steps-header{text-align:center;margin-bottom:4rem}
+.steps-header .eyebrow{justify-content:center}
+.steps-header .eyebrow::before{display:none}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3rem;position:relative}
+.steps-grid::before{content:'';position:absolute;top:24px;left:calc(33.3% + 1.5rem);right:calc(33.3% + 1.5rem);height:1px;background:linear-gradient(90deg,var(--gold-pale),var(--gold),var(--gold-pale))}
+.step{padding-top:2.5rem;position:relative}
+.step-num{position:absolute;top:0;left:0;font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:300;color:var(--gold-pale);line-height:1}
+.step-icon{width:48px;height:48px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;margin-bottom:1.4rem}
+.step h3{color:var(--forest);margin-bottom:.65rem;font-size:1.45rem}
+.step p{font-size:.88rem;color:var(--stone);line-height:1.8}
+
+/* ===== MORE INVENTORY ===== */
+.inv-section{background:var(--forest);color:var(--ivory)}
+.inv-section .eyebrow{color:var(--gold-warm)}
+.inv-section .eyebrow::before{background:var(--gold-warm)}
+.inv-section h2{color:var(--ivory)}
+.inv-section .section-lead{color:rgba(247,244,239,.6)}
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.inv-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r8);overflow:hidden;transition:border-color var(--t),transform var(--t)}
+.inv-card:hover{border-color:rgba(181,146,74,.45);transform:translateY(-4px)}
+.inv-card img{height:200px}
+.inv-card-body{padding:1.4rem 1.6rem}
+.inv-card h3{color:var(--ivory);font-size:1.3rem;margin-bottom:.4rem}
+.inv-card p{font-size:.82rem;color:rgba(247,244,239,.58);line-height:1.72}
+
+/* ===== REVIEWS ===== */
+.reviews-section{background:var(--blush-tint)}
+.reviews-header{text-align:center;margin-bottom:3.5rem}
+.reviews-header .eyebrow{justify-content:center}
+.reviews-header .eyebrow::before{display:none}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+.review-card{background:var(--ivory);border-radius:var(--r8);padding:2rem;box-shadow:var(--shadow-sm)}
+.review-qdot{font-family:'Cormorant Garamond',serif;font-size:3.5rem;color:var(--gold-pale);line-height:1;margin-bottom:.3rem}
+.review-text{font-size:.9rem;font-style:italic;color:var(--stone);line-height:1.82;margin-bottom:1.4rem}
+.review-stars{color:var(--gold);letter-spacing:.12em;font-size:.78rem;margin-bottom:1rem}
+.review-author{display:flex;align-items:center;gap:.7rem}
+.review-av{width:38px;height:38px;border-radius:50%;background:var(--blush);display:flex;align-items:center;justify-content:center;color:var(--forest);font-size:.8rem;font-weight:500;flex-shrink:0}
+.review-name{font-weight:500;font-size:.84rem;color:var(--forest)}
+.review-event{font-size:.72rem;color:var(--mist);letter-spacing:.04em}
+
+/* ===== GALLERY ===== */
+.gallery-section{background:var(--ivory);padding-bottom:0}
+.gallery-head{text-align:center;padding-bottom:2.5rem}
+.gallery-head .eyebrow{justify-content:center}
+.gallery-head .eyebrow::before{display:none}
+.gallery-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+.g-item{aspect-ratio:1;overflow:hidden;position:relative}
+.g-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.g-item:hover img{transform:scale(1.08)}
+.g-hover{position:absolute;inset:0;background:rgba(28,27,20,.44);opacity:0;display:flex;align-items:center;justify-content:center;color:var(--ivory);font-size:.72rem;letter-spacing:.1em;transition:opacity var(--t)}
+.g-item:hover .g-hover{opacity:1}
+
+/* ===== FINAL CTA ===== */
+.cta-section{background:var(--cream);text-align:center}
+.cta-section .eyebrow{justify-content:center}
+.cta-section .eyebrow::before{display:none}
+.cta-section h2{max-width:16ch;margin:0 auto .75rem}
+.cta-section .section-lead{margin:0 auto 3rem;text-align:center}
+.cta-widget-wrap{background:var(--ivory);border-radius:var(--r16);padding:2.5rem;max-width:640px;margin:0 auto;box-shadow:var(--shadow-md),0 0 0 1px rgba(181,146,74,.12)}
+
+/* ===== FOOTER ===== */
+footer{background:var(--forest);padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:2rem;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4)}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(28,27,20,.7);backdrop-filter:blur(5px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--ivory);border-radius:var(--r16);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;transform:translateY(16px);transition:transform .35s ease;box-shadow:var(--shadow-lg)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-hd{padding:1.8rem 2rem 1.4rem;border-bottom:1px solid rgba(28,27,20,.07);display:flex;align-items:flex-start;justify-content:space-between}
+.modal-hd h3{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--forest);font-weight:400}
+.modal-hd p{font-size:.82rem;color:var(--stone);margin-top:.2rem}
+.modal-close{background:none;border:none;font-size:1.1rem;color:var(--mist);padding:.25rem;line-height:1;transition:color var(--t)}
+.modal-close:hover{color:var(--forest)}
+.modal-body{padding:1.6rem 2rem 2rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.fg{margin-bottom:.1rem}
+.fg.full{grid-column:1/-1}
+.fg label{display:block;font-size:.67rem;letter-spacing:.11em;text-transform:uppercase;color:var(--stone);margin-bottom:.38rem;font-weight:500}
+.fg input,.fg select,.fg textarea{width:100%;padding:.68rem .9rem;border:1.5px solid rgba(28,27,20,.15);border-radius:var(--r4);background:var(--white);color:var(--charcoal);font-family:'Jost',sans-serif;font-size:.88rem;outline:none;transition:border-color var(--t),box-shadow var(--t)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(74,92,64,.1)}
+.fg textarea{resize:vertical;min-height:85px}
+.fg.err input,.fg.err select{border-color:var(--err)}
+.checkboxes{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.25rem}
+.cb-label{display:flex;align-items:center;gap:.5rem;font-size:.83rem;color:var(--stone);cursor:pointer}
+.cb-label input[type=checkbox]{accent-color:var(--sage);width:14px;height:14px}
+.btn-submit{width:100%;padding:.88rem;background:var(--forest);color:var(--ivory);border:none;border-radius:var(--r4);font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;margin-top:.6rem;transition:background var(--t),transform var(--t)}
+.btn-submit:hover{background:var(--sage);transform:translateY(-1px)}
+.form-note{font-size:.73rem;color:var(--mist);text-align:center;margin-top:.9rem;line-height:1.65}
+.confirm{display:none;text-align:center;padding:2rem 1rem}
+.confirm.show{display:block}
+.confirm-check{width:56px;height:56px;background:rgba(74,92,64,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--sage);font-size:1.4rem;margin:0 auto 1.4rem}
+.confirm h3{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--forest);margin-bottom:.65rem}
+.confirm p{font-size:.88rem;color:var(--stone);line-height:1.8}
+
+/* ===== STICKY MOBILE CTA ===== */
+.sticky-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--forest);padding:1rem 1.5rem;z-index:150;box-shadow:0 -4px 20px rgba(0,0,0,.18)}
+.sticky-bar .btn-quote{width:100%;justify-content:center}
+@media(max-width:768px){.sticky-bar{display:block}body{padding-bottom:72px}}
+
+/* ===== REVEAL ANIMATIONS ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  /* Collapse to 2-col: flower walls spans top row, rest auto-flow */
+  .cats-grid{grid-template-columns:1fr 1fr;grid-template-rows:320px auto auto;gap:1rem}
+  .cat-card:nth-child(1){grid-column:1/3;grid-row:1}
+  .cat-card:nth-child(2){grid-column:1;grid-row:2}
+  .cat-card:nth-child(3){grid-column:2;grid-row:2}
+  .cat-card:nth-child(4){grid-column:1;grid-row:3}
+  .cat-card:nth-child(5){grid-column:2;grid-row:3}
+  .cat-card img{height:240px}
+  .cat-card:nth-child(1) img{height:320px}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .avail-row{grid-template-columns:1fr;gap:.6rem}
+  .steps-grid{grid-template-columns:1fr;gap:2.5rem}
+  .steps-grid::before{display:none}
+  .cats-grid{grid-template-columns:1fr 1fr;grid-template-rows:260px auto auto;gap:.8rem}
+  .cat-card:nth-child(1){grid-column:1/3;grid-row:1}
+  .cat-card:nth-child(1) img{height:260px}
+  .inv-grid{grid-template-columns:1fr}
+  .reviews-grid{grid-template-columns:1fr}
+  .gallery-strip{grid-template-columns:repeat(3,1fr)}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .foot-bottom{flex-direction:column;gap:.75rem;text-align:center}
+  .form-grid{grid-template-columns:1fr}
+  .cta-widget-wrap{padding:1.75rem 1.5rem}
+}
+@media(max-width:480px){
+  .cats-grid{grid-template-columns:1fr;grid-template-rows:auto}
+  .cat-card:nth-child(1),.cat-card:nth-child(2),.cat-card:nth-child(3),.cat-card:nth-child(4),.cat-card:nth-child(5){grid-column:auto;grid-row:auto}
+  .cat-card img,.cat-card:nth-child(1) img{height:220px}
+  .gallery-strip{grid-template-columns:repeat(2,1fr)}
+  .trust-inner{gap:1.5rem;justify-content:flex-start}
+  .foot-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Fern Studio</a>
+      <ul class="nav-links">
+        <li><a href="#rentals">Rentals</a></li>
+        <li><a href="#availability">Availability</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#" class="nav-book" id="navBook">Book Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+
+      <!-- LEFT -->
+      <div class="hero-left">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Booking Spring–Fall 2026
+        </div>
+        <h1>Event rentals<br>for <em>beautiful<br>days.</em></h1>
+        <p class="hero-sub">Floral installations, flower walls, arches, tables, chairs, and LED signs — <strong>delivered, styled, and picked up</strong> by our team. Serving Greater Indianapolis.</p>
+
+        <div class="hero-widget-card" id="heroCard">
+          <div class="widget-label">
+            <span>✦</span> Check your date in 30 seconds
+          </div>
+          <div class="hero-avail-row">
+            <input type="date" id="hDate" placeholder="mm/dd/yyyy">
+            <select id="hType">
+              <option value="">Event type</option>
+              <option value="wedding">Wedding</option>
+              <option value="baby-shower">Baby Shower</option>
+              <option value="bridal-shower">Bridal Shower</option>
+              <option value="birthday">Birthday</option>
+              <option value="corporate">Corporate Event</option>
+              <option value="other">Other</option>
+            </select>
+            <button class="btn-check-pill" onclick="checkAvail('h')">Check →</button>
+          </div>
+          <div class="avail-results" id="hRes"></div>
+          <div class="widget-trust">Reply within 24 hours · No obligation · Free quote</div>
+        </div>
+
+        <div class="hero-proof-row">
+          <span class="proof-stars">★★★★★</span>
+          <span><strong>200+ Indy hosts</strong> booked with Fern Studio</span>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="hero-right">
+        <div class="deco-circle deco-blush"></div>
+        <div class="deco-circle deco-sage"></div>
+        <div class="hero-photo-wrap">
+          <div class="hero-photo">
+            <img src="https://picsum.photos/seed/fernbouquet/800/1067" alt="Floral arch — Conrad Indianapolis">
+            <div class="photo-caption">Floral arch — Conrad Indianapolis</div>
+          </div>
+          <div class="bookings-badge">
+            <span class="bookings-dot"></span>
+            3 bookings this week
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="wrap">
+    <div class="trust-inner">
+      <div class="trust-item"><span class="trust-icon">✦</span>Free delivery within 30 miles</div>
+      <div class="trust-item"><span class="trust-icon">✦</span>Full setup &amp; breakdown included</div>
+      <div class="trust-item"><span class="trust-icon">✦</span>Same-day quote response</div>
+      <div class="trust-item"><span class="trust-icon">✦</span>No obligation to inquire</div>
+    </div>
+  </div>
+</div>
+
+<!-- RENTALS / CATEGORIES -->
+<section class="cats-section" id="rentals">
+  <div class="wrap">
+    <div class="cats-header reveal">
+      <div class="eyebrow">Our Collection</div>
+      <h2 style="color:var(--forest)">Curated pieces for<br>your most special moments</h2>
+      <p class="section-lead">Each rental is selected for beauty, quality, and versatility — designed to photograph effortlessly and feel genuinely elevated.</p>
+    </div>
+    <div class="cats-grid">
+      <!-- 1: Flower Walls — tall left card -->
+      <div class="cat-card reveal">
+        <img src="https://picsum.photos/seed/flowerwall1/700/1000" alt="Flower Walls">
+        <div class="cat-overlay">
+          <div>
+            <div class="cat-name">Flower Walls</div>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+      </div>
+      <!-- 2: Floral Arches — top middle -->
+      <div class="cat-card reveal" style="transition-delay:.1s">
+        <img src="https://picsum.photos/seed/floralarch/700/500" alt="Floral Arches" style="height:100%">
+        <div class="cat-overlay">
+          <div>
+            <div class="cat-name">Floral Arches</div>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+      </div>
+      <!-- 3: Floral Frames — top right -->
+      <div class="cat-card reveal" style="transition-delay:.18s">
+        <img src="https://picsum.photos/seed/floralframes/700/500" alt="Floral Frames" style="height:100%">
+        <div class="cat-overlay">
+          <div>
+            <div class="cat-name">Floral Frames</div>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+      </div>
+      <!-- 4: Tables & Seating — bottom middle -->
+      <div class="cat-card reveal" style="transition-delay:.26s">
+        <img src="https://picsum.photos/seed/tablescapes/700/500" alt="Tables & Seating" style="height:100%">
+        <div class="cat-overlay">
+          <div>
+            <div class="cat-name">Tables &amp; Seating</div>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+      </div>
+      <!-- 5: Drapery — bottom right -->
+      <div class="cat-card reveal" style="transition-delay:.34s">
+        <img src="https://picsum.photos/seed/drapery/700/500" alt="Drapery" style="height:100%">
+        <div class="cat-overlay">
+          <div>
+            <div class="cat-name">Drapery</div>
+            <div class="cat-arrow">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="steps-section">
+  <div class="wrap">
+    <div class="steps-header reveal">
+      <div class="eyebrow">How it works</div>
+      <h2 style="color:var(--forest)">Three simple steps</h2>
+      <p class="section-lead" style="margin:0.75rem auto 0;text-align:center">We handle everything so you can focus entirely on your event.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-icon">◈</div>
+        <h3>Browse &amp; choose</h3>
+        <p>Explore flower walls, arches, table settings, and accent pieces. Mix and match to build your exact vision — there's no wrong answer.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:.15s">
+        <div class="step-num">02</div>
+        <div class="step-icon">◎</div>
+        <h3>Pick your date</h3>
+        <p>Check real-time availability instantly. Request a personalized quote and lock in your date — no payment required to inquire.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:.3s">
+        <div class="step-num">03</div>
+        <div class="step-icon">◇</div>
+        <h3>We handle the rest</h3>
+        <p>We deliver, set up, and break down every piece. You arrive, take the photos, and enjoy every beautiful moment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MORE INVENTORY -->
+<section class="inv-section" id="inventory">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">Supporting Inventory</div>
+      <h2>Everything else<br>your event needs</h2>
+      <p class="section-lead">Beyond statement pieces — the practical luxuries that make the room feel complete.</p>
+    </div>
+    <div class="inv-grid">
+      <div class="inv-card reveal">
+        <img src="https://picsum.photos/seed/renttables/600/300" alt="Tables">
+        <div class="inv-card-body">
+          <h3>Tables</h3>
+          <p>Farmhouse, round, and cocktail tables in multiple finishes. Available in quantity — seats up to 200 guests.</p>
+        </div>
+      </div>
+      <div class="inv-card reveal" style="transition-delay:.15s">
+        <img src="https://picsum.photos/seed/rentchairs/600/300" alt="Chairs">
+        <div class="inv-card-body">
+          <h3>Chairs</h3>
+          <p>Ghost chairs, chiavari, and cross-back styles. Elegant enough to stand alone or pair with lush florals.</p>
+        </div>
+      </div>
+      <div class="inv-card reveal" style="transition-delay:.3s">
+        <img src="https://picsum.photos/seed/decoraddons/600/300" alt="Decor Add-ons">
+        <div class="inv-card-body">
+          <h3>Decor Add-ons</h3>
+          <p>Lanterns, vases, candle holders, table runners, charger plates — the finishing details that pull everything together.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="wrap">
+    <div class="reviews-header reveal">
+      <div class="eyebrow">Client love</div>
+      <h2 style="color:var(--forest)">What our hosts say</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="review-qdot">"</div>
+        <p class="review-text">The flower wall was absolutely stunning. Every single guest stopped for a photo. Setup was seamless and the Fern team was so easy to work with from start to finish.</p>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-author">
+          <div class="review-av">AM</div>
+          <div>
+            <div class="review-name">Ashley M.</div>
+            <div class="review-event">Wedding · June 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:.15s">
+        <div class="review-qdot">"</div>
+        <p class="review-text">Used Fern for my daughter's baby shower and cannot recommend them enough. The arch and table settings transformed our backyard into something genuinely magical.</p>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-author">
+          <div class="review-av">JK</div>
+          <div>
+            <div class="review-name">Jennifer K.</div>
+            <div class="review-event">Baby Shower · March 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card reveal" style="transition-delay:.3s">
+        <div class="review-qdot">"</div>
+        <p class="review-text">Got a quote the same day I inquired and everything arrived on time and pristine. The LED sign had everyone asking where we found it. Already booking them for our next event.</p>
+        <div class="review-stars">★★★★★</div>
+        <div class="review-author">
+          <div class="review-av">TR</div>
+          <div>
+            <div class="review-name">Tanya R.</div>
+            <div class="review-event">Birthday Party · April 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery-section" id="gallery">
+  <div class="wrap gallery-head reveal">
+    <div class="eyebrow">@fernstudio.indy</div>
+    <h2 style="color:var(--forest)">As seen on Instagram</h2>
+  </div>
+  <div class="gallery-strip">
+    <div class="g-item"><img src="https://picsum.photos/seed/gal1/500/500" alt=""><div class="g-hover">@fernstudio.indy</div></div>
+    <div class="g-item"><img src="https://picsum.photos/seed/gal2/500/500" alt=""><div class="g-hover">@fernstudio.indy</div></div>
+    <div class="g-item"><img src="https://picsum.photos/seed/gal3/500/500" alt=""><div class="g-hover">@fernstudio.indy</div></div>
+    <div class="g-item"><img src="https://picsum.photos/seed/gal4/500/500" alt=""><div class="g-hover">@fernstudio.indy</div></div>
+    <div class="g-item"><img src="https://picsum.photos/seed/gal5/500/500" alt=""><div class="g-hover">@fernstudio.indy</div></div>
+    <div class="g-item"><img src="https://picsum.photos/seed/gal6/500/500" alt=""><div class="g-hover">@fernstudio.indy</div></div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="availability">
+  <div class="wrap">
+    <div class="eyebrow">Ready to book?</div>
+    <h2 style="color:var(--forest)">Check your date,<br><em>get a quote today</em></h2>
+    <p class="section-lead">No commitment required. We respond within hours — and popular dates fill quickly.</p>
+    <div class="cta-widget-wrap reveal">
+      <div class="avail-card-title serif" style="font-size:1.2rem;color:var(--forest);margin-bottom:1.2rem">Check Your Date</div>
+      <div class="avail-row">
+        <div class="afield">
+          <label for="cDate">Event date</label>
+          <input type="date" id="cDate">
+        </div>
+        <div class="afield">
+          <label for="cType">Event type</label>
+          <select id="cType">
+            <option value="">Select…</option>
+            <option value="wedding">Wedding</option>
+            <option value="baby-shower">Baby Shower</option>
+            <option value="bridal-shower">Bridal Shower</option>
+            <option value="birthday">Birthday</option>
+            <option value="corporate">Corporate Event</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button class="btn-check" onclick="checkAvail('c')">Check →</button>
+      </div>
+      <div class="avail-results" id="cRes"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">Fern Studio</div>
+        <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+      </div>
+      <div>
+        <div class="foot-head">Rentals</div>
+        <ul class="foot-links">
+          <li><a href="#rentals">Flower Walls</a></li>
+          <li><a href="#rentals">Floral Arches</a></li>
+          <li><a href="#inventory">Tables &amp; Chairs</a></li>
+          <li><a href="#rentals">LED Signs</a></li>
+          <li><a href="#inventory">Decor Add-ons</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-head">Company</div>
+        <ul class="foot-links">
+          <li><a href="#">About Fern</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-head">Contact</div>
+        <ul class="foot-links">
+          <li><a href="#">Indianapolis, IN</a></li>
+          <li><a href="#">(317) 555-0124</a></li>
+          <li><a href="#">hello@fernstudio.com</a></li>
+          <li><a href="#">@fernstudio.indy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+      <span>Privacy &nbsp;·&nbsp; Terms</span>
+    </div>
+  </div>
+</footer>
+
+<!-- STICKY MOBILE CTA -->
+<div class="sticky-bar">
+  <button class="btn-quote" id="stickyBook">Check availability &amp; book →</button>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-hd">
+      <div>
+        <h3>Request a Quote</h3>
+        <p>We'll follow up within a few hours</p>
+      </div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="bookingForm">
+        <div class="form-grid">
+          <div class="fg" id="fgFname">
+            <label for="mFname">First name *</label>
+            <input type="text" id="mFname" placeholder="Ashley">
+          </div>
+          <div class="fg">
+            <label for="mLname">Last name</label>
+            <input type="text" id="mLname" placeholder="Monroe">
+          </div>
+          <div class="fg" id="fgEmail">
+            <label for="mEmail">Email *</label>
+            <input type="email" id="mEmail" placeholder="hello@email.com">
+          </div>
+          <div class="fg" id="fgPhone">
+            <label for="mPhone">Phone *</label>
+            <input type="tel" id="mPhone" placeholder="(317) 555-0000">
+          </div>
+          <div class="fg">
+            <label for="mDate">Event date *</label>
+            <input type="date" id="mDate">
+          </div>
+          <div class="fg">
+            <label for="mType">Event type *</label>
+            <select id="mType">
+              <option value="">Select…</option>
+              <option value="wedding">Wedding</option>
+              <option value="baby-shower">Baby Shower</option>
+              <option value="bridal-shower">Bridal Shower</option>
+              <option value="birthday">Birthday</option>
+              <option value="corporate">Corporate Event</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="fg full">
+            <label>Interested rentals (optional)</label>
+            <div class="checkboxes">
+              <label class="cb-label"><input type="checkbox" value="flower_wall"> Flower Wall</label>
+              <label class="cb-label"><input type="checkbox" value="floral_arch"> Floral Arch</label>
+              <label class="cb-label"><input type="checkbox" value="tables"> Tables</label>
+              <label class="cb-label"><input type="checkbox" value="chairs"> Chairs</label>
+              <label class="cb-label"><input type="checkbox" value="led_signs"> LED Signs</label>
+              <label class="cb-label"><input type="checkbox" value="decor"> Decor Add-ons</label>
+            </div>
+          </div>
+          <div class="fg full">
+            <label for="mNotes">Notes (optional)</label>
+            <textarea id="mNotes" placeholder="Tell us about your event — venue, guest count, vision…"></textarea>
+          </div>
+        </div>
+        <button class="btn-submit" id="btnSubmit">Send My Quote Request →</button>
+        <p class="form-note">No payment required. We'll reply within 2–4 hours with availability and pricing.</p>
+      </div>
+      <div class="confirm" id="confirm">
+        <div class="confirm-check">✓</div>
+        <h3>Request received!</h3>
+        <p>Thank you — we'll review your event details and follow up within a few hours with availability and personalized pricing.<br><br><strong>Fern Studio · Indianapolis</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== AVAILABILITY DATA =====
+// Replace with real backend API when ready
+const INVENTORY = {
+  flower_wall: { total: 3, name: 'Flower Walls' },
+  floral_arch:  { total: 2, name: 'Floral Arches' },
+  tables:       { total: 20, name: 'Tables' },
+  chairs:       { total: 50, name: 'Chairs' },
+  led_signs:    { total: 2, name: 'LED Signs' },
+};
+
+// Pre-seeded bookings — swap in API response here
+const BOOKINGS = {
+  '2026-05-09': { flower_wall: 2, floral_arch: 1 },
+  '2026-05-16': { flower_wall: 3, floral_arch: 2, tables: 16 },
+  '2026-05-23': { led_signs: 2, tables: 8 },
+  '2026-06-06': { flower_wall: 2, floral_arch: 1 },
+  '2026-06-13': { flower_wall: 3, floral_arch: 2, tables: 20, chairs: 50, led_signs: 2 },
+  '2026-06-20': { flower_wall: 2, tables: 10 },
+  '2026-06-27': { floral_arch: 1, chairs: 30 },
+  '2026-07-04': { flower_wall: 3, floral_arch: 2 },
+  '2026-07-11': { flower_wall: 1, tables: 8 },
+  '2026-07-18': { flower_wall: 2, floral_arch: 2, led_signs: 1 },
+  '2026-07-25': { flower_wall: 3, tables: 18, chairs: 40 },
+  '2026-08-01': { flower_wall: 2, floral_arch: 1 },
+  '2026-08-08': { flower_wall: 3, floral_arch: 2, tables: 20, chairs: 50, led_signs: 2 },
+  '2026-08-15': { led_signs: 1, tables: 5 },
+  '2026-08-22': { flower_wall: 1, floral_arch: 1 },
+  '2026-08-29': { flower_wall: 2 },
+};
+
+function getAvailability(dateStr) {
+  const used = BOOKINGS[dateStr] || {};
+  const out = {};
+  for (const [k, { total, name }] of Object.entries(INVENTORY)) {
+    const remaining = total - (used[k] || 0);
+    const ratio = remaining / total;
+    out[k] = {
+      name,
+      remaining,
+      total,
+      status: remaining === 0 ? 'booked' : ratio <= 0.35 ? 'limited' : 'available',
+    };
+  }
+  return out;
+}
+
+function overallStatus(avail) {
+  const vals = Object.values(avail).map(i => i.status);
+  if (vals.every(s => s === 'booked')) return 'booked';
+  if (vals.some(s => s === 'booked' || s === 'limited')) return 'limited';
+  return 'available';
+}
+
+const STATUS_LABELS = { available: 'Available', limited: 'Limited Availability', booked: 'Fully Booked' };
+const STATUS_MSGS = {
+  available: 'Great news — your date is open. Request a quote to lock it in.',
+  limited: 'Some items are in high demand for this date. Book soon to secure your picks.',
+  booked: 'This date is fully booked. Try a nearby date or contact us — cancellations do happen.',
+};
+
+let lastDate = '';
+
+function renderResults(dateStr, container) {
+  lastDate = dateStr;
+  const avail = getAvailability(dateStr);
+  const overall = overallStatus(avail);
+
+  const chips = Object.values(avail).map(({ name, remaining, status }) => `
+    <div class="inv-chip">
+      <div class="inv-chip-name">${name}</div>
+      <div class="inv-chip-val ${status}">
+        ${status === 'available' ? `${remaining} open` : status === 'limited' ? `${remaining} left` : 'Booked out'}
+      </div>
+    </div>`).join('');
+
+  const momentum = Math.floor(Math.random() * 3) + 1;
+  const cta = overall !== 'booked'
+    ? `<button class="btn-quote" onclick="openModal('${dateStr}')">${overall === 'limited' ? 'Secure this date →' : 'Get a free quote →'}</button>`
+    : `<button class="btn-quote dim" disabled>Date fully booked</button>
+       <p style="margin-top:.55rem;font-size:.74rem;color:var(--stone)"><a href="#" onclick="openModal(null);return false" style="color:var(--sage);text-decoration:underline">Contact us</a> about alternatives or cancellations.</p>`;
+
+  container.innerHTML = `
+    <div class="status-row">
+      <div class="status-pill ${overall}"><span class="spill-dot"></span>${STATUS_LABELS[overall]}</div>
+      ${overall !== 'booked' ? `<span class="momentum-tag">${momentum} bookings this week</span>` : ''}
+    </div>
+    <p class="status-msg">${STATUS_MSGS[overall]}</p>
+    <div class="items-grid">${chips}</div>
+    <div>${cta}</div>`;
+  container.classList.add('open');
+}
+
+function checkAvail(prefix) {
+  const dateEl = document.getElementById(prefix + 'Date');
+  const resEl  = document.getElementById(prefix + 'Res');
+  if (!dateEl.value) { dateEl.focus(); dateEl.style.outline = '2px solid var(--err)'; setTimeout(() => dateEl.style.outline = '', 1600); return; }
+  renderResults(dateEl.value, resEl);
+}
+
+// Auto-check on date change
+['hDate','cDate'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', () => checkAvail(id === 'hDate' ? 'h' : 'c'));
+});
+
+// Set min date to today
+const today = new Date().toISOString().split('T')[0];
+['hDate','cDate','mDate'].forEach(id => { const e = document.getElementById(id); if (e) e.min = today; });
+
+// ===== MODAL =====
+function openModal(date) {
+  const overlay = document.getElementById('modalOverlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (date) document.getElementById('mDate').value = date;
+  else if (lastDate) document.getElementById('mDate').value = lastDate;
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('navBook').onclick    = e => { e.preventDefault(); openModal(null); };
+document.getElementById('modalClose').onclick = closeModal;
+document.getElementById('stickyBook').onclick = () => openModal(null);
+document.getElementById('modalOverlay').onclick = e => { if (e.target.id === 'modalOverlay') closeModal(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== FORM SUBMIT =====
+document.getElementById('btnSubmit').onclick = e => {
+  e.preventDefault();
+  const fields = [
+    { id: 'mFname', fg: 'fgFname' },
+    { id: 'mEmail', fg: 'fgEmail' },
+    { id: 'mPhone', fg: 'fgPhone' },
+  ];
+  let ok = true;
+  fields.forEach(({ id, fg }) => {
+    const el = document.getElementById(id);
+    const wrap = document.getElementById(fg);
+    if (!el.value.trim()) { wrap.classList.add('err'); ok = false; setTimeout(() => wrap.classList.remove('err'), 2500); }
+  });
+  if (!ok) return;
+  document.getElementById('bookingForm').style.display = 'none';
+  document.getElementById('confirm').classList.add('show');
+};
+
+// ===== NAV SCROLL =====
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('solid', window.scrollY > 60);
+}, { passive: true });
+
+// ===== SCROLL REVEAL =====
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

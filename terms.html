@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms &amp; Conditions · Fern Studio Event Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#383410;
+  --forest-mid:#4A4418;
+  --sage:#4A5C40;
+  --sage-light:#7A8F6A;
+  --cream:#EDE8DF;
+  --ivory:#F7F4EF;
+  --gold:#B5924A;
+  --gold-warm:#CBA86A;
+  --gold-pale:#E8D9B5;
+  --blush:#C9A0A0;
+  --blush-tint:#F0E6E6;
+  --warm-stone:#E8E0D5;
+  --charcoal:#1C1B14;
+  --stone:#6B6358;
+  --mist:#B0A898;
+  --white:#FFFFFF;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);
+  --shadow-md:0 8px 24px rgba(28,27,20,.11);
+  --t:.32s cubic-bezier(.4,0,.2,1);
+  --r4:4px;--r8:8px;
+}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.7}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.1;letter-spacing:-.012em}
+h1{font-size:clamp(2.6rem,5.5vw,4.4rem)}
+
+.wrap{max-width:780px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav .wrap{max-width:1280px}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+
+/* ===== HERO ===== */
+.terms-hero{padding:9rem 0 2.5rem;text-align:center}
+.terms-hero h1{color:var(--forest);margin-bottom:.7rem}
+.terms-hero h1 em{font-style:italic;color:var(--gold);font-weight:400}
+.terms-hero .effective{font-size:.78rem;letter-spacing:.06em;color:var(--mist);margin-top:1.2rem}
+
+/* ===== TERMS CONTENT ===== */
+.terms-section{padding:1.5rem 0 4rem}
+.terms-intro{font-size:1rem;line-height:1.85;color:var(--stone);margin-bottom:2.5rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(28,27,20,.1)}
+.terms-h2{font-family:'Cormorant Garamond',serif;font-size:1.85rem;color:var(--forest);font-weight:500;margin:2.6rem 0 .9rem;padding-top:1.2rem;border-top:1px solid rgba(28,27,20,.1)}
+.terms-h2:first-of-type{padding-top:0;border-top:none;margin-top:0}
+.terms-h3{font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:500;margin:1.4rem 0 .55rem}
+.terms-section p{font-size:.95rem;line-height:1.85;color:var(--stone);margin-bottom:1rem}
+.terms-section p strong{color:var(--charcoal);font-weight:500}
+.terms-section a{color:var(--forest);border-bottom:1px solid var(--gold)}
+.terms-section a:hover{color:var(--gold)}
+
+/* ===== CTA BAND ===== */
+.cta-band{background:var(--forest);color:var(--ivory);padding:clamp(3rem,6vw,5rem) 0;text-align:center}
+.cta-band .eyebrow{color:var(--gold-warm);justify-content:center}
+.cta-band .eyebrow::before{background:var(--gold-warm)}
+.cta-band h2{color:var(--ivory);font-size:clamp(2rem,4vw,3rem);margin-bottom:.8rem;font-weight:400}
+.cta-band h2 em{color:var(--gold-warm);font-style:italic}
+.cta-band p{color:rgba(247,244,239,.7);font-size:.98rem;max-width:52ch;margin:0 auto 2rem;line-height:1.8}
+.btn-link{display:inline-flex;align-items:center;gap:.55rem;background:var(--gold);color:var(--white)!important;padding:.95rem 2rem;border-radius:var(--r4);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
+.btn-link:hover{background:var(--ivory);color:var(--forest)!important;transform:translateY(-1px)}
+
+/* ===== FOOTER ===== */
+footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;max-width:1280px;margin-left:auto;margin-right:auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding:2rem clamp(1.5rem,5vw,4.5rem) 0;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4);max-width:1280px;margin:0 auto}
+.foot-bottom a{transition:color var(--t)}
+.foot-bottom a:hover{color:rgba(247,244,239,.85)}
+
+@media(max-width:900px){.foot-grid{grid-template-columns:1fr 1fr;gap:2.2rem}}
+@media(max-width:768px){.nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
+      <ul class="nav-links">
+        <li><a href="shop.html">Rentals</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="collab.html">Collab</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="shop.html#cart" class="nav-book">Booking Request</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="terms-hero">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">The fine print</div>
+    <h1>Terms &amp; <em>Conditions</em></h1>
+    <div class="effective">Last updated · May 19, 2026</div>
+  </div>
+</section>
+
+<!-- TERMS -->
+<section class="terms-section">
+  <div class="wrap">
+    <p class="terms-intro">This Rental Agreement ("Agreement") is entered into by and between <strong>Fern Studio Event Rentals</strong> ("Company") and the Renter. By submitting payment or signing this Agreement, the Renter agrees to the terms and conditions outlined below.</p>
+
+    <h2 class="terms-h2">Agreement of terms</h2>
+    <p>By submitting the required 25% nonrefundable deposit or signing this Agreement, the Renter acknowledges that they have read, understood, and agreed to all terms and conditions herein. This Agreement constitutes a binding contract between the Renter and Fern Studio Event Rentals.</p>
+
+    <h2 class="terms-h2">Confirming your rental</h2>
+
+    <div class="terms-h3">Order accuracy</div>
+    <p>The Renter is responsible for verifying that all rental items, quantities, event dates, and times are correct. Same day changes to items or rental times cannot be accommodated.</p>
+
+    <div class="terms-h3">Order adjustments</div>
+    <p>Any changes must be requested at least 72 hours prior to the event date and are subject to item availability and approval.</p>
+
+    <div class="terms-h3">Right of refusal</div>
+    <p>Fern Studio Event Rentals reserves the right to refuse service to any individual or event at its discretion.</p>
+
+    <h2 class="terms-h2">Payment</h2>
+
+    <div class="terms-h3">Deposit</div>
+    <p>A 25% nonrefundable deposit is due at the time of booking. The event date is not secured until this payment is received.</p>
+
+    <div class="terms-h3">Final balance</div>
+    <p>The remaining balance must be paid in full prior to delivery or pickup of rental items. Failure to do so may result in cancellation without refund.</p>
+
+    <h2 class="terms-h2">Delivery</h2>
+
+    <div class="terms-h3">Location &amp; access</div>
+    <p>Delivery will be made to the address provided by the Renter. The Renter must ensure a clear, safe, and accessible path to the dropoff location (e.g., driveway, backyard, garage, or indoor space).</p>
+
+    <div class="terms-h3">Delivery window</div>
+    <p>While we strive to arrive within the agreed time window, delays may occur due to traffic, weather, or other unforeseen circumstances. Such delays do not constitute a breach of contract.</p>
+
+    <h2 class="terms-h2">Customer pickup</h2>
+
+    <div class="terms-h3">Scheduling</div>
+    <p>Renter arranged pickups must occur at the scheduled time. The Renter must arrive within a 15 minute window before or after the scheduled pickup time.</p>
+
+    <div class="terms-h3">Failure to pick up</div>
+    <p>If the Renter fails to arrive within the 15 minute pickup window, the rental may be considered forfeited at Fern Studio Event Rentals' discretion. In such cases, the Renter will forfeit the 25% nonrefundable deposit as well as the full remaining balance, and no refunds will be issued.</p>
+
+    <div class="terms-h3">Third party pickup</div>
+    <p>If a third party is picking up the rentals, the Renter must provide the individual's name and phone number in advance. The 15 minute pickup window still applies.</p>
+
+    <h2 class="terms-h2">Pickup readiness &amp; teardown</h2>
+
+    <div class="terms-h3">Item preparation</div>
+    <p>For rentals scheduled for pickup by Fern Studio Event Rentals, all items must be folded, stacked, and ready at the agreed time.</p>
+
+    <div class="terms-h3">Teardown fee</div>
+    <p>Items not prepared for pickup may result in a teardown fee or an additional full day rental charge.</p>
+
+    <div class="terms-h3">Large installations</div>
+    <p>Only select items such as flower walls and other large installations will be assembled and disassembled by Fern Studio Event Rentals. Once assembled, an installation cannot be moved from its setup location. Moving will result in an additional fine.</p>
+
+    <h2 class="terms-h2">Care of equipment</h2>
+
+    <div class="terms-h3">Proper use</div>
+    <p>All rental items must be used only for their intended purpose and handled with care.</p>
+
+    <div class="terms-h3">Weather protection</div>
+    <p>The Renter is responsible for protecting all items from weather exposure, including rain, wind, snow, and excessive moisture.</p>
+
+    <div class="terms-h3">Damage &amp; loss</div>
+    <p>The Renter assumes full financial responsibility for any lost, stolen, damaged, or excessively soiled items, including but not limited to stains, burns, breakage, or missing parts.</p>
+
+    <div class="terms-h3">Outdoor events</div>
+    <p>For outdoor events, the Renter must have a weather contingency plan. Fern Studio Event Rentals reserves the right to modify delivery or pickup schedules to protect staff and equipment.</p>
+
+    <h2 class="terms-h2">Use of images &amp; media</h2>
+    <p>Fern Studio Event Rentals reserves the right to photograph or record rented items before, during, or after the event and to use such images or videos for marketing, promotional, website, and social media purposes. This includes images of installations, décor, and event setups. If the Renter wishes to opt out of this use, written notice must be provided prior to the event date.</p>
+
+    <h2 class="terms-h2">Cancellations</h2>
+
+    <div class="terms-h3">More than 7 days prior</div>
+    <p>Cancellations made more than 7 days before the event will result in forfeiture of the 25% nonrefundable deposit.</p>
+
+    <div class="terms-h3">Within 7 days</div>
+    <p>Cancellations made within 7 days of the event will result in forfeiture of 100% of the rental fee.</p>
+
+    <div class="terms-h3">Severe weather</div>
+    <p>In cases of severe or unsafe weather, Fern Studio Event Rentals will work with the Renter to explore rescheduling or partial refunds at our discretion.</p>
+
+    <h2 class="terms-h2">Force majeure</h2>
+    <p>Fern Studio Event Rentals shall not be held liable for failure or delay in performance due to events beyond our reasonable control, including but not limited to acts of God, extreme weather, natural disasters, fire, flood, government restrictions, power outages, labor disruptions, or other emergencies. In such cases, Fern Studio Event Rentals will make reasonable efforts to reschedule services or provide a partial refund at our discretion, but is not obligated to do so.</p>
+
+    <h2 class="terms-h2">Questions?</h2>
+    <p>Reach out to us at <a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a> or call <a href="tel:+13174429621">(317) 442-9621</a>.</p>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="wrap">
+    <div class="eyebrow">Ready to plan?</div>
+    <h2>Let's make your <em>event happen.</em></h2>
+    <p>Browse the full collection and reserve online, or send us a quick note and we'll put together a custom quote.</p>
+    <a href="shop.html" class="btn-link">Browse rentals →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand"><img src="fernlogo.png" alt="Fern Studio"></div>
+      <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+    </div>
+    <div>
+      <div class="foot-head">Rentals</div>
+      <ul class="foot-links">
+        <li><a href="index.html#rentals">Flower Walls</a></li>
+        <li><a href="index.html#rentals">Floral Arches</a></li>
+        <li><a href="shop.html">Browse All Rentals</a></li>
+        <li><a href="index.html#rentals">LED Signs</a></li>
+        <li><a href="packages.html">Packages</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Company</div>
+      <ul class="foot-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#reviews">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Contact</div>
+      <ul class="foot-links">
+        <li><a href="https://maps.app.goo.gl/EycGHMzLkPrmpNa98" target="_blank" rel="noopener">Indianapolis, IN</a></li>
+        <li><a href="tel:+13174429621">(317) 442-9621</a></li>
+        <li><a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/fern.eventrentals/" target="_blank" rel="noopener">@fern.eventrentals</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+    <span><a href="terms.html">Terms</a></span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+</body>
+</html>

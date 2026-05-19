@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product · Fern Studio Event Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#383410;--forest-mid:#4A4418;--sage:#4A5C40;--sage-light:#7A8F6A;
+  --cream:#EDE8DF;--ivory:#F7F4EF;--gold:#B5924A;--gold-warm:#CBA86A;--gold-pale:#E8D9B5;
+  --blush:#C9A0A0;--blush-tint:#F0E6E6;--warm-stone:#E8E0D5;
+  --charcoal:#1C1B14;--stone:#6B6358;--mist:#B0A898;--white:#FFFFFF;
+  --err:#A23E2C;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);--shadow-md:0 8px 24px rgba(28,27,20,.11);--shadow-lg:0 20px 60px rgba(28,27,20,.16);
+  --t:.32s cubic-bezier(.4,0,.2,1);--r4:4px;--r8:8px;
+}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.05;letter-spacing:-.012em}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav .wrap{max-width:1280px}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+.nav-cart-btn{background:none;border:none;display:inline-flex;align-items:center;gap:.45rem;font-family:'Jost',sans-serif;font-size:.73rem;font-weight:300;line-height:1;letter-spacing:.13em;text-transform:uppercase;color:var(--stone)!important;cursor:pointer;transition:color var(--t);padding:0;position:relative}
+.nav-cart-btn:hover{color:var(--gold)!important}
+.cart-badge{background:var(--sage);color:var(--ivory);font-size:.56rem;font-weight:700;min-width:15px;height:15px;border-radius:50%;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1;position:absolute;top:-.55rem;right:-.65rem}
+
+/* PAGE */
+.pdp{padding:8.5rem 0 4rem;min-height:80vh}
+.pdp-crumbs{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);margin-bottom:2rem;display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+.pdp-crumbs a{color:var(--stone);transition:color var(--t)}
+.pdp-crumbs a:hover{color:var(--gold)}
+.pdp-crumbs .sep{opacity:.4}
+.pdp-crumbs .here{color:var(--forest);font-weight:500}
+
+.pdp-grid{display:grid;grid-template-columns:6fr 5fr;gap:clamp(2.5rem,5vw,5rem);align-items:start}
+
+.pdp-media{position:sticky;top:6rem}
+.pdp-photo{aspect-ratio:1/1;border-radius:var(--r8);overflow:hidden;background:var(--cream);box-shadow:var(--shadow-lg)}
+.pdp-photo img{width:100%;height:100%;object-fit:cover}
+.pdp-photo .pdp-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--mist);font-size:2.5rem}
+
+.pdp-info-cat{display:inline-block;background:var(--blush-tint);color:var(--forest);padding:.32rem .9rem;border-radius:2rem;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;margin-bottom:1rem}
+.pdp-info h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,4vw,3.2rem);color:var(--forest);font-weight:500;line-height:1.06;margin-bottom:.65rem}
+.pdp-info h1 em{font-style:italic;color:var(--gold)}
+.pdp-price{font-family:'Cormorant Garamond',serif;font-size:1.75rem;color:var(--forest);font-weight:500;margin-bottom:1.4rem}
+.pdp-price span{font-size:.78rem;font-family:'Jost',sans-serif;color:var(--mist);font-weight:300;letter-spacing:.04em;margin-left:.1rem}
+.pdp-desc{font-size:.95rem;color:var(--stone);line-height:1.85;margin-bottom:2rem;max-width:54ch}
+
+.pdp-form{background:var(--cream);border-radius:var(--r8);padding:1.5rem;margin-bottom:1.8rem}
+.pdp-form-lbl{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
+.pdp-form-lbl svg{display:inline-block;color:var(--gold)}
+.pdp-form-row{display:grid;grid-template-columns:1fr 100px;gap:.7rem;margin-bottom:.9rem}
+.pdp-field-lbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:.3rem;display:block}
+.pdp-field input{width:100%;padding:.65rem .8rem;border:1.5px solid rgba(28,27,20,.12);border-radius:var(--r4);background:var(--white);font-family:'Jost',sans-serif;font-size:.88rem;color:var(--charcoal);outline:none;transition:border-color var(--t)}
+.pdp-field input:focus{border-color:var(--sage)}
+.pdp-avail-msg{font-size:.78rem;color:var(--stone);min-height:1.2rem;margin-bottom:.85rem}
+.pdp-avail-msg.available{color:var(--sage);font-weight:500}
+.pdp-avail-msg.booked{color:var(--err);font-weight:500}
+.pdp-cta{width:100%;padding:.95rem;background:var(--forest);color:var(--ivory);border:none;border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t)}
+.pdp-cta:hover{background:var(--sage);transform:translateY(-1px)}
+.pdp-cta:disabled{background:var(--mist);cursor:default;transform:none}
+.pdp-cta.added{background:var(--sage)}
+.pdp-fineprint{font-size:.7rem;color:var(--mist);margin-top:.85rem;text-align:center;letter-spacing:.04em}
+.pdp-fineprint a{color:var(--sage);text-decoration:underline;text-underline-offset:2px}
+
+.pdp-specs{padding-top:1.6rem;border-top:1px solid rgba(28,27,20,.1)}
+.pdp-specs h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--forest);margin-bottom:1rem;font-weight:500}
+.pdp-specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem 1.5rem}
+.pdp-spec-lbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:.2rem}
+.pdp-spec-val{font-size:.92rem;color:var(--charcoal)}
+
+/* COMPLETE THE LOOK */
+.complete{background:var(--cream);padding:clamp(3rem,6vw,5rem) 0;margin-top:5rem}
+.complete-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.complete-head h2{font-size:clamp(1.8rem,3vw,2.4rem);color:var(--forest);font-weight:500;margin-bottom:.2rem}
+.complete-head p{font-size:.85rem;color:var(--stone);max-width:42ch}
+.complete-head a{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:500;border-bottom:1px solid var(--gold);padding-bottom:.18rem;transition:color var(--t)}
+.complete-head a:hover{color:var(--forest);border-color:var(--forest)}
+.complete-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.complete-card{background:var(--white);border-radius:var(--r8);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform var(--t),box-shadow var(--t);cursor:pointer}
+.complete-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.complete-card-img{aspect-ratio:4/3;overflow:hidden;background:var(--warm-stone)}
+.complete-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.complete-card:hover .complete-card-img img{transform:scale(1.05)}
+.complete-card-body{padding:1rem 1.1rem 1.1rem;display:flex;align-items:end;justify-content:space-between;gap:.6rem}
+.complete-card-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--forest);line-height:1.2}
+.complete-card-cat{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);margin-top:.2rem}
+.complete-card-price{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--forest);white-space:nowrap}
+
+/* FOOTER */
+footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;max-width:1280px;margin-left:auto;margin-right:auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding:2rem clamp(1.5rem,5vw,4.5rem) 0;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4);max-width:1280px;margin:0 auto}
+
+.pdp-loading{padding:6rem 0;text-align:center;color:var(--mist)}
+
+@media(max-width:900px){
+  .pdp-grid{grid-template-columns:1fr;gap:2.5rem}
+  .pdp-media{position:static}
+  .complete-grid{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2.2rem}
+}
+@media(max-width:768px){.nav-links{display:none}}
+@media(max-width:600px){.complete-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
+      <ul class="nav-links">
+        <li><a href="shop.html">Rentals</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="collab.html">Collab</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li>
+          <a href="shop.html#cart" class="nav-cart-btn" id="navCart" aria-label="Cart">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            Cart
+            <span class="cart-badge" id="cartBadge">0</span>
+          </a>
+        </li>
+        <li><a href="shop.html#cart" class="nav-book">Booking Request</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="pdp">
+  <div class="wrap">
+    <div id="pdpRoot">
+      <div class="pdp-loading">Loading…</div>
+    </div>
+  </div>
+</section>
+
+<section class="complete" id="completeSection" style="display:none">
+  <div class="wrap">
+    <div class="complete-head">
+      <div>
+        <h2>Complete the look</h2>
+        <p>Curated pairings from our rentals to elevate your event.</p>
+      </div>
+      <a href="shop.html">View all rentals →</a>
+    </div>
+    <div class="complete-grid" id="completeGrid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand"><img src="fernlogo.png" alt="Fern Studio"></div>
+      <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+    </div>
+    <div>
+      <div class="foot-head">Rentals</div>
+      <ul class="foot-links">
+        <li><a href="shop.html?cat=flower-walls">Flower Walls</a></li>
+        <li><a href="shop.html?cat=arches">Floral Arches</a></li>
+        <li><a href="shop.html">Browse All Rentals</a></li>
+        <li><a href="shop.html?cat=signs">LED Signs</a></li>
+        <li><a href="packages.html">Packages</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Company</div>
+      <ul class="foot-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#reviews">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Contact</div>
+      <ul class="foot-links">
+        <li><a href="https://maps.app.goo.gl/EycGHMzLkPrmpNa98" target="_blank" rel="noopener">Indianapolis, IN</a></li>
+        <li><a href="tel:+13174429621">(317) 442-9621</a></li>
+        <li><a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/fern.eventrentals/" target="_blank" rel="noopener">@fern.eventrentals</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+    <span><a href="terms.html">Terms</a></span>
+  </div>
+</footer>
+
+<script>
+const BOOQABLE_KEY = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a';
+const PRODUCTS_URL = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
+const CART_KEY = 'fern_cart_v1';
+const SKIP_SLUGS = new Set(['delivery']);
+
+const CAT_LABELS = {
+  'flower-walls': 'Flower Wall',
+  'arches':       'Floral Arch',
+  'signs':        'Neon Sign',
+  'tables':       'Table',
+  'seating':      'Seating',
+  'linens':       'Drapery',
+  'more':         'Décor',
+};
+
+function categorizeProduct(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('flower wall') || ['classic','fairytale','garden','glam','scarlet','celeste'].some(w => n.includes(w))) return 'flower-walls';
+  if (n.includes('arch') || n.includes('side piece') || n.includes('floral spray') || n === 'the peach') return 'arches';
+  if (n.includes('neon') || ['cheers','oh baby','you + me'].some(w => n.includes(w))) return 'signs';
+  if (n.includes('table') && !n.includes('linen') && !n.includes('cover')) return 'tables';
+  if (n.includes('chair') || n.includes('sofa') || n.includes('peacock')) return 'seating';
+  if (n.includes('linen') || n.includes('cover') || n.includes('drap') || n.includes('pipe')) return 'linens';
+  return 'more';
+}
+
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtPrice(cents) {
+  const d = cents / 100;
+  return `$${d % 1 === 0 ? d : d.toFixed(2)}`;
+}
+
+// Cart helpers (compatible with shop.html cart format)
+function loadCart() {
+  try { const s = localStorage.getItem(CART_KEY); const v = s ? JSON.parse(s) : []; return Array.isArray(v) ? v : []; }
+  catch (e) { return []; }
+}
+function saveCart(cart) { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {} }
+function refreshBadge() {
+  const cart = loadCart();
+  const n = cart.reduce((s,i) => s + (i.qty||0), 0);
+  const b = document.getElementById('cartBadge');
+  if (!b) return;
+  b.textContent = n;
+  b.style.display = n > 0 ? 'flex' : 'none';
+}
+refreshBadge();
+
+// Nav scroll behavior
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// State
+let allProducts = [];
+let currentProduct = null;
+
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+
+async function loadAll() {
+  try {
+    const res = await fetch(PRODUCTS_URL);
+    if (!res.ok) throw new Error();
+    const { product_groups } = await res.json();
+    allProducts = product_groups
+      .filter(p => !SKIP_SLUGS.has(p.slug))
+      .map(p => ({ ...p, category: categorizeProduct(p.name) }));
+    render();
+  } catch (e) {
+    document.getElementById('pdpRoot').innerHTML = `
+      <div class="pdp-loading">
+        Couldn't load this product right now. <a href="shop.html" style="color:var(--sage);text-decoration:underline">Back to rentals →</a>
+      </div>`;
+  }
+}
+
+function render() {
+  const p = allProducts.find(x => x.id === productId);
+  currentProduct = p;
+  if (!p) {
+    document.getElementById('pdpRoot').innerHTML = `
+      <div class="pdp-loading">
+        Product not found. <a href="shop.html" style="color:var(--sage);text-decoration:underline">Back to rentals →</a>
+      </div>`;
+    return;
+  }
+
+  document.title = `${p.name} · Fern Studio Event Rentals`;
+
+  const catLabel = CAT_LABELS[p.category] || 'Rental';
+  const price = p.base_price_in_cents > 0
+    ? `${fmtPrice(p.base_price_in_cents)} <span>/ day</span>`
+    : 'Contact for pricing';
+  const desc = p.description
+    ? p.description.replace(/<[^>]+>/g,'').trim()
+    : `A signature piece from our floral installation collection. Built for ceremonies, receptions, and photo backdrops. Delivered, installed, and picked up by our team.`;
+  const img = p.photo_url
+    ? `<img src="${escHtml(p.photo_url)}" alt="${escHtml(p.name)}">`
+    : `<div class="pdp-no-img">✦</div>`;
+  const inventoryLine = (p.stock_count != null)
+    ? `${p.stock_count} available`
+    : 'In studio';
+
+  document.getElementById('pdpRoot').innerHTML = `
+    <div class="pdp-crumbs">
+      <a href="shop.html">Rentals</a>
+      <span class="sep">·</span>
+      <a href="shop.html?cat=${escHtml(p.category)}">${escHtml(catLabel)}</a>
+      <span class="sep">·</span>
+      <span class="here">${escHtml(p.name)}</span>
+    </div>
+    <div class="pdp-grid">
+      <div class="pdp-media">
+        <div class="pdp-photo">${img}</div>
+      </div>
+      <div class="pdp-info">
+        <span class="pdp-info-cat">${escHtml(catLabel)}</span>
+        <h1>${escHtml(p.name)}</h1>
+        <div class="pdp-price">${price}</div>
+        <p class="pdp-desc">${escHtml(desc)}</p>
+
+        <div class="pdp-form">
+          <div class="pdp-form-lbl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Check availability
+          </div>
+          <div class="pdp-field">
+            <label class="pdp-field-lbl">Event date</label>
+            <input type="date" id="pdpDate">
+          </div>
+          <div class="pdp-avail-msg" id="pdpAvail">Pick a date to check availability.</div>
+          <button class="pdp-cta" id="pdpAddBtn">Add to cart</button>
+          <div class="pdp-fineprint">Items are reserved after deposit · 25% non refundable</div>
+        </div>
+
+        <div class="pdp-specs">
+          <h3>Details</h3>
+          <div class="pdp-specs-grid">
+            <div>
+              <div class="pdp-spec-lbl">Category</div>
+              <div class="pdp-spec-val">${escHtml(catLabel)}</div>
+            </div>
+            <div>
+              <div class="pdp-spec-lbl">Setup</div>
+              <div class="pdp-spec-val">Included with delivery</div>
+            </div>
+            <div>
+              <div class="pdp-spec-lbl">Inventory</div>
+              <div class="pdp-spec-val">${escHtml(inventoryLine)}</div>
+            </div>
+            <div>
+              <div class="pdp-spec-lbl">Rental period</div>
+              <div class="pdp-spec-val">Per event day</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  setupAvailabilityCheck();
+  setupAddToCart();
+  renderCompleteTheLook(p);
+}
+
+function setupAvailabilityCheck() {
+  const dateEl = document.getElementById('pdpDate');
+  const today = new Date().toISOString().split('T')[0];
+  dateEl.min = today;
+  dateEl.addEventListener('change', checkPdpAvail);
+}
+
+async function checkPdpAvail() {
+  const date = document.getElementById('pdpDate').value;
+  const msg  = document.getElementById('pdpAvail');
+  if (!date) { msg.textContent = 'Pick a date to check availability.'; msg.className = 'pdp-avail-msg'; return; }
+
+  msg.textContent = 'Checking…';
+  msg.className = 'pdp-avail-msg';
+
+  const tillDate = new Date(date); tillDate.setDate(tillDate.getDate() + 1);
+  const till = tillDate.toISOString().split('T')[0];
+  const fromISO = `${date}T00:00:00Z`;
+  const tillISO = `${till}T23:59:59Z`;
+
+  try {
+    const res = await fetch(
+      `https://byfernstudio.booqable.com/api/4/inventory_levels` +
+      `?filter%5Bitem_id%5D=${encodeURIComponent(currentProduct.id)}` +
+      `&filter%5Bfrom%5D=${encodeURIComponent(fromISO)}` +
+      `&filter%5Btill%5D=${encodeURIComponent(tillISO)}` +
+      `&per_page=10`,
+      { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}` } }
+    );
+    if (!res.ok) throw new Error();
+    const { data } = await res.json();
+    const available = data && data[0] ? data[0].attributes.location_available : 0;
+    if (available > 0) {
+      msg.textContent = `✓ Available on this date${available > 1 ? ` (${available} in stock)` : ''}`;
+      msg.className = 'pdp-avail-msg available';
+    } else {
+      msg.textContent = '✕ Booked on this date. Try another date or contact us.';
+      msg.className = 'pdp-avail-msg booked';
+    }
+  } catch {
+    msg.textContent = 'Unable to check right now.';
+    msg.className = 'pdp-avail-msg';
+  }
+}
+
+function setupAddToCart() {
+  const btn = document.getElementById('pdpAddBtn');
+  btn.addEventListener('click', () => {
+    const qty = 1;
+    const p = currentProduct;
+    let cart = loadCart();
+    const existing = cart.find(i => i.id === p.id);
+    if (existing) existing.qty = Math.max(1, existing.qty + qty);
+    else cart.push({
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      pricePerDay: p.base_price_in_cents || 0,
+      photo: p.photo_url || null,
+      qty,
+    });
+    saveCart(cart);
+    refreshBadge();
+    btn.classList.add('added');
+    btn.textContent = '✓ Added · View cart →';
+    btn.onclick = () => { window.location.href = 'shop.html#cart'; };
+  });
+}
+
+// Curated pairings — items to push for each installation category.
+// Match by keyword (case insensitive) against product name, in priority order.
+const COMPLETE_KEYWORDS = {
+  'flower-walls': ['neon','cheers','oh baby','you + me','peacock','victorian','sofa','drape','pipe'],
+  'arches':       ['neon','cheers','oh baby','peacock','victorian','sofa','drape','pipe','chiavari','resin'],
+};
+
+function renderCompleteTheLook(p) {
+  const pool = allProducts.filter(x => x.id !== p.id);
+  const keywords = COMPLETE_KEYWORDS[p.category] || [];
+
+  // Walk the keyword list in order and grab the first matching product for each
+  const picks = [];
+  const seen = new Set();
+  for (const kw of keywords) {
+    const match = pool.find(x => !seen.has(x.id) && x.name.toLowerCase().includes(kw));
+    if (match) { picks.push(match); seen.add(match.id); }
+    if (picks.length >= 3) break;
+  }
+  // Fill any remaining slots with random items from other categories
+  if (picks.length < 3) {
+    const filler = pool
+      .filter(x => !seen.has(x.id) && x.category !== p.category)
+      .sort(() => Math.random() - .5)
+      .slice(0, 3 - picks.length);
+    picks.push(...filler);
+  }
+  if (!picks.length) return;
+
+  document.getElementById('completeSection').style.display = 'block';
+  document.getElementById('completeGrid').innerHTML = picks.map(x => {
+    const img = x.photo_url
+      ? `<img src="${escHtml(x.photo_url)}" alt="${escHtml(x.name)}" loading="lazy">`
+      : `<div class="pdp-no-img" style="aspect-ratio:4/3;background:var(--warm-stone);display:flex;align-items:center;justify-content:center;color:var(--mist);font-size:1.6rem">✦</div>`;
+    const isInstall = ['flower-walls','arches'].includes(x.category);
+    const href = isInstall ? `product.html?id=${encodeURIComponent(x.id)}` : `shop.html?cat=${encodeURIComponent(x.category)}#product-${encodeURIComponent(x.id)}`;
+    const price = x.base_price_in_cents > 0 ? fmtPrice(x.base_price_in_cents) : '—';
+    return `<a class="complete-card" href="${href}">
+      <div class="complete-card-img">${img}</div>
+      <div class="complete-card-body">
+        <div>
+          <div class="complete-card-name">${escHtml(x.name)}</div>
+          <div class="complete-card-cat">${escHtml(CAT_LABELS[x.category] || 'Rental')}</div>
+        </div>
+        <div class="complete-card-price">${price}</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+if (!productId) {
+  document.getElementById('pdpRoot').innerHTML = `
+    <div class="pdp-loading">
+      No product specified. <a href="shop.html" style="color:var(--sage);text-decoration:underline">Browse rentals →</a>
+    </div>`;
+} else {
+  loadAll();
+}
+</script>
+</body>
+</html>

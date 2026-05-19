@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About · Fern Studio Event Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#383410;
+  --forest-mid:#4A4418;
+  --sage:#4A5C40;
+  --sage-light:#7A8F6A;
+  --cream:#EDE8DF;
+  --ivory:#F7F4EF;
+  --gold:#B5924A;
+  --gold-warm:#CBA86A;
+  --gold-pale:#E8D9B5;
+  --blush:#C9A0A0;
+  --blush-tint:#F0E6E6;
+  --warm-stone:#E8E0D5;
+  --charcoal:#1C1B14;
+  --stone:#6B6358;
+  --mist:#B0A898;
+  --white:#FFFFFF;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);
+  --shadow-md:0 8px 24px rgba(28,27,20,.11);
+  --shadow-lg:0 20px 60px rgba(28,27,20,.16);
+  --t:.32s cubic-bezier(.4,0,.2,1);
+  --r4:4px;--r8:8px;
+}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.05;letter-spacing:-.012em}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav .wrap{max-width:1280px}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+
+/* ===== HERO ===== */
+.about-hero{padding:9rem 0 4rem;text-align:center}
+.about-hero h1{color:var(--forest);margin-bottom:1.3rem}
+.about-hero h1 em{font-style:italic;color:var(--gold);font-weight:400}
+.about-hero p{color:var(--stone);font-size:1.05rem;line-height:1.85;max-width:54ch;margin:0 auto}
+
+/* ===== STORY ===== */
+.story{padding:3rem 0 5rem}
+.story-grid{display:grid;grid-template-columns:5fr 6fr;gap:clamp(2.5rem,5vw,5rem);align-items:center}
+.story-media{aspect-ratio:4/5;border-radius:var(--r8);overflow:hidden;box-shadow:var(--shadow-lg)}
+.story-media img{width:100%;height:100%;object-fit:cover}
+.story-body h2{font-size:clamp(2rem,3.6vw,2.8rem);color:var(--forest);margin-bottom:1.2rem}
+.story-body h2 em{font-style:italic;color:var(--gold)}
+.story-body p{color:var(--stone);font-size:.98rem;line-height:1.85;margin-bottom:1.2rem;max-width:54ch}
+.story-body p strong{color:var(--charcoal);font-weight:500}
+.story-sig{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--forest);font-size:1.15rem;margin-top:1.5rem}
+
+/* ===== VALUES ===== */
+.values{background:var(--warm-stone);padding:clamp(3rem,6vw,5rem) 0}
+.values-head{text-align:center;margin-bottom:3rem}
+.values-head h2{font-size:clamp(2rem,3.6vw,2.8rem);color:var(--forest)}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;max-width:1080px;margin:0 auto}
+.value{text-align:center;padding:0 .5rem}
+.value-num{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:2rem;margin-bottom:.6rem;opacity:.7}
+.value h3{color:var(--forest);font-size:1.35rem;margin-bottom:.5rem;font-weight:500}
+.value p{font-size:.92rem;color:var(--stone);line-height:1.7;max-width:30ch;margin:0 auto}
+
+/* ===== CTA BAND ===== */
+.cta-band{background:var(--forest);color:var(--ivory);padding:clamp(3rem,6vw,5rem) 0;text-align:center}
+.cta-band .eyebrow{color:var(--gold-warm);justify-content:center}
+.cta-band .eyebrow::before{background:var(--gold-warm)}
+.cta-band h2{color:var(--ivory);font-size:clamp(2rem,4vw,3rem);margin-bottom:.8rem;font-weight:400}
+.cta-band h2 em{color:var(--gold-warm);font-style:italic}
+.cta-band p{color:rgba(247,244,239,.7);font-size:.98rem;max-width:52ch;margin:0 auto 2rem;line-height:1.8}
+.btn-link{display:inline-flex;align-items:center;gap:.55rem;background:var(--gold);color:var(--white)!important;padding:.95rem 2rem;border-radius:var(--r4);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
+.btn-link:hover{background:var(--ivory);color:var(--forest)!important;transform:translateY(-1px)}
+
+/* ===== FOOTER ===== */
+footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;max-width:1280px;margin-left:auto;margin-right:auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding:2rem clamp(1.5rem,5vw,4.5rem) 0;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4);max-width:1280px;margin:0 auto}
+
+@media(max-width:900px){
+  .story-grid{grid-template-columns:1fr;gap:2.5rem}
+  .story-media{aspect-ratio:5/4;max-width:560px;margin:0 auto}
+  .values-grid{grid-template-columns:1fr;gap:2rem}
+  .foot-grid{grid-template-columns:1fr 1fr;gap:2.2rem}
+}
+@media(max-width:768px){.nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
+      <ul class="nav-links">
+        <li><a href="shop.html">Rentals</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="collab.html">Collab</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="shop.html#cart" class="nav-book">Booking Request</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- STORY -->
+<section class="story" style="padding-top:9rem">
+  <div class="wrap">
+    <div class="story-grid">
+      <div class="story-media">
+        <img src="about.png" alt="The Fern Studio team">
+      </div>
+      <div class="story-body">
+        <div class="eyebrow">About us</div>
+        <h2>From cheesecloth runners<br>to <em>event essentials.</em></h2>
+        <p>Four years ago we launched <a href="https://www.etsy.com/shop/ByFernStudio" target="_blank" rel="noopener" style="color:var(--forest);font-weight:500;border-bottom:1px solid var(--gold);transition:color var(--t)"><strong>ByFernStudio</strong></a>, an online shop specializing in cheesecloth table runners and napkins, dyed by hand in small batches. That journey pulled us deep into the world of events, connecting us with hosts and couples from around the globe as they brought their celebrations to life.</p>
+        <p>Today we're expanding with the essentials for any event: tables, chairs, tents, flower walls, arches, drapery, LED signs, and more. Our promise stays the same: <strong>quality pieces at fair prices</strong>, delivered and styled with care.</p>
+        <p>When you reach out, you're talking to us directly. We deliver every rental and personally install flower walls and statement pieces. Breakdown is available for an additional fee. No surprises, no inflated quotes, just two people who care about how your event turns out.</p>
+        <div class="story-sig">Fernando &amp; Fabi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values">
+  <div class="wrap">
+    <div class="values-head">
+      <div class="eyebrow" style="justify-content:center">What we stand for</div>
+      <h2>Three things we promise</h2>
+    </div>
+    <div class="values-grid">
+      <div class="value">
+        <div class="value-num">01</div>
+        <h3>Built to photograph</h3>
+        <p>Every piece is chosen and styled to look beautiful in person and on camera.</p>
+      </div>
+      <div class="value">
+        <div class="value-num">02</div>
+        <h3>We handle logistics</h3>
+        <p>Delivery, setup, breakdown, and pickup are always done by our team.</p>
+      </div>
+      <div class="value">
+        <div class="value-num">03</div>
+        <h3>Real, fast answers</h3>
+        <p>You reach a real person within hours. Quotes are clear. Prices are honest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="wrap">
+    <div class="eyebrow">Ready to plan?</div>
+    <h2>Tell us about <em>your event.</em></h2>
+    <p>Browse the full collection and reserve online, or send us a quick note and we'll put together a custom quote.</p>
+    <a href="shop.html" class="btn-link">Browse rentals →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand"><img src="fernlogo.png" alt="Fern Studio"></div>
+      <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+    </div>
+    <div>
+      <div class="foot-head">Rentals</div>
+      <ul class="foot-links">
+        <li><a href="index.html#rentals">Flower Walls</a></li>
+        <li><a href="index.html#rentals">Floral Arches</a></li>
+        <li><a href="shop.html">Browse All Rentals</a></li>
+        <li><a href="index.html#rentals">LED Signs</a></li>
+        <li><a href="packages.html">Packages</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Company</div>
+      <ul class="foot-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#reviews">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Contact</div>
+      <ul class="foot-links">
+        <li><a href="https://maps.app.goo.gl/EycGHMzLkPrmpNa98" target="_blank" rel="noopener">Indianapolis, IN</a></li>
+        <li><a href="tel:+13174429621">(317) 442-9621</a></li>
+        <li><a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/fern.eventrentals/" target="_blank" rel="noopener">@fern.eventrentals</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+    <span><a href="terms.html">Terms</a></span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+</body>
+</html>

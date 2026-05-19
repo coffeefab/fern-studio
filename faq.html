@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ · Fern Studio Event Rentals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#383410;
+  --forest-mid:#4A4418;
+  --sage:#4A5C40;
+  --sage-light:#7A8F6A;
+  --cream:#EDE8DF;
+  --ivory:#F7F4EF;
+  --gold:#B5924A;
+  --gold-warm:#CBA86A;
+  --gold-pale:#E8D9B5;
+  --blush:#C9A0A0;
+  --blush-tint:#F0E6E6;
+  --warm-stone:#E8E0D5;
+  --charcoal:#1C1B14;
+  --stone:#6B6358;
+  --mist:#B0A898;
+  --white:#FFFFFF;
+  --shadow-sm:0 2px 8px rgba(28,27,20,.07);
+  --shadow-md:0 8px 24px rgba(28,27,20,.11);
+  --shadow-lg:0 20px 60px rgba(28,27,20,.16);
+  --t:.32s cubic-bezier(.4,0,.2,1);
+  --r4:4px;--r8:8px;
+}
+html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
+body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+img{display:block;width:100%;object-fit:cover}
+a{text-decoration:none;color:inherit}
+button{font-family:'Jost',sans-serif;cursor:pointer}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.05;letter-spacing:-.012em}
+h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.eyebrow{display:inline-flex;align-items:center;gap:.65rem;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:1rem}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 0;transition:background var(--t),padding var(--t),box-shadow var(--t)}
+.nav .wrap{max-width:1280px}
+.nav.solid{background:rgba(247,244,239,.96);backdrop-filter:blur(16px);padding:1rem 0;box-shadow:var(--shadow-sm)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
+.nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
+.nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
+.nav-links a:hover{color:var(--gold)}
+.nav-book{background:var(--gold);color:var(--white)!important;padding:.55rem 1.4rem;border-radius:2px;font-weight:500;transition:background var(--t),transform var(--t)!important}
+.nav-book:hover{background:var(--sage)!important;transform:translateY(-1px)}
+
+/* ===== HERO ===== */
+.faq-hero{padding:9rem 0 3rem;text-align:center}
+.faq-hero h1{color:var(--forest);margin-bottom:1.3rem}
+.faq-hero h1 em{font-style:italic;color:var(--gold);font-weight:400}
+.faq-hero p{color:var(--stone);font-size:1.05rem;line-height:1.85;max-width:54ch;margin:0 auto}
+
+/* ===== FAQ ===== */
+.faq-section{padding:2rem 0 4rem}
+.faq-group{margin-bottom:3rem}
+.faq-group-title{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:1.4rem;padding-bottom:.8rem;border-bottom:1px solid rgba(28,27,20,.12)}
+.faq-item{border-bottom:1px solid rgba(28,27,20,.08)}
+.faq-q{width:100%;text-align:left;padding:1.3rem 0;background:none;border:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--forest);cursor:pointer;font-weight:400;line-height:1.2}
+.faq-q:hover{color:var(--gold)}
+.faq-toggle{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--forest);transition:transform var(--t),background var(--t)}
+.faq-item.is-open .faq-toggle{transform:rotate(45deg);background:var(--gold);color:var(--white)}
+.faq-toggle svg{width:14px;height:14px}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
+.faq-item.is-open .faq-a{max-height:400px}
+.faq-a-inner{padding:0 0 1.4rem;color:var(--stone);font-size:.95rem;line-height:1.85;max-width:64ch}
+.faq-a-inner p{margin-bottom:.6rem}
+.faq-a-inner p:last-child{margin-bottom:0}
+.faq-a-inner ol{padding-left:1.2rem;margin:.4rem 0 .6rem;list-style:decimal}
+.faq-a-inner ol li{margin-bottom:.5rem;padding-left:.2rem}
+.faq-a-inner ol li:last-child{margin-bottom:0}
+.faq-a-inner strong{color:var(--forest);font-weight:500}
+
+/* ===== CTA BAND ===== */
+.cta-band{background:var(--forest);color:var(--ivory);padding:clamp(3rem,6vw,5rem) 0;text-align:center}
+.cta-band .eyebrow{color:var(--gold-warm);justify-content:center}
+.cta-band .eyebrow::before{background:var(--gold-warm)}
+.cta-band h2{color:var(--ivory);font-size:clamp(2rem,4vw,3rem);margin-bottom:.8rem;font-weight:400}
+.cta-band h2 em{color:var(--gold-warm);font-style:italic}
+.cta-band p{color:rgba(247,244,239,.7);font-size:.98rem;max-width:52ch;margin:0 auto 2rem;line-height:1.8}
+.btn-link{display:inline-flex;align-items:center;gap:.55rem;background:var(--gold);color:var(--white)!important;padding:.95rem 2rem;border-radius:var(--r4);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
+.btn-link:hover{background:var(--ivory);color:var(--forest)!important;transform:translateY(-1px)}
+
+/* ===== FOOTER ===== */
+footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;max-width:1280px;margin-left:auto;margin-right:auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
+.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
+.foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
+.foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
+.foot-links{list-style:none}
+.foot-links li{margin-bottom:.55rem}
+.foot-links a{font-size:.82rem;color:rgba(247,244,239,.52);transition:color var(--t)}
+.foot-links a:hover{color:var(--ivory)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.07);padding:2rem clamp(1.5rem,5vw,4.5rem) 0;display:flex;align-items:center;justify-content:space-between;font-size:.75rem;color:rgba(247,244,239,.4);max-width:1280px;margin:0 auto}
+
+@media(max-width:900px){.foot-grid{grid-template-columns:1fr 1fr;gap:2.2rem}}
+@media(max-width:768px){.nav-links{display:none}}
+@media(max-width:600px){.faq-q{font-size:1.1rem}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="Fern Studio"><img src="fernlogo.png" alt="Fern Studio"></a>
+      <ul class="nav-links">
+        <li><a href="shop.html">Rentals</a></li>
+        <li><a href="packages.html">Packages</a></li>
+        <li><a href="collab.html">Collab</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="shop.html#cart" class="nav-book">Booking Request</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="faq-hero">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center">Frequently asked</div>
+    <h1>The <em>quick</em> answers.</h1>
+    <p>What people ask most before booking. Don't see yours? <a href="mailto:byfernstudio@gmail.com" style="color:var(--forest);border-bottom:1px solid var(--gold)">Email us</a>.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="wrap">
+
+    <div class="faq-group">
+      <div class="faq-group-title">Booking &amp; payment</div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>How do I get started with my rental?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <ol>
+            <li><strong>Browse our catalog</strong> to see what's available.</li>
+            <li><strong>Check dates for availability</strong> using our online tool.</li>
+            <li><strong>Submit your booking request</strong> once you've selected your items and confirmed they're available.</li>
+            <li><strong>Secure your booking</strong> with a 25% nonrefundable deposit at online checkout.</li>
+          </ol>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>What should I expect after placing my booking?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>You'll receive your rental agreement within 24 hours of booking confirmation. A direct link to your invoice and outstanding balance will be included in our followup email.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>What payment methods do you accept?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Online credit card at checkout, or by Zelle, Cashapp, Venmo, or Cash. The deposit and balance can both be paid through any of these methods.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>What if I need to cancel?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Cancellations made <strong>more than 7 days</strong> before your event forfeit the 25% deposit. Cancellations <strong>within 7 days</strong> forfeit 100% of the rental fee. In cases of severe or unsafe weather, we'll work with you on rescheduling. Full details live in our <a href="terms.html" style="color:var(--forest);border-bottom:1px solid var(--gold)">Terms &amp; Conditions</a>.</p>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="faq-group">
+      <div class="faq-group-title">Delivery &amp; pickup</div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Do you offer delivery?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Yes, throughout Indianapolis and surrounding areas. The delivery charge is based on mileage from our storage location and is quoted up front before you book.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Can I pick up rentals myself?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Chairs, tables, and smaller pieces can be picked up from our Indianapolis storage by appointment. Flower walls, arches, and drapery are delivery only because of size and the styling involved.</p>
+          <p>Pickups happen within a 15 minute window of the scheduled time. If a third party is picking up for you, send us their name and phone number in advance.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Do you set up and break down?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>We deliver every rental. Setup is included for <strong>flower walls, arches, and pipe and drape</strong>. Once assembled, these pieces cannot be moved from their setup location without an additional fee.</p>
+          <p>Standard rentals (chairs, tables, smaller decor) are delivered ready to use, not assembled at the site. Breakdown is available for an additional fee on all rentals.</p>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="faq-group">
+      <div class="faq-group-title">Items &amp; care</div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>What if you don't have what I'm looking for?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>We're expanding our inventory all the time. Tell us what you're picturing and we'll let you know if we can source it, recommend a partner, or design something custom.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>Can I build a custom package?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Yes. Mix and match any items from our catalog to build a package that fits your event. Individual pieces (flower walls, arches, signs) aren't customized themselves, but you have full control over what to include in your rental.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>What if an item gets damaged during my event?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Let us know right away. Depending on the extent of the damage, we'll bill the cost of repair or replacement. Normal wear is expected and never charged.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          <span>What about outdoor events and weather?</span>
+          <span class="faq-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>For outdoor events, please have a weather contingency plan. You're responsible for protecting rentals from rain, wind, and excessive moisture. In severe weather, we may adjust delivery or pickup times to keep our team and your items safe.</p>
+        </div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="wrap">
+    <div class="eyebrow">Still have a question?</div>
+    <h2>Let's <em>chat.</em></h2>
+    <p>Send a quick note with your event details and we'll come back with answers and a personalized quote.</p>
+    <a href="mailto:byfernstudio@gmail.com" class="btn-link">Email us →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand"><img src="fernlogo.png" alt="Fern Studio"></div>
+      <p class="foot-desc">Curated event rentals for Indianapolis and surrounding areas. Delivering beauty, one event at a time.</p>
+    </div>
+    <div>
+      <div class="foot-head">Rentals</div>
+      <ul class="foot-links">
+        <li><a href="index.html#rentals">Flower Walls</a></li>
+        <li><a href="index.html#rentals">Floral Arches</a></li>
+        <li><a href="shop.html">Browse All Rentals</a></li>
+        <li><a href="index.html#rentals">LED Signs</a></li>
+        <li><a href="packages.html">Packages</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Company</div>
+      <ul class="foot-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="index.html#gallery">Gallery</a></li>
+        <li><a href="index.html#reviews">Reviews</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="foot-head">Contact</div>
+      <ul class="foot-links">
+        <li><a href="https://maps.app.goo.gl/EycGHMzLkPrmpNa98" target="_blank" rel="noopener">Indianapolis, IN</a></li>
+        <li><a href="tel:+13174429621">(317) 442-9621</a></li>
+        <li><a href="mailto:byfernstudio@gmail.com">byfernstudio@gmail.com</a></li>
+        <li><a href="https://www.instagram.com/fern.eventrentals/" target="_blank" rel="noopener">@fern.eventrentals</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Fern Studio · Event Rentals · Indianapolis, IN</span>
+    <span><a href="terms.html">Terms</a></span>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
+onScroll();
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    item.classList.toggle('is-open');
+  });
+});
+</script>
+</body>
+</html>
