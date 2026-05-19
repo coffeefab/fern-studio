@@ -1390,7 +1390,7 @@ document.getElementById('agreeBtn').addEventListener('click', () => {
 });
 
 // ===== FORM SUBMIT =====
-document.getElementById('btnSubmit').onclick = e => {
+document.getElementById('btnSubmit').onclick = async (e) => {
   e.preventDefault();
   let ok = true;
 
@@ -1430,8 +1430,45 @@ document.getElementById('btnSubmit').onclick = e => {
   }
 
   if (!ok) return;
-  document.getElementById('bookingForm').style.display = 'none';
-  document.getElementById('confirm').classList.add('show');
+
+  const btn = document.getElementById('btnSubmit');
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const payload = {
+    name:      document.getElementById('mName').value.trim(),
+    email:     document.getElementById('mEmail').value.trim(),
+    phone:     document.getElementById('mPhone').value.trim(),
+    addr1:     document.getElementById('mAddr1').value.trim(),
+    addr2:     document.getElementById('mAddr2').value.trim(),
+    city:      document.getElementById('mCity').value.trim(),
+    state:     document.getElementById('mState').value.trim(),
+    zip:       document.getElementById('mZip').value.trim(),
+    date:      document.getElementById('mDate').value,
+    eventType: document.querySelector('#eventTypePills .pill-opt.active')?.dataset.val || '',
+    delivery:  document.querySelector('#deliveryToggle .yn-btn.active')?.dataset.val || '',
+    dropoff:   document.getElementById('mDropoff').value,
+    return:    document.getElementById('mReturn').value,
+    items:     document.getElementById('mItems').value.trim(),
+    notes:     document.getElementById('mNotes')?.value.trim() || '',
+  };
+
+  try {
+    const res = await fetch('/api/send-booking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    document.getElementById('bookingForm').style.display = 'none';
+    document.getElementById('confirm').classList.add('show');
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    alert("Couldn't submit right now. Please email byfernstudio@gmail.com directly or call (317) 442-9621.");
+  }
 };
 
 // ===== NAV SCROLL =====
