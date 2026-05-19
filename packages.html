@@ -111,10 +111,35 @@ h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 .pkg-row.bg-ivory .pkg-items .item{background:var(--white)}
 
 .pkg-cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem}
-.pkg-cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--forest);color:var(--ivory);padding:.92rem 1.85rem;border-radius:var(--r4);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
+.pkg-cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--forest);color:var(--ivory);padding:.92rem 1.85rem;border:none;border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t)}
 .pkg-cta:hover{background:var(--sage);transform:translateY(-1px)}
-.pkg-cta-quiet{font-size:.78rem;color:var(--sage);text-decoration:underline;text-underline-offset:3px;transition:color var(--t)}
-.pkg-cta-quiet:hover{color:var(--forest)}
+
+/* ===== PACKAGE MODAL ===== */
+.pm-overlay{position:fixed;inset:0;background:rgba(28,27,20,.55);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease;z-index:200;padding:1.5rem;backdrop-filter:blur(6px)}
+.pm-overlay.open{opacity:1;visibility:visible}
+.pm{background:var(--ivory);border-radius:var(--r8);width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.3);transform:translateY(16px);transition:transform .35s ease}
+.pm-overlay.open .pm{transform:translateY(0)}
+.pm-head{padding:1.6rem 1.8rem .4rem;position:relative}
+.pm-eyebrow{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:.4rem}
+.pm-head h3{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--forest);font-weight:500;margin-bottom:.3rem;line-height:1.15}
+.pm-head p{font-size:.88rem;color:var(--stone);line-height:1.6}
+.pm-close{position:absolute;top:.9rem;right:1.1rem;background:none;border:none;font-size:1.6rem;line-height:1;color:var(--stone);cursor:pointer;width:32px;height:32px;padding:0}
+.pm-close:hover{color:var(--forest)}
+.pm-body{padding:1.3rem 1.8rem 1.8rem}
+.pm-fg{margin-bottom:1rem}
+.pm-fg label{display:block;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);margin-bottom:.4rem;font-weight:500}
+.pm-fg input,.pm-fg textarea{width:100%;padding:.78rem 1rem;border:1.5px solid rgba(28,27,20,.15);border-radius:var(--r4);background:var(--white);font-family:'Jost',sans-serif;font-size:1rem;color:var(--charcoal);outline:none;transition:border-color var(--t),box-shadow var(--t)}
+.pm-fg input:focus,.pm-fg textarea:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(74,92,64,.1)}
+.pm-fg textarea{resize:vertical;min-height:70px}
+.pm-fg.err input,.pm-fg.err textarea{border-color:var(--gold);background:rgba(181,146,74,.05)}
+.pm-submit{width:100%;padding:.95rem;background:var(--forest);color:var(--ivory);border:none;border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t);margin-top:.5rem}
+.pm-submit:hover{background:var(--sage);transform:translateY(-1px)}
+.pm-submit:disabled{opacity:.6;cursor:default;transform:none}
+.pm-confirm{display:none;text-align:center;padding:2.4rem 1.5rem}
+.pm-confirm.show{display:block}
+.pm-confirm .check{width:54px;height:54px;background:rgba(74,92,64,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--sage);font-size:1.4rem;margin:0 auto 1.2rem}
+.pm-confirm h3{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--forest);margin-bottom:.6rem;line-height:1.15}
+.pm-confirm p{font-size:.98rem;color:var(--stone);line-height:1.7;max-width:34ch;margin:0 auto}
 
 /* ===== CUSTOM CTA ===== */
 .custom-cta{background:var(--forest);color:var(--ivory);padding:5rem 0;text-align:center;position:relative;overflow:hidden}
@@ -245,8 +270,7 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
           <span class="item">Floral spray</span>
         </div>
         <div class="pkg-cta-row">
-          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20The%20Ceremony%20Edit">Reserve this look →</a>
-          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+          <button class="pkg-cta" type="button" data-package="The Ceremony Edit">Reserve this look →</button>
         </div>
       </div>
     </div>
@@ -282,8 +306,7 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
           <span class="item">'You + Me' LED sign</span>
         </div>
         <div class="pkg-cta-row">
-          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20The%20Sweetheart%20Table">Reserve this look →</a>
-          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+          <button class="pkg-cta" type="button" data-package="The Sweetheart Table">Reserve this look →</button>
         </div>
       </div>
     </div>
@@ -317,8 +340,7 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
           <span class="item">Baby block lettering</span>
         </div>
         <div class="pkg-cta-row">
-          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20Baby%20Shower%20Package">Reserve this look →</a>
-          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+          <button class="pkg-cta" type="button" data-package="The Oh Baby">Reserve this look →</button>
         </div>
       </div>
     </div>
@@ -351,8 +373,7 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
           <span class="item">4 cocktail tables &amp; covers</span>
         </div>
         <div class="pkg-cta-row">
-          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20The%20Essentials">Reserve this look →</a>
-          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+          <button class="pkg-cta" type="button" data-package="The Essentials">Reserve this look →</button>
         </div>
       </div>
     </div>
@@ -386,8 +407,7 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
           <span class="item">LED sign</span>
         </div>
         <div class="pkg-cta-row">
-          <a class="pkg-cta" href="mailto:byfernstudio@gmail.com?subject=Package%20inquiry%3A%20Signature%20Backdrop">Reserve this look →</a>
-          <a class="pkg-cta-quiet" href="collab.html">or customize it</a>
+          <button class="pkg-cta" type="button" data-package="Signature Backdrop">Reserve this look →</button>
         </div>
       </div>
     </div>
@@ -447,6 +467,46 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
     </div>
   </div>
 </footer>
+
+<!-- PACKAGE RESERVE MODAL -->
+<div class="pm-overlay" id="pmOverlay">
+  <div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
+    <div class="pm-head">
+      <button class="pm-close" id="pmClose" type="button" aria-label="Close">×</button>
+      <div class="pm-eyebrow">Reserve a package</div>
+      <h3 id="pmTitle">Package</h3>
+      <p>Send a quick request and we'll confirm availability the same day.</p>
+    </div>
+    <div class="pm-body" id="pmForm">
+      <div class="pm-fg" id="pmFgName">
+        <label for="pmName">Full name</label>
+        <input type="text" id="pmName" autocomplete="name">
+      </div>
+      <div class="pm-fg" id="pmFgEmail">
+        <label for="pmEmail">Email</label>
+        <input type="email" id="pmEmail" autocomplete="email">
+      </div>
+      <div class="pm-fg" id="pmFgPhone">
+        <label for="pmPhone">Phone</label>
+        <input type="tel" id="pmPhone" autocomplete="tel">
+      </div>
+      <div class="pm-fg" id="pmFgDate">
+        <label for="pmDate">Event date</label>
+        <input type="date" id="pmDate">
+      </div>
+      <div class="pm-fg">
+        <label for="pmNotes">Notes (optional)</label>
+        <textarea id="pmNotes" placeholder="Anything else we should know?"></textarea>
+      </div>
+      <button class="pm-submit" id="pmSubmit" type="button">Send request →</button>
+    </div>
+    <div class="pm-confirm" id="pmConfirm">
+      <div class="check">✓</div>
+      <h3>Request sent.</h3>
+      <p>We'll reach out the same day to confirm availability and lock in your date.</p>
+    </div>
+  </div>
+</div>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
@@ -525,6 +585,109 @@ window.addEventListener('scroll', onScroll, { passive: true });
       toggle.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
     }
+  });
+})();
+
+// Package reserve modal
+(function setupPkgModal(){
+  const overlay = document.getElementById('pmOverlay');
+  const title   = document.getElementById('pmTitle');
+  const formEl  = document.getElementById('pmForm');
+  const confirm = document.getElementById('pmConfirm');
+  const closeBtn = document.getElementById('pmClose');
+  const submitBtn = document.getElementById('pmSubmit');
+  const dateInput = document.getElementById('pmDate');
+  if (!overlay) return;
+
+  let currentPackage = '';
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.min = today;
+
+  function openModal(pkgName) {
+    currentPackage = pkgName;
+    title.textContent = pkgName;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    formEl.style.display = '';
+    confirm.classList.remove('show');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send request →';
+  }
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.pkg-cta[data-package]').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.package));
+  });
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+  submitBtn.addEventListener('click', () => {
+    const required = [
+      { id: 'pmName',  fg: 'pmFgName'  },
+      { id: 'pmEmail', fg: 'pmFgEmail' },
+      { id: 'pmPhone', fg: 'pmFgPhone' },
+      { id: 'pmDate',  fg: 'pmFgDate'  },
+    ];
+    let ok = true;
+    required.forEach(({id, fg}) => {
+      const el   = document.getElementById(id);
+      const wrap = document.getElementById(fg);
+      if (!el.value.trim()) {
+        wrap.classList.add('err');
+        ok = false;
+        setTimeout(() => wrap.classList.remove('err'), 2500);
+      }
+    });
+    if (!ok) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    // Hidden iframe POST to FormSubmit.co
+    let frame = document.getElementById('submitFrame');
+    if (!frame) {
+      frame = document.createElement('iframe');
+      frame.name = 'submitFrame';
+      frame.id   = 'submitFrame';
+      frame.style.display = 'none';
+      document.body.appendChild(frame);
+    }
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://formsubmit.co/byfernstudio@gmail.com';
+    form.target = 'submitFrame';
+    form.style.display = 'none';
+
+    const fields = {
+      Package:    currentPackage,
+      Name:       document.getElementById('pmName').value.trim(),
+      Email:      document.getElementById('pmEmail').value.trim(),
+      Phone:      document.getElementById('pmPhone').value.trim(),
+      'Event date': document.getElementById('pmDate').value,
+      Notes:      document.getElementById('pmNotes').value.trim() || '(none)',
+      _subject:   `Package request · ${currentPackage}`,
+      _replyto:   document.getElementById('pmEmail').value.trim(),
+      _template:  'table',
+      _captcha:   'false',
+    };
+    Object.entries(fields).forEach(([k, v]) => {
+      const i = document.createElement('input');
+      i.type  = 'hidden';
+      i.name  = k;
+      i.value = v == null ? '' : String(v);
+      form.appendChild(i);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
+    formEl.style.display = 'none';
+    confirm.classList.add('show');
+    setTimeout(() => form.remove(), 1000);
   });
 })();
 </script>
