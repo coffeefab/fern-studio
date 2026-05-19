@@ -161,13 +161,13 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
 }
 @media(max-width:768px){
   .nav-toggle{display:block}
-  .nav-links{position:absolute;top:100%;left:0;right:0;background:rgba(247,244,239,.98);backdrop-filter:blur(16px);flex-direction:column;align-items:stretch;gap:0;padding:0 clamp(1.5rem,5vw,4.5rem);box-shadow:0 8px 24px rgba(28,27,20,.1);border-top:1px solid rgba(28,27,20,.06);max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .3s ease,padding .35s ease;pointer-events:none}
-  .nav-links.open{max-height:80vh;opacity:1;padding-top:.6rem;padding-bottom:1.2rem;pointer-events:auto}
+  .nav-links{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:var(--ivory);flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:6rem clamp(2rem,8vw,3rem) 3rem;box-shadow:none;border-top:none;opacity:0;visibility:hidden;transform:translateY(-12px);transition:opacity .35s ease,visibility .35s ease,transform .4s ease;pointer-events:none;overflow-y:auto;z-index:90}
+  .nav-links.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
   .nav-links li{width:100%}
-  .nav-links a:not(.nav-book){display:block;padding:.85rem 0;border-bottom:1px solid rgba(28,27,20,.07);font-size:.85rem;letter-spacing:.13em}
-  .nav-links .nav-cart-btn{padding:.85rem 0!important;font-size:.85rem!important;border-bottom:1px solid rgba(28,27,20,.07)}
-  .nav-links .nav-cart-btn .cart-badge{position:static;margin-left:.4rem}
-  .nav-links .nav-book{display:block;text-align:center;margin-top:.75rem;padding:.9rem 1rem!important}
+  .nav-links a:not(.nav-book){display:block;padding:1.15rem 0;border-bottom:1px solid rgba(28,27,20,.08);font-size:1.05rem;letter-spacing:.14em;color:var(--forest);font-family:'Cormorant Garamond',serif;font-weight:400;text-transform:none}
+  .nav-links .nav-cart-btn{padding:1.15rem 0!important;font-size:1.05rem!important;border-bottom:1px solid rgba(28,27,20,.08);color:var(--forest)!important;letter-spacing:.14em;font-family:'Cormorant Garamond',serif;text-transform:none}
+  .nav-links .nav-cart-btn .cart-badge{position:static;margin-left:.5rem}
+  .nav-links .nav-book{display:block;text-align:center;margin-top:1.5rem;padding:1rem 1rem!important;font-size:.85rem!important;letter-spacing:.16em}
 }
 @media(max-width:600px){
   .pkg-hero{padding:6.5rem 0 3.5rem}
@@ -511,12 +511,14 @@ window.addEventListener('scroll', onScroll, { passive: true });
     const isOpen = toggle.classList.toggle('open');
     links.classList.toggle('open', isOpen);
     toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   });
   links.addEventListener('click', e => {
     if (e.target.closest('a')) {
       toggle.classList.remove('open');
       links.classList.remove('open');
       toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
     }
   });
 })();
