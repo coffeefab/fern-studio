@@ -196,9 +196,9 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 <section class="form-section">
   <div class="form-wrap">
 
-    <form id="collabForm" name="collab" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" netlify>
+    <form id="collabForm" name="collab" method="POST" action="https://formsubmit.co/byfernstudio@gmail.com">
       <input type="hidden" name="form-name" value="collab">
-      <p class="honeypot"><label>Don't fill this out: <input name="bot-field"></label></p>
+      <p class="honeypot"><label>Don't fill this out: <input name="_honey"></label></p>
 
       <div class="field">
         <label class="field-label" for="firstName">First name <span class="req">(required)</span></label>
@@ -361,7 +361,8 @@ const onScroll = () => nav.classList.toggle('solid', window.scrollY > 30);
 onScroll();
 window.addEventListener('scroll', onScroll, { passive: true });
 
-// Form submission — submits to Netlify Forms via fetch so the page doesn't redirect
+// Form submission — FormSubmit.co (free, no account required)
+// First-ever submission triggers a one-time confirmation email to byfernstudio@gmail.com.
 const form = document.getElementById('collabForm');
 const successEl = document.getElementById('formSuccess');
 const submitBtn = document.getElementById('submitBtn');
@@ -377,15 +378,25 @@ form.addEventListener('submit', async (e) => {
   data.delete('setupLevel');
   if (setupValues.length) data.append('setupLevel', setupValues.join(', '));
 
-  const body = new URLSearchParams(data).toString();
+  // FormSubmit configuration fields
+  const senderName  = data.get('name') || 'unknown';
+  const senderEmail = data.get('email') || '';
+  data.append('_subject',  `Collab inquiry · ${senderName}`);
+  if (senderEmail) data.append('_replyto', senderEmail);
+  data.append('_template', 'table');
+  data.append('_captcha',  'false');
+
+  // Convert FormData to a plain object for the JSON endpoint
+  const payload = {};
+  data.forEach((v, k) => { payload[k] = v; });
 
   try {
-    const res = await fetch('/', {
+    const res = await fetch('https://formsubmit.co/ajax/byfernstudio@gmail.com', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
     });
-    if (!res.ok && res.status !== 200) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     form.style.display = 'none';
     successEl.classList.add('show');
     window.scrollTo({ top: successEl.offsetTop - 120, behavior: 'smooth' });

@@ -1454,10 +1454,29 @@ document.getElementById('btnSubmit').onclick = async (e) => {
   };
 
   try {
-    const res = await fetch('/api/send-booking', {
+    // FormSubmit.co — free form-to-email, no account needed.
+    // First-ever submission triggers a one-time confirmation email to byfernstudio@gmail.com.
+    const fullAddress = [payload.addr1, payload.addr2, [payload.city, payload.state, payload.zip].filter(Boolean).join(', ')].filter(Boolean).join('\n');
+    const res = await fetch('https://formsubmit.co/ajax/byfernstudio@gmail.com', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        Name:           payload.name,
+        Email:          payload.email,
+        Phone:          payload.phone,
+        'Event date':   payload.date,
+        'Event type':   payload.eventType || '(not specified)',
+        Address:        fullAddress,
+        Delivery:       payload.delivery === 'yes' ? 'Yes ($40)' : 'No, picking up',
+        'Drop off / pickup time': payload.dropoff,
+        'Return time':  payload.return,
+        Items:          payload.items,
+        Notes:          payload.notes || '(none)',
+        _subject:       `New booking · ${payload.name || 'unknown'} · ${payload.date || 'no date'}`,
+        _replyto:       payload.email,
+        _template:      'table',
+        _captcha:       'false',
+      }),
     });
     if (!res.ok) throw new Error(await res.text());
 
