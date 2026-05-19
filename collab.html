@@ -367,44 +367,58 @@ const form = document.getElementById('collabForm');
 const successEl = document.getElementById('formSuccess');
 const submitBtn = document.getElementById('submitBtn');
 
-form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', (e) => {
+  // Collect multi-value setupLevel into a single hidden field, add helper fields,
+  // then let the native form POST to FormSubmit (with a hidden iframe so the
+  // page doesn't navigate away).
   e.preventDefault();
   submitBtn.disabled = true;
   submitBtn.textContent = 'Sending…';
 
-  const data = new FormData(form);
-  // Collect multi-value setupLevel as a single string
-  const setupValues = data.getAll('setupLevel');
-  data.delete('setupLevel');
-  if (setupValues.length) data.append('setupLevel', setupValues.join(', '));
-
-  // FormSubmit configuration fields
-  const senderName  = data.get('name') || 'unknown';
-  const senderEmail = data.get('email') || '';
-  data.append('_subject',  `Collab inquiry · ${senderName}`);
-  if (senderEmail) data.append('_replyto', senderEmail);
-  data.append('_template', 'table');
-  data.append('_captcha',  'false');
-
-  // Convert FormData to a plain object for the JSON endpoint
-  const payload = {};
-  data.forEach((v, k) => { payload[k] = v; });
-
-  try {
-    const res = await fetch('https://formsubmit.co/ajax/byfernstudio@gmail.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    form.style.display = 'none';
-    successEl.classList.add('show');
-    window.scrollTo({ top: successEl.offsetTop - 120, behavior: 'smooth' });
-  } catch (err) {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit';
-    alert('Something went wrong. Please email byfernstudio@gmail.com directly.');
+  // Hidden iframe target
+  let frame = document.getElementById('submitFrame');
+  if (!frame) {
+    frame = document.createElement('iframe');
+    frame.name = 'submitFrame';
+    frame.id   = 'submitFrame';
+    frame.style.display = 'none';
+    document.body.appendChild(frame);
   }
+  form.target = 'submitFrame';
+
+  // Consolidate multi-value setupLevel as one comma string
+  const setupBoxes = form.querySelectorAll('input[name="setupLevel"]');
+  const setupValues = [...setupBoxes].filter(b => b.checked).map(b => b.value);
+  setupBoxes.forEach(b => b.remove());
+  if (setupValues.length) {
+    const hidden = document.createElement('input');
+    hidden.type = 'hidden';
+    hidden.name = 'setupLevel';
+    hidden.value = setupValues.join(', ');
+    form.appendChild(hidden);
+  }
+
+  // FormSubmit helpers
+  const nameVal  = (form.querySelector('[name="name"]')  || {}).value || 'unknown';
+  const emailVal = (form.querySelector('[name="email"]') || {}).value || '';
+  const setHidden = (name, value) => {
+    const h = document.createElement('input');
+    h.type  = 'hidden';
+    h.name  = name;
+    h.value = value;
+    form.appendChild(h);
+  };
+  setHidden('_subject',  `Collab inquiry · ${nameVal}`);
+  if (emailVal) setHidden('_replyto', emailVal);
+  setHidden('_template', 'table');
+  setHidden('_captcha',  'false');
+
+  form.submit();
+
+  // Show success immediately (response is cross-origin and can't be read)
+  form.style.display = 'none';
+  successEl.classList.add('show');
+  window.scrollTo({ top: successEl.offsetTop - 120, behavior: 'smooth' });
 });
 
 // Mobile nav toggle

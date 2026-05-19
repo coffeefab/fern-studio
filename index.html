@@ -1459,40 +1459,60 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     notes:     document.getElementById('mNotes')?.value.trim() || '',
   };
 
-  try {
-    // FormSubmit.co — free form-to-email, no account needed.
-    // First-ever submission triggers a one-time confirmation email to byfernstudio@gmail.com.
-    const fullAddress = [payload.addr1, payload.addr2, [payload.city, payload.state, payload.zip].filter(Boolean).join(', ')].filter(Boolean).join('\n');
-    const res = await fetch('https://formsubmit.co/ajax/byfernstudio@gmail.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        Name:           payload.name,
-        Email:          payload.email,
-        Phone:          payload.phone,
-        'Event date':   payload.date,
-        'Event type':   payload.eventType || '(not specified)',
-        Address:        fullAddress,
-        Delivery:       payload.delivery === 'yes' ? 'Yes ($40)' : 'No, picking up',
-        'Drop off / pickup time': payload.dropoff,
-        'Return time':  payload.return,
-        Items:          payload.items,
-        Notes:          payload.notes || '(none)',
-        _subject:       `New booking · ${payload.name || 'unknown'} · ${payload.date || 'no date'}`,
-        _replyto:       payload.email,
-        _template:      'table',
-        _captcha:       'false',
-      }),
-    });
-    if (!res.ok) throw new Error(await res.text());
+  // Submit via FormSubmit.co using a hidden form + hidden iframe — bypasses CORS
+  // and works on the first submission (verification email goes to byfernstudio@gmail.com).
+  const fullAddress = [payload.addr1, payload.addr2, [payload.city, payload.state, payload.zip].filter(Boolean).join(', ')].filter(Boolean).join('\n');
+  const fields = {
+    Name:           payload.name,
+    Email:          payload.email,
+    Phone:          payload.phone,
+    'Event date':   payload.date,
+    'Event type':   payload.eventType || '(not specified)',
+    Address:        fullAddress,
+    Delivery:       payload.delivery === 'yes' ? 'Yes ($40)' : 'No, picking up',
+    'Drop off / pickup time': payload.dropoff,
+    'Return time':  payload.return,
+    Items:          payload.items,
+    Notes:          payload.notes || '(none)',
+    _subject:       `New booking · ${payload.name || 'unknown'} · ${payload.date || 'no date'}`,
+    _replyto:       payload.email,
+    _template:      'table',
+    _captcha:       'false',
+  };
 
-    document.getElementById('bookingForm').style.display = 'none';
-    document.getElementById('confirm').classList.add('show');
-  } catch (err) {
-    btn.disabled = false;
-    btn.textContent = originalLabel;
-    alert("Couldn't submit right now. Please email byfernstudio@gmail.com directly or call (317) 442-9621.");
+  // Hidden iframe so the page doesn't navigate away
+  let frame = document.getElementById('submitFrame');
+  if (!frame) {
+    frame = document.createElement('iframe');
+    frame.name = 'submitFrame';
+    frame.id   = 'submitFrame';
+    frame.style.display = 'none';
+    document.body.appendChild(frame);
   }
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://formsubmit.co/byfernstudio@gmail.com';
+  form.target = 'submitFrame';
+  form.style.display = 'none';
+
+  Object.entries(fields).forEach(([k, v]) => {
+    const input = document.createElement('input');
+    input.type  = 'hidden';
+    input.name  = k;
+    input.value = v == null ? '' : String(v);
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(form);
+  form.submit();
+
+  // Show confirmation immediately (we can't read the iframe response cross-origin)
+  document.getElementById('bookingForm').style.display = 'none';
+  document.getElementById('confirm').classList.add('show');
+
+  // Clean up
+  setTimeout(() => form.remove(), 1000);
 };
 
 // ===== NAV SCROLL =====
