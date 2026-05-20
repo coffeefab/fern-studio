@@ -1465,13 +1465,16 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     notes:     document.getElementById('mNotes')?.value.trim() || '',
   };
 
-  // Submit via FormSubmit.co using a hidden form + hidden iframe — bypasses CORS
-  // and works on the first submission (verification email goes to byfernstudio@gmail.com).
+  // Submit to Web3Forms. Real fetch + JSON response so we can show actual
+  // success or actual errors, not a fake "thanks" while the request failed.
   const fullAddress = [payload.addr1, payload.addr2, [payload.city, payload.state, payload.zip].filter(Boolean).join(', ')].filter(Boolean).join('\n');
   const fields = {
-    Name:           payload.name,
-    Email:          payload.email,
-    Phone:          payload.phone,
+    access_key: 'fed38217-a01e-46c4-87dd-f2540733c5fa',
+    subject:    `New booking request from ${payload.name || 'unknown'} for ${payload.date || 'no date'}`,
+    from_name:  'Fern Studio Booking Form',
+    name:       payload.name,
+    email:      payload.email,
+    phone:      payload.phone,
     'Event date':   payload.date,
     'Event type':   payload.eventType || '(not specified)',
     Address:        fullAddress,
@@ -1480,45 +1483,34 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     'Return time':  payload.return,
     Items:          payload.items,
     Notes:          payload.notes || '(none)',
-    _subject:       `New booking · ${payload.name || 'unknown'} · ${payload.date || 'no date'}`,
-    _replyto:       payload.email,
-    _template:      'table',
-    _captcha:       'false',
+    botcheck:       '',
   };
 
-  // Hidden iframe so the page doesn't navigate away
-  let frame = document.getElementById('submitFrame');
-  if (!frame) {
-    frame = document.createElement('iframe');
-    frame.name = 'submitFrame';
-    frame.id   = 'submitFrame';
-    frame.style.display = 'none';
-    document.body.appendChild(frame);
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body:    JSON.stringify(fields),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || `Web3Forms returned HTTP ${res.status}`);
+    }
+    document.getElementById('bookingForm').style.display = 'none';
+    document.getElementById('confirm').classList.add('show');
+  } catch (err) {
+    console.error('Booking submission failed:', err);
+    let errBox = document.getElementById('formError');
+    if (!errBox) {
+      errBox = document.createElement('div');
+      errBox.id = 'formError';
+      errBox.style.cssText = 'background:#fdecec;border:1px solid #e6b3b3;color:#8a2a2a;padding:.85rem 1rem;border-radius:6px;font-size:.85rem;margin-top:.9rem;line-height:1.5;text-align:left';
+      btn.parentNode.insertBefore(errBox, btn);
+    }
+    errBox.textContent = `We could not send your request just now (${err.message}). Please try again, or email byfernstudio@gmail.com directly.`;
+    btn.disabled = false;
+    btn.textContent = originalLabel;
   }
-
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = 'https://formsubmit.co/byfernstudio@gmail.com';
-  form.target = 'submitFrame';
-  form.style.display = 'none';
-
-  Object.entries(fields).forEach(([k, v]) => {
-    const input = document.createElement('input');
-    input.type  = 'hidden';
-    input.name  = k;
-    input.value = v == null ? '' : String(v);
-    form.appendChild(input);
-  });
-
-  document.body.appendChild(form);
-  form.submit();
-
-  // Show confirmation immediately (we can't read the iframe response cross-origin)
-  document.getElementById('bookingForm').style.display = 'none';
-  document.getElementById('confirm').classList.add('show');
-
-  // Clean up
-  setTimeout(() => form.remove(), 1000);
 };
 
 // ===== NAV SCROLL =====
