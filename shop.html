@@ -266,7 +266,8 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 .cs-row.total{font-weight:600;color:var(--forest);font-size:.88rem;border-top:1px solid rgba(28,27,20,.1);padding-top:.45rem;margin-top:.2rem;margin-bottom:.3rem}
 .cs-row.deposit{color:var(--gold);font-weight:600;font-size:.84rem;margin-bottom:.85rem}
 .cs-row.delivery-row{align-items:center;margin-bottom:.45rem}
-.cart-fine-print{font-size:.7rem;color:var(--mist);line-height:1.55;margin:.1rem 0 .7rem;font-style:italic}
+.cart-fine-print{font-size:.78rem;color:var(--stone);line-height:1.55;margin:.15rem 0 .8rem;display:flex;flex-direction:column;gap:.18rem}
+.cart-fine-print strong{color:var(--forest);font-weight:500}
 .cart-yn-ctrl{display:flex;gap:.35rem}
 .cart-yn-btn{padding:.28rem .7rem;border:1.5px solid rgba(28,27,20,.18);border-radius:2rem;background:none;font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);cursor:pointer;transition:all var(--t)}
 .cart-yn-btn:hover{border-color:var(--sage);color:var(--sage)}
@@ -521,7 +522,8 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
       </div>
     </div>
     <div class="cart-fine-print">
-      Delivery $40 within the Indy area. Outside, the fee may vary. Pickup is at our downtown storage unit. We will share the address after your booking is confirmed.
+      <div><strong>Delivery:</strong> $40 in Indy area, varies outside.</div>
+      <div><strong>Pickup:</strong> downtown storage, address shared after booking.</div>
     </div>
     <div class="cs-row"><span>Subtotal</span><span id="cs-sub">—</span></div>
     <div class="cs-row total"><span>Est. Total</span><span id="cs-tot">—</span></div>
