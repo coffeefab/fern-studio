@@ -1362,7 +1362,6 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
       `${CART_HOST}/api/1/cart?api_key=${BOOQABLE_KEY}`,
       {
         method:  'PUT',
-        credentials: 'include',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body:    JSON.stringify({ cart: { starts_at: startDate.toISOString(), stops_at: stopDate.toISOString() } }),
       }
@@ -1381,8 +1380,7 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
         `${CART_HOST}/api/boomerang/cart_bookings?id=${encodeURIComponent(cartId)}`,
         {
           method: 'POST',
-          credentials: 'include',
-          headers: {
+            headers: {
             'Authorization': `Bearer ${BOOQABLE_KEY}`,
             'Content-Type':  'application/vnd.api+json',
             'Accept':        'application/vnd.api+json',
