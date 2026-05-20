@@ -268,6 +268,9 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 .cs-row.delivery-row{align-items:center;margin-bottom:.45rem}
 .cart-fine-print{font-size:.78rem;color:var(--stone);line-height:1.55;margin:.15rem 0 .8rem;display:flex;flex-direction:column;gap:.18rem}
 .cart-fine-print strong{color:var(--forest);font-weight:500}
+.cart-terms-note{font-size:.72rem;color:var(--stone);text-align:center;margin-top:.65rem;line-height:1.5}
+.cart-terms-note a{color:var(--gold);text-decoration:underline;text-underline-offset:2px}
+.cart-terms-note a:hover{color:var(--sage)}
 .cart-yn-ctrl{display:flex;gap:.35rem}
 .cart-yn-btn{padding:.28rem .7rem;border:1.5px solid rgba(28,27,20,.18);border-radius:2rem;background:none;font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);cursor:pointer;transition:all var(--t)}
 .cart-yn-btn:hover{border-color:var(--sage);color:var(--sage)}
@@ -529,6 +532,7 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
     <div class="cs-row total"><span>Est. Total</span><span id="cs-tot">—</span></div>
     <div class="cs-row deposit"><span>25% deposit today</span><span id="cs-dep">—</span></div>
     <button class="cart-cta-btn" id="cartCheckoutBtn" disabled>Checkout · pay deposit</button>
+    <div class="cart-terms-note">By continuing, you agree to our <a href="terms.html" target="_blank" rel="noopener">terms</a>.</div>
   </div>
 
 </aside>
