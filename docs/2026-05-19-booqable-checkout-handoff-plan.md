@@ -569,11 +569,188 @@ refund it from the Stripe dashboard.
 
 ## Booqable API reference
 
-> Filled in during Task 1. Until that task runs, treat the API shape used in Task 3
-> as a placeholder skeleton.
+> Verified live against `byfernstudio.booqableshop.com` on 2026-05-19 with the
+> public `BOOQABLE_KEY`. The cart-handoff flow uses TWO endpoints, in this
+> order, sharing a session cookie that the browser maintains automatically:
 
-- **Endpoint:** _TBD by Task 1_
-- **Auth:** `api_key` query parameter, value `BOOQABLE_KEY`
-- **Request body shape:** _TBD by Task 1_
-- **Response field with customer URL:** _TBD by Task 1_
-- **Delivery product ID:** _TBD by Task 4 Step 5 curl_
+### Critical hostname note
+
+All cart, cart_bookings, and checkout calls go to the customer-facing
+storefront subdomain, **not** the admin subdomain:
+
+- Use: `https://byfernstudio.booqableshop.com/...`
+- NOT: `https://byfernstudio.booqable.com/...` (admin host, returns 404 / employee sign-in)
+
+Product catalog reads in `shop.html` already use the admin host
+(`/api/1/product_groups`), which is fine and stays unchanged. Only cart/checkout
+moves to the storefront host.
+
+### Step A. Set rental date range (creates cart if none exists)
+
+- **Endpoint:** `PUT https://byfernstudio.booqableshop.com/api/1/cart?api_key=<BOOQABLE_KEY>`
+- **Auth:** `api_key` query parameter
+- **Headers:** `Content-Type: application/json`, `Accept: application/json`
+- **fetch options:** `credentials: 'include'` (browser must send + store the
+  `_booqable_session` cookie so the next call lands on the same cart)
+- **Body:**
+  ```json
+  { "cart": {
+      "starts_at": "2026-06-01T10:00:00Z",
+      "stops_at":  "2026-06-02T10:00:00Z"
+  } }
+  ```
+- **Response:** `200 OK`, full cart JSON. Key fields:
+  - `data.cart.id` — the cart UUID (also embedded in `checkout_url`)
+  - `data.cart.checkout_url` — already populated, points to the
+    `byfernstudio.booqableshop.com/checkouts/<id>` page
+
+### Step B. Add each line item (one POST per cart line)
+
+- **Endpoint:** `POST https://byfernstudio.booqableshop.com/api/boomerang/cart_bookings`
+- **Auth:** `Authorization: Bearer <BOOQABLE_KEY>` header.
+  > Boomerang explicitly rejects the `api_key=` query param with
+  > `"Including an api_key as a parameter is not allowed. Use the authorization header instead."`
+- **Headers:**
+  - `Authorization: Bearer <BOOQABLE_KEY>`
+  - `Content-Type: application/vnd.api+json`
+  - `Accept: application/vnd.api+json`
+- **fetch options:** `credentials: 'include'` (same session cookie as Step A)
+- **Body (JSON:API shape):**
+  ```json
+  { "data": {
+      "type": "cart_bookings",
+      "attributes": {
+        "item_id": "5c794d7f-59da-49bd-8ef0-90e2b989a819",
+        "quantity": 2
+      }
+  } }
+  ```
+- **Response:** `200 OK`. The response body is the full updated cart wrapped
+  the same way as Step A (`data.cart...`), so the easiest pattern is:
+  - Send Step A, ignore most of the response.
+  - Send Step B for each line item; on the FINAL Step B response, read
+    `data.cart.checkout_url` and redirect there.
+  - Key response fields on Step B:
+    - `data.cart.id`
+    - `data.cart.price_in_cents` — line subtotal
+    - `data.cart.grand_total_in_cents`
+    - `data.cart.down_payment_in_cents` — the 25 % deposit Booqable will charge
+    - `data.cart.to_be_paid_in_cents`
+    - `data.cart.checkout_url` — **redirect target**
+
+### Important: `item_id` is NOT the product_group id
+
+Booqable distinguishes `product_groups` (catalog entries / what
+`shop.html` lists) from `items` (the rentable stock entity per product
+group). `cart_bookings.attributes.item_id` requires the `items` UUID.
+
+Fetch it once per product group:
+
+```
+GET https://byfernstudio.booqable.com/api/boomerang/items
+    ?filter[product_group_id]=<PRODUCT_GROUP_ID>
+Authorization: Bearer <BOOQABLE_KEY>
+Accept: application/vnd.api+json
+```
+
+For "5 Foot White Round Table":
+- `product_group_id` = `24b708a8-9cf0-4c02-ba9f-62b9f703257c`
+- `item_id`          = `5c794d7f-59da-49bd-8ef0-90e2b989a819`
+
+For Task 3 to work, the catalog rendering in `shop.html` must capture the
+item_id alongside the product_group_id (either as a one-off lookup at
+add-to-cart time, or by enriching the catalog fetch with
+`?include=items` and reading `data.items[0].id`).
+
+### Customer checkout URL shape
+
+`https://byfernstudio.booqableshop.com/checkouts/<cart_uuid>`
+
+Confirmed `HTTP 200` and renders the line items + Stripe deposit UI when
+opened (verified 2026-05-19). Booqable's deposit setting (25 %) is honored
+automatically; nothing client-side needs to compute it.
+
+### CORS
+
+Both `/api/1/cart` and `/api/boomerang/cart_bookings` on
+`byfernstudio.booqableshop.com` return:
+- `Access-Control-Allow-Origin: *`
+- `Access-Control-Allow-Methods: GET, POST, PUT, PATCH, OPTIONS`
+- `Access-Control-Allow-Headers: content-type, authorization`
+- `Access-Control-Allow-Credentials: false`
+
+Because `Allow-Credentials` is `false`, the browser will NOT forward the
+`_booqable_session` cookie cross-origin by default. The static site
+must use `credentials: 'include'` on its fetches; if that still drops
+the cookie (likely, given the `false` flag), the workaround is to keep
+the cart_id in `localStorage` (key `bqCartId`, matching what
+`byfernstudio.booqableshop.com` itself uses) and pass `?id=<cart_id>` on
+the PUT in Step A.
+
+> If the cookie-less fallback also fails to bind a stable cart across
+> the two calls, the safest pattern is to do everything in ONE call:
+> just `POST /api/boomerang/cart_bookings` for the first line item
+> (which auto-creates the cart on the server and returns a `checkout_url`),
+> then redirect immediately. Date range can be set on the cart by
+> the customer on the Booqable hosted checkout page itself, or passed
+> as `starts_at` / `stops_at` cart attributes via a follow-up PUT
+> within the same session.
+
+### Verification evidence (2026-05-19)
+
+```
+$ KEY=28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a
+$ ITEM_ID=5c794d7f-59da-49bd-8ef0-90e2b989a819
+$ CJ=/tmp/fin.txt; rm -f $CJ
+
+$ curl -sS -c $CJ -X PUT \
+    "https://byfernstudio.booqableshop.com/api/1/cart?api_key=$KEY" \
+    -H 'Content-Type: application/json' \
+    -d '{"cart":{"starts_at":"2026-06-01T10:00:00Z","stops_at":"2026-06-02T10:00:00Z"}}'
+# 200 OK, returns cart with id=040eeafb-5d01-4f02-acee-aa35582dd26c
+
+$ curl -sS -b $CJ -c $CJ -X POST \
+    "https://byfernstudio.booqableshop.com/api/boomerang/cart_bookings" \
+    -H 'Content-Type: application/vnd.api+json' \
+    -H "Authorization: Bearer $KEY" \
+    -d "{\"data\":{\"type\":\"cart_bookings\",\"attributes\":{\"item_id\":\"$ITEM_ID\",\"quantity\":2}}}"
+# 200 OK, response:
+# {"cart":{"id":"040eeafb-5d01-4f02-acee-aa35582dd26c",
+#   "starts_at":"2026-06-01T10:00:00.000Z",
+#   "stops_at":"2026-06-02T10:00:00.000Z",
+#   "price_in_cents":2000,
+#   "grand_total_in_cents":2000,
+#   "down_payment_in_cents":500,         <-- 25% deposit on $20
+#   "to_be_paid_in_cents":500,
+#   "checkout_url":"https://byfernstudio.booqableshop.com/checkouts/040eeafb-5d01-4f02-acee-aa35582dd26c",
+#   ...}}
+
+$ curl -sS -I "https://byfernstudio.booqableshop.com/checkouts/040eeafb-5d01-4f02-acee-aa35582dd26c"
+# HTTP/2 200 - hosted checkout page with the line item rendered.
+```
+
+### Implications for Task 3 (`shop.html` handler rewrite)
+
+The placeholder in Task 3 Step 2 was wrong on three counts: the host
+(should be `booqableshop.com`, not `booqable.com`), the resource
+(`/cart`, not `/carts`), and the line-item shape (line items go through
+a separate Boomerang POST with Bearer auth, not nested
+`lines_attributes` on the cart). The handler must do PUT-then-N-POSTs,
+read `data.cart.checkout_url` from the LAST POST's response, and
+redirect there.
+
+### Delivery product ID
+
+To be fetched at Task 4 Step 5. Per the new findings, the
+`<DELIVERY_PRODUCT_ID>` placeholder must be the `items` UUID (not the
+product_group UUID) for the "delivery" product:
+
+```bash
+KEY=28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a
+DELIVERY_PG=$(curl -sS "https://byfernstudio.booqable.com/api/1/product_groups?api_key=$KEY&filter%5Bslug%5D=delivery" \
+  | python3 -c "import sys,json;print(json.load(sys.stdin)['product_groups'][0]['id'])")
+curl -sS "https://byfernstudio.booqable.com/api/boomerang/items?filter%5Bproduct_group_id%5D=$DELIVERY_PG" \
+  -H "Authorization: Bearer $KEY" \
+  -H 'Accept: application/vnd.api+json' \
+  | python3 -c "import sys,json;print(json.load(sys.stdin)['data'][0]['id'])"
+```
