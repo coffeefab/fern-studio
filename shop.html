@@ -1481,6 +1481,9 @@ const REVIEWS = [
       </div>
     </div>
   `).join('');
+  // The reveal observer was set up before this IIFE ran, so it never saw
+  // these dynamically-created cards. Observe them now so they fade in.
+  grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 })();
 
 // ===== INIT =====
