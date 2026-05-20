@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://js.stripe.com/v3/"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -266,6 +265,11 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 .cs-row{display:flex;justify-content:space-between;font-size:.79rem;color:var(--stone);margin-bottom:.3rem}
 .cs-row.total{font-weight:600;color:var(--forest);font-size:.88rem;border-top:1px solid rgba(28,27,20,.1);padding-top:.45rem;margin-top:.2rem;margin-bottom:.3rem}
 .cs-row.deposit{color:var(--gold);font-weight:600;font-size:.84rem;margin-bottom:.85rem}
+.cs-row.delivery-row{align-items:center;margin-bottom:.55rem}
+.cart-yn-ctrl{display:flex;gap:.35rem}
+.cart-yn-btn{padding:.28rem .7rem;border:1.5px solid rgba(28,27,20,.18);border-radius:2rem;background:none;font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);cursor:pointer;transition:all var(--t)}
+.cart-yn-btn:hover{border-color:var(--sage);color:var(--sage)}
+.cart-yn-btn.active{background:var(--sage);border-color:var(--sage);color:var(--ivory)}
 .cart-cta-btn{width:100%;padding:.8rem;background:var(--forest);color:var(--ivory);border:none;border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t)}
 .cart-cta-btn:hover:not(:disabled){background:var(--sage);transform:translateY(-1px)}
 .cart-cta-btn:disabled{opacity:.45;cursor:default;transform:none}
@@ -493,88 +497,9 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
     <button class="cart-drawer-close" id="cartDrawerClose">✕</button>
   </div>
 
-  <!-- Step indicator -->
-  <div class="cart-steps-bar">
-    <div class="csd active" id="csd1"><span>1</span>Cart</div>
-    <div class="csd-sep"></div>
-    <div class="csd" id="csd2"><span>2</span>Details</div>
-    <div class="csd-sep"></div>
-    <div class="csd" id="csd3"><span>3</span>Payment</div>
-  </div>
-
   <!-- Scrollable body -->
   <div class="cart-body" id="cartBody">
-
-    <!-- STEP 1: Cart items -->
-    <div id="csStep1">
-      <div id="cartItemsList"></div>
-    </div>
-
-    <!-- STEP 2: Event details -->
-    <div id="csStep2" style="display:none">
-      <div class="co-wrap">
-        <button class="cart-back-lnk" id="backToCart">← Back to cart</button>
-        <div class="co-sec-lbl">Contact</div>
-        <div class="co-grid-2">
-          <div class="co-fg" id="cofg-name"><label>Full name *</label><input type="text" id="coName" autocomplete="name" placeholder="Ashley Monroe"></div>
-          <div class="co-fg" id="cofg-phone"><label>Phone *</label><input type="tel" id="coPhone" autocomplete="tel" placeholder="(317) 555-0000"></div>
-        </div>
-        <div class="co-fg" id="cofg-email"><label>Email *</label><input type="email" id="coEmail" autocomplete="email" placeholder="hello@email.com"></div>
-        <div class="co-sec-lbl">Event</div>
-        <div class="co-fg" id="cofg-date"><label>Event date *</label><input type="date" id="coDate"></div>
-        <div class="co-fg">
-          <label>Type of event</label>
-          <div class="co-pills" id="coPills">
-            <button type="button" class="co-pill" data-val="wedding">Wedding</button>
-            <button type="button" class="co-pill" data-val="bridal">Bridal Shower</button>
-            <button type="button" class="co-pill" data-val="birthday">Birthday</button>
-            <button type="button" class="co-pill" data-val="baby">Baby Shower</button>
-            <button type="button" class="co-pill" data-val="corporate">Corporate</button>
-            <button type="button" class="co-pill" data-val="other">Other</button>
-          </div>
-        </div>
-        <div class="co-fg" id="cofg-delivery">
-          <label>Need delivery? *</label>
-          <div class="co-yn" id="coDelivery">
-            <button type="button" class="co-yn-btn" data-val="yes">Yes · $40</button>
-            <button type="button" class="co-yn-btn" data-val="no">No, I'll pick up</button>
-          </div>
-        </div>
-        <div class="co-fg">
-          <label>Special notes</label>
-          <textarea id="coNotes" rows="3" style="width:100%;padding:.58rem .82rem;border:1.5px solid rgba(28,27,20,.15);border-radius:4px;background:#fff;font-family:'Jost',sans-serif;font-size:.86rem;outline:none;resize:vertical;color:#1C1B14;transition:border-color .32s" placeholder="Venue details, timing, or special requests…"></textarea>
-        </div>
-        <button class="cart-cta-btn" id="toPayment">Continue to payment →</button>
-      </div>
-    </div>
-
-    <!-- STEP 3: Payment -->
-    <div id="csStep3" style="display:none">
-      <div class="co-wrap">
-        <button class="cart-back-lnk" id="backToDetails">← Back to details</button>
-        <div class="co-sec-lbl">Order Summary</div>
-        <div class="co-order-box" id="coOrderBox"></div>
-        <div class="co-sec-lbl">Pay deposit by card</div>
-        <div id="stripeMount">
-          <div id="stripe-card-element"></div>
-          <div id="stripe-card-error"></div>
-          <p class="secure-note">🔒 Secured by Stripe. Only the 25% deposit is charged today.</p>
-        </div>
-        <button class="pay-btn" id="payBtn">Pay deposit <span id="payBtnAmt"></span></button>
-        <p class="pay-note">Remaining balance is due on your event day. No surprise fees.</p>
-      </div>
-    </div>
-
-    <!-- STEP 4: Confirmed -->
-    <div id="csStep4" style="display:none">
-      <div class="cart-confirm-wrap">
-        <div class="cart-confirm-ck">✓</div>
-        <h3>You're booked!</h3>
-        <p>Your deposit was received and your date is held. We'll send a confirmation email within 24 hours with all the details.<br><br><strong>Fern Studio · Indianapolis</strong></p>
-        <button class="cart-done-btn" id="cartDoneBtn">Continue shopping</button>
-      </div>
-    </div>
-
+    <div id="cartItemsList"></div>
   </div><!-- end cart-body -->
 
   <!-- Footer (step 1 only) -->
@@ -588,8 +513,13 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
       </div>
       <span style="font-size:.72rem;color:var(--mist);margin-left:.4rem">day(s)</span>
     </div>
+    <div class="cs-row delivery-row"><span>Delivery</span>
+      <div class="cart-yn-ctrl" id="cartDeliveryToggle">
+        <button type="button" class="cart-yn-btn" data-val="yes">Yes ($40)</button>
+        <button type="button" class="cart-yn-btn" data-val="no">Pickup</button>
+      </div>
+    </div>
     <div class="cs-row"><span>Subtotal</span><span id="cs-sub">—</span></div>
-    <div class="cs-row"><span>Delivery</span><span id="cs-del">TBD</span></div>
     <div class="cs-row total"><span>Est. Total</span><span id="cs-tot">—</span></div>
     <div class="cs-row deposit"><span>25% deposit today</span><span id="cs-dep">—</span></div>
     <button class="cart-cta-btn" id="cartCheckoutBtn" disabled>Checkout · pay deposit</button>
@@ -724,13 +654,16 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 
 <script>
 // ===== CONSTANTS =====
-const BOOQABLE_KEY = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a';
-const PRODUCTS_URL = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
-const SKIP_SLUGS   = new Set(['delivery']);
+const BOOQABLE_KEY  = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a';
+const PRODUCTS_URL  = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
+const ITEMS_URL     = `https://byfernstudio.booqable.com/api/boomerang/items?page%5Bsize%5D=200&fields%5Bitems%5D=name,product_group_id`;
+const CART_HOST     = 'https://byfernstudio.booqableshop.com';
+const DELIVERY_ITEM_ID = '005b6bcf-924e-45f2-b7e7-9057049359ba';
+const SKIP_SLUGS    = new Set(['delivery']);
 
-// ===== STRIPE KEY (replace with yours) =====
-// Get your key at dashboard.stripe.com/apikeys → Publishable key
-const STRIPE_PK = 'pk_live_YOUR_STRIPE_PUBLISHABLE_KEY';
+// Lookup: product_group_id (what the catalog uses) -> item_id (what Booqable's
+// cart_bookings endpoint requires). Populated by loadItems() at page load.
+const pgToItemId = new Map();
 
 // ===== CART STATE =====
 const CART_KEY = 'fern_cart_v1';
@@ -744,8 +677,6 @@ function saveCart() {
 let cart = loadCart();  // [{id, name, category, pricePerDay, photo, qty}]
 let rentalDays = 1;
 let checkoutDelivery = null;  // null | true | false
-let stripeObj = null;
-let stripeCard = null;
 
 // ===== CART HELPERS =====
 const CAT_ICON = {'flower-walls':'🌸','arches':'🌿','signs':'✨','tables':'🪵','seating':'🪑','linens':'🎀','more':'🎊'};
@@ -847,7 +778,6 @@ function updateFooter() {
   const tot = cartTotCents();
   const dep = cartDepCents();
   document.getElementById('cs-sub').textContent = cart.length ? fmtDollars(sub) : '—';
-  document.getElementById('cs-del').textContent = checkoutDelivery === true ? '$40.00' : checkoutDelivery === false ? 'None' : 'TBD';
   document.getElementById('cs-tot').textContent = cart.length ? fmtDollars(tot) : '—';
   document.getElementById('cs-dep').textContent = cart.length ? fmtDollars(dep) : '—';
   const btn = document.getElementById('cartCheckoutBtn');
@@ -861,137 +791,12 @@ function openCart() {
   document.body.style.overflow = 'hidden';
   renderCartItems();
   updateFooter();
-  goStep(1);
 }
 
 function closeCart() {
   document.getElementById('cartOverlay').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
   document.body.style.overflow = '';
-}
-
-// ===== STEP NAVIGATION =====
-function goStep(n) {
-  [1,2,3,4].forEach(i => {
-    const el = document.getElementById(`csStep${i}`);
-    if (el) el.style.display = i === n ? '' : 'none';
-  });
-  const footer = document.getElementById('cartFooter');
-  if (footer) footer.style.display = n === 1 ? '' : 'none';
-  // Step dots
-  ['csd1','csd2','csd3'].forEach((id, i) => {
-    const d = document.getElementById(id);
-    if (!d) return;
-    d.classList.remove('active','done');
-    if (i + 1 < n) d.classList.add('done');
-    else if (i + 1 === n) d.classList.add('active');
-  });
-  const titles = {1:'Your Cart',2:'Event Details',3:'Payment',4:'Booking Confirmed'};
-  const t = document.getElementById('cartDrawerTitle');
-  if (t) t.textContent = titles[n];
-  const body = document.getElementById('cartBody');
-  if (body) body.scrollTop = 0;
-  if (n === 3) mountStripe();
-}
-
-// ===== ORDER SUMMARY (step 3) =====
-function buildOrderBox() {
-  const box = document.getElementById('coOrderBox');
-  if (!box) return;
-  const del = checkoutDelivery === true ? 4000 : 0;
-  const tot = cartTotCents();
-  const dep = cartDepCents();
-  box.innerHTML = `
-    <div class="co-order-box-ttl">Items (${rentalDays} day${rentalDays>1?'s':''})</div>
-    ${cart.map(i=>`<div class="co-order-line"><span>${escHtml(i.name)} ×${i.qty}</span><span>${fmtDollars(i.pricePerDay*i.qty*rentalDays)}</span></div>`).join('')}
-    ${del ? `<div class="co-order-line"><span>Delivery</span><span>$40.00</span></div>` : ''}
-    <div class="co-order-line tot"><span>Total</span><span>${fmtDollars(tot)}</span></div>
-    <div class="co-order-line dep"><span>Deposit today (25%)</span><span>${fmtDollars(dep)}</span></div>`;
-  const amt = document.getElementById('payBtnAmt');
-  if (amt) amt.textContent = fmtDollars(dep);
-}
-
-// ===== STRIPE MOUNT =====
-function mountStripe() {
-  buildOrderBox();
-  const container = document.getElementById('stripeMount');
-  if (!container) return;
-  if (!window.Stripe || !STRIPE_PK || STRIPE_PK.includes('YOUR_STRIPE')) {
-    // Stripe not configured — show placeholder + allow form submission without payment
-    container.innerHTML = `
-      <div style="background:rgba(181,146,74,.08);border:1px solid rgba(181,146,74,.22);border-radius:var(--r8);padding:1rem 1.1rem;margin-bottom:1rem">
-        <div style="font-size:.77rem;color:var(--charcoal);font-weight:500;margin-bottom:.3rem">Connect Stripe to accept payments</div>
-        <div style="font-size:.72rem;color:var(--stone);line-height:1.65">
-          Replace <code style="background:rgba(0,0,0,.06);padding:.1em .35em;border-radius:3px;font-size:.68rem">STRIPE_PK</code> with your Stripe publishable key from
-          <strong>dashboard.stripe.com → Developers → API keys</strong>.
-          You'll also need a server endpoint to create Payment Intents.
-        </div>
-      </div>`;
-    const payBtn = document.getElementById('payBtn');
-    if (payBtn) {
-      payBtn.textContent = 'Submit booking request →';
-      payBtn.style.background = 'var(--forest)';
-      payBtn.onclick = () => { goStep(4); cart = []; saveCart(); refreshBadge(); };
-    }
-    return;
-  }
-  if (stripeObj) return;
-  stripeObj = Stripe(STRIPE_PK);
-  const elements = stripeObj.elements();
-  stripeCard = elements.create('card', {
-    style: {
-      base: { fontFamily:"'Jost',sans-serif", fontSize:'15px', color:'#1C1B14', '::placeholder':{color:'#B0A898'} },
-      invalid: { color:'#A83232' }
-    }
-  });
-  stripeCard.mount('#stripe-card-element');
-  stripeCard.on('change', e => {
-    document.getElementById('stripe-card-error').textContent = e.error ? e.error.message : '';
-  });
-  document.getElementById('payBtn').onclick = doStripePayment;
-}
-
-// ===== STRIPE PAYMENT =====
-async function doStripePayment() {
-  const btn = document.getElementById('payBtn');
-  const errEl = document.getElementById('stripe-card-error');
-  btn.disabled = true;
-  btn.textContent = 'Processing…';
-  try {
-    // Your server creates a PaymentIntent and returns { clientSecret }
-    const r = await fetch('/api/create-payment-intent', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        amount: cartDepCents(),
-        currency: 'usd',
-        name: document.getElementById('coName').value,
-        email: document.getElementById('coEmail').value,
-        items: cart.map(i => ({name: i.name, qty: i.qty}))
-      })
-    });
-    const { clientSecret } = await r.json();
-    const result = await stripeObj.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: stripeCard,
-        billing_details: { name: document.getElementById('coName').value, email: document.getElementById('coEmail').value }
-      }
-    });
-    if (result.error) {
-      errEl.textContent = result.error.message;
-      btn.disabled = false;
-      btn.textContent = `Pay deposit ${fmtDollars(cartDepCents())}`;
-    } else {
-      goStep(4);
-      cart = [];
-      saveCart();
-      refreshBadge();
-    }
-  } catch {
-    errEl.textContent = 'Payment failed. Please try again or contact us.';
-    btn.disabled = false;
-    btn.textContent = `Pay deposit ${fmtDollars(cartDepCents())}`;
-  }
 }
 
 const CAT_LABELS = {
@@ -1085,6 +890,26 @@ async function loadProducts() {
   } catch (err) {
     document.getElementById('shopGrid').innerHTML =
       `<div class="shop-state">Couldn't load right now. <a href="#" onclick="openModal(null);return false" style="color:var(--sage)">Contact us</a> for pricing.</div>`;
+  }
+}
+
+// ===== LOAD ITEMS (for cart handoff to Booqable) =====
+// Booqable's cart_bookings endpoint requires item_id, not product_group_id.
+// The catalog gives us product_group_id; this fetch builds a lookup map so
+// the checkout handler can translate one to the other at submit time.
+async function loadItems() {
+  try {
+    const res = await fetch(ITEMS_URL, {
+      headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}`, 'Accept': 'application/vnd.api+json' },
+    });
+    if (!res.ok) return;  // Cart still loads; checkout will fail loud with a clear message.
+    const { data } = await res.json();
+    (data || []).forEach(it => {
+      const pgId = it?.attributes?.product_group_id;
+      if (pgId) pgToItemId.set(pgId, it.id);
+    });
+  } catch (e) {
+    console.warn('loadItems failed; checkout may be unable to translate IDs', e);
   }
 }
 
@@ -1472,72 +1297,136 @@ document.getElementById('daysUp').addEventListener('click', () => {
   rentalDays++; document.getElementById('rentalDaysDisplay').textContent = rentalDays; renderCartItems(); updateFooter();
 });
 
-// Checkout button (step 1 → 2)
-document.getElementById('cartCheckoutBtn').addEventListener('click', () => {
-  if (!cart.length) return;
-  const sd = document.getElementById('shopDate').value;
-  if (sd) document.getElementById('coDate').value = sd;
-  const today2 = new Date().toISOString().split('T')[0];
-  document.getElementById('coDate').min = today2;
-  goStep(2);
-});
-
-// Back buttons
-document.getElementById('backToCart').addEventListener('click', () => goStep(1));
-document.getElementById('backToDetails').addEventListener('click', () => goStep(2));
-
-// Event type pills
-document.getElementById('coPills').addEventListener('click', e => {
-  const btn = e.target.closest('.co-pill');
-  if (!btn) return;
-  document.querySelectorAll('#coPills .co-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-});
-
-// Delivery yn
-document.getElementById('coDelivery').addEventListener('click', e => {
-  const btn = e.target.closest('.co-yn-btn');
-  if (!btn) return;
-  document.querySelectorAll('#coDelivery .co-yn-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  checkoutDelivery = btn.dataset.val === 'yes';
-  document.getElementById('cofg-delivery').classList.remove('err');
+// Delivery yes/no toggle in cart footer
+document.getElementById('cartDeliveryToggle').addEventListener('click', e => {
+  const yn = e.target.closest('.cart-yn-btn');
+  if (!yn) return;
+  document.querySelectorAll('#cartDeliveryToggle .cart-yn-btn').forEach(b => b.classList.remove('active'));
+  yn.classList.add('active');
+  checkoutDelivery = yn.dataset.val === 'yes';
   updateFooter();
 });
 
-// Step 2 → 3 with validation
-document.getElementById('toPayment').addEventListener('click', () => {
-  let ok = true;
-  [['coName','cofg-name'],['coEmail','cofg-email'],['coPhone','cofg-phone'],['coDate','cofg-date']].forEach(([id, fg]) => {
-    const el = document.getElementById(id);
-    const wrap = document.getElementById(fg);
-    if (el && !el.value.trim()) {
-      wrap && wrap.classList.add('err');
-      ok = false;
-      setTimeout(() => wrap && wrap.classList.remove('err'), 2500);
-    }
-  });
+// ===== CHECKOUT: hand cart off to Booqable's hosted checkout =====
+// The customer pays the 25% deposit on Booqable's page (which uses our
+// connected Stripe account under the hood). We do not handle card data
+// or PCI scope on this site.
+document.getElementById('cartCheckoutBtn').addEventListener('click', async () => {
+  if (!cart.length) return;
+
+  // Delivery choice must be made before redirect, since Booqable's hosted
+  // checkout treats delivery as just another line item.
   if (checkoutDelivery === null) {
-    const fg = document.getElementById('cofg-delivery');
-    fg.style.outline = '2px solid var(--err)';
-    ok = false;
-    setTimeout(() => fg.style.outline = '', 2500);
+    const ctrl = document.getElementById('cartDeliveryToggle');
+    if (ctrl) {
+      ctrl.style.outline = '2px solid var(--err)';
+      setTimeout(() => ctrl.style.outline = '', 2500);
+    }
+    return;
   }
-  if (!ok) return;
-  goStep(3);
+
+  const btn = document.getElementById('cartCheckoutBtn');
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Redirecting to checkout…';
+
+  // Build the rental date range. Use the shop's date bar if set, otherwise
+  // a default starting tomorrow. Booqable's hosted page lets customers
+  // adjust dates if needed.
+  const today = new Date();
+  const shopDateVal = document.getElementById('shopDate').value;
+  const startDate = shopDateVal ? new Date(shopDateVal) : new Date(today.getTime() + 86400000);
+  const stopDate  = new Date(startDate.getTime() + rentalDays * 86400000);
+
+  // Translate cart product_group_ids to item_ids. The map is populated by
+  // loadItems() at page load; if it's empty (network blip) we abort.
+  const lines = [];
+  for (const ci of cart) {
+    const itemId = pgToItemId.get(ci.id);
+    if (!itemId) {
+      showCartError(`We could not look up "${ci.name}" in the rental inventory. Please refresh and try again.`);
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+      return;
+    }
+    lines.push({ itemId, quantity: ci.qty });
+  }
+  if (checkoutDelivery === true) {
+    lines.push({ itemId: DELIVERY_ITEM_ID, quantity: 1 });
+  }
+
+  try {
+    // Step 1: PUT /api/1/cart to set the rental date range. This call also
+    // returns a brand-new cart_id we'll attach subsequent line items to.
+    const dateRes = await fetch(
+      `${CART_HOST}/api/1/cart?api_key=${BOOQABLE_KEY}`,
+      {
+        method:  'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify({ cart: { starts_at: startDate.toISOString(), stops_at: stopDate.toISOString() } }),
+      }
+    );
+    if (!dateRes.ok) throw new Error(`Booqable cart init failed (HTTP ${dateRes.status})`);
+    const dateData = await dateRes.json();
+    const cartId   = dateData?.cart?.id;
+    if (!cartId)   throw new Error('Booqable did not return a cart id');
+    let checkoutUrl = dateData?.cart?.checkout_url;
+
+    // Step 2: POST one cart_booking per line item, binding to the same cart
+    // via the ?id= query param (CORS strips the session cookie so we rely
+    // on the id binding instead).
+    for (const line of lines) {
+      const bookingRes = await fetch(
+        `${CART_HOST}/api/boomerang/cart_bookings?id=${encodeURIComponent(cartId)}`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${BOOQABLE_KEY}`,
+            'Content-Type':  'application/vnd.api+json',
+            'Accept':        'application/vnd.api+json',
+          },
+          body: JSON.stringify({
+            data: { type: 'cart_bookings', attributes: { item_id: line.itemId, quantity: line.quantity } },
+          }),
+        }
+      );
+      if (!bookingRes.ok) {
+        const errBody = await bookingRes.text().catch(() => '');
+        throw new Error(`Booqable line-item add failed (HTTP ${bookingRes.status}). ${errBody.slice(0, 160)}`);
+      }
+      const bookingData = await bookingRes.json();
+      if (bookingData?.cart?.checkout_url) checkoutUrl = bookingData.cart.checkout_url;
+    }
+
+    if (!checkoutUrl) throw new Error('Booqable did not return a checkout URL');
+
+    // Clear local cart so a back-button visit starts fresh.
+    cart = [];
+    saveCart();
+
+    window.location.href = checkoutUrl;
+  } catch (err) {
+    console.error('Booqable checkout handoff failed:', err);
+    showCartError(`We could not start checkout (${err.message}). Please try again, or email byfernstudio@gmail.com.`);
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
 });
 
-// Confirmation done
-document.getElementById('cartDoneBtn').addEventListener('click', () => {
-  closeCart();
-  goStep(1);
-  // Reset checkout state
-  checkoutDelivery = null;
-  rentalDays = 1;
-  document.getElementById('rentalDaysDisplay').textContent = '1';
-  stripeObj = null;
-  stripeCard = null;
-});
+function showCartError(message) {
+  const btn = document.getElementById('cartCheckoutBtn');
+  let errBox = document.getElementById('cartError');
+  if (!errBox) {
+    errBox = document.createElement('div');
+    errBox.id = 'cartError';
+    errBox.style.cssText = 'background:#fdecec;border:1px solid #e6b3b3;color:#8a2a2a;padding:.75rem 1rem;border-radius:6px;font-size:.82rem;margin:.6rem 0;line-height:1.5;text-align:left';
+    btn.parentNode.insertBefore(errBox, btn);
+  }
+  errBox.textContent = message;
+}
+
 
 // ===== NAV SCROLL =====
 window.addEventListener('scroll', () => {
@@ -1589,6 +1478,7 @@ const REVIEWS = [
 
 // ===== INIT =====
 loadProducts();
+loadItems();
 
 // ===== MOBILE NAV TOGGLE =====
 (function(){
