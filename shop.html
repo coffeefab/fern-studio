@@ -413,11 +413,13 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
   <div class="wrap">
     <div class="filter-inner" id="filterBar">
       <button class="filter-btn active" data-cat="flower-walls">Flower Walls</button>
-      <button class="filter-btn" data-cat="arches">Arches &amp; Floral</button>
+      <button class="filter-btn" data-cat="floral-arches">Floral Arches</button>
+      <button class="filter-btn" data-cat="floral-frames">Floral Frames</button>
+      <button class="filter-btn" data-cat="pipe-drape">Pipe &amp; Drape</button>
+      <button class="filter-btn" data-cat="wooden-backdrops">Wooden Backdrops</button>
       <button class="filter-btn" data-cat="signs">Neon Signs</button>
       <button class="filter-btn" data-cat="tables">Tables</button>
       <button class="filter-btn" data-cat="seating">Seating</button>
-      <button class="filter-btn" data-cat="more">Décor &amp; More</button>
     </div>
   </div>
 </div>
@@ -688,7 +690,7 @@ let rentalDays = 1;
 let checkoutDelivery = null;  // null | true | false
 
 // ===== CART HELPERS =====
-const CAT_ICON = {'flower-walls':'🌸','arches':'🌿','signs':'✨','tables':'🪵','seating':'🪑','linens':'🎀','more':'🎊'};
+const CAT_ICON = {'flower-walls':'🌸','floral-arches':'🌿','floral-frames':'🖼️','pipe-drape':'🎭','wooden-backdrops':'🪵','signs':'✨','tables':'🪑','seating':'🪑','linens':'🎀'};
 
 function fmtDollars(cents) {
   return `$${(cents/100).toFixed(2)}`;
@@ -809,15 +811,17 @@ function closeCart() {
 }
 
 const CAT_LABELS = {
-  'flower-walls': 'Flower Wall',
-  'arches':       'Floral',
-  'signs':        'Neon Sign',
-  'tables':       'Table',
-  'seating':      'Seating',
-  'linens':       'Linens',
-  'more':         'Décor',
+  'flower-walls':     'Flower Wall',
+  'floral-arches':    'Floral Arch',
+  'floral-frames':    'Floral Frame',
+  'pipe-drape':       'Pipe & Drape',
+  'wooden-backdrops': 'Wooden Backdrop',
+  'signs':            'Neon Sign',
+  'tables':           'Table',
+  'seating':          'Seating',
+  'linens':           'Linens',
 };
-const CAT_ORDER = ['flower-walls','arches','signs','tables','seating','linens','more'];
+const CAT_ORDER = ['flower-walls','floral-arches','floral-frames','pipe-drape','wooden-backdrops','signs','tables','seating','linens'];
 
 // ===== HELPERS =====
 function escHtml(s) {
@@ -830,13 +834,15 @@ function fmtPrice(cents) {
 }
 
 const CAT_SUBTITLES = {
-  'flower-walls': 'Full-day rental · setup included',
-  'arches':       'Ceremony &amp; reception styling',
-  'signs':        'LED neon · custom message',
-  'tables':       'Available in multiple configurations',
-  'seating':      'Priced per item',
-  'linens':       'Custom sizing available',
-  'more':         'Event décor rental',
+  'flower-walls':     'Full-day rental · setup included',
+  'floral-arches':    'Ceremony &amp; reception styling',
+  'floral-frames':    'Statement floral backdrop',
+  'pipe-drape':       'Draped backdrop · custom width',
+  'wooden-backdrops': 'Natural wood styling',
+  'signs':            'LED neon · custom message',
+  'tables':           'Available in multiple configurations',
+  'seating':          'Priced per item',
+  'linens':           'Custom sizing available',
 };
 
 function subtitleFor(p) {
@@ -850,16 +856,18 @@ function subtitleFor(p) {
 function categorizeProduct(name) {
   const n = name.toLowerCase();
   if (n.includes('flower wall') || ['classic','fairytale','garden','glam','scarlet','celeste'].some(w => n.includes(w))) return 'flower-walls';
-  if (n.includes('arch') || n.includes('side piece') || n.includes('floral spray') || n === 'the peach') return 'arches';
-  if (n.includes('neon') || ['cheers','oh baby','you + me'].some(w => n.includes(w))) return 'signs';
+  if (n.includes('pipe and drape') || n.includes('pipe & drape')) return 'pipe-drape';
+  if (n.includes('wooden') || n.includes('wood backdrop')) return 'wooden-backdrops';
+  if (n.includes('floral frame') || n.includes('flower frame')) return 'floral-frames';
+  if (n.includes('arch') || n.includes('side piece') || n.includes('floral spray') || n === 'the peach') return 'floral-arches';
+  if (n.includes('neon') || n.includes('led sign') || ['cheers','oh baby','you + me'].some(w => n.includes(w))) return 'signs';
   if (n.includes('table') && !n.includes('linen') && !n.includes('cover')) return 'tables';
   if (n.includes('chair') || n.includes('sofa') || n.includes('peacock')) return 'seating';
-  if (n.includes('linen') || n.includes('cover') || n.includes('drape')) return 'linens';
-  return 'more';
+  return 'linens';
 }
 
 // ===== STATE =====
-const VALID_CATS = new Set(['flower-walls','arches','signs','tables','seating','linens','more']);
+const VALID_CATS = new Set(['flower-walls','floral-arches','floral-frames','pipe-drape','wooden-backdrops','signs','tables','seating','linens']);
 const urlParams  = new URLSearchParams(window.location.search);
 const urlCat     = urlParams.get('cat');
 const urlDate    = urlParams.get('date');
@@ -929,7 +937,7 @@ function renderShop() {
     document.getElementById('shopGrid').innerHTML = '<div class="shop-state">No items in this category.</div>';
     return;
   }
-  const PDP_CATS = new Set(['flower-walls','arches']);
+  const PDP_CATS = new Set(['flower-walls','floral-arches','floral-frames','pipe-drape','wooden-backdrops']);
   document.getElementById('shopGrid').innerHTML = list.map(p => {
     const img = p.photo_url
       ? `<img src="${escHtml(p.photo_url)}" alt="${escHtml(p.name)}" loading="lazy">`
