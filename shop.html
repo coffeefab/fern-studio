@@ -672,6 +672,13 @@ const CART_HOST     = 'https://byfernstudio.booqableshop.com';
 const DELIVERY_ITEM_ID = '005b6bcf-924e-45f2-b7e7-9057049359ba';
 const SKIP_SLUGS    = new Set(['delivery']);
 
+// Products that aren't bookable yet. They render with an "Inquire" CTA instead
+// of View Details / Add to Cart, and skip the availability check. Remove a name
+// from this set once the item is bookable in Booqable.
+const INQUIRE_ONLY_NAMES = new Set([
+  "Floral Arch: 'The Harvest'",
+]);
+
 // Lookup: product_group_id (what the catalog uses) -> item_id (what Booqable's
 // cart_bookings endpoint requires). Populated by loadItems() at page load.
 const pgToItemId = new Map();
@@ -948,9 +955,11 @@ function renderShop() {
       ? `<div class="shop-card-from-lbl">from</div><div class="shop-card-price">${fmtPrice(p.base_price_in_cents)} <span>/ day</span></div>`
       : `<div class="shop-card-from-lbl" style="margin-top:auto"></div><div class="shop-card-price" style="font-size:.88rem;font-family:'Jost',sans-serif;color:var(--stone)">Contact for pricing</div>`;
 
+    const isInquire = INQUIRE_ONLY_NAMES.has(p.name);
     const hasDetail = PDP_CATS.has(p.category);
     const pdpHref   = `product.html?id=${encodeURIComponent(p.id)}`;
-    const imgWrap   = hasDetail
+    const linkable  = hasDetail && !isInquire;
+    const imgWrap   = linkable
       ? `<a href="${pdpHref}" class="shop-card-img" style="display:block;cursor:pointer">
            ${img}${catBadge}
            <span class="avail-badge" id="avail-${escHtml(p.id)}"></span>
@@ -959,15 +968,20 @@ function renderShop() {
            ${img}${catBadge}
            <span class="avail-badge" id="avail-${escHtml(p.id)}"></span>
          </div>`;
-    const nameWrap  = hasDetail
+    const nameWrap  = linkable
       ? `<a href="${pdpHref}" class="shop-card-name" style="display:block">${escHtml(p.name)}</a>`
       : `<div class="shop-card-name">${escHtml(p.name)}</div>`;
-    const action    = hasDetail
+    const action    = isInquire
+      ? `<a href="index.html#book" class="shop-card-cta" style="text-align:center;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">Inquire →</a>`
+      : hasDetail
       ? `<a href="${pdpHref}" class="shop-card-cta" style="text-align:center;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">View details →</a>`
       : `<div class="shop-qty-row">
            <input type="number" class="shop-qty-input" id="qty-${escHtml(p.id)}" value="1" min="1" max="99">
            <button class="shop-card-cta" id="cta-${escHtml(p.id)}" data-product="${escHtml(p.name)}" data-id="${escHtml(p.id)}">Add to cart</button>
          </div>`;
+    const availLink = isInquire
+      ? ''
+      : `<button class="shop-check-link" data-id="${escHtml(p.id)}">Check availability</button>`;
 
     return `<div class="shop-card" id="product-${escHtml(p.id)}" data-cat="${escHtml(p.category)}">
       ${imgWrap}
@@ -975,7 +989,7 @@ function renderShop() {
         ${nameWrap}
         <div class="shop-card-sub">${subtitleFor(p)}</div>
         ${price}
-        <button class="shop-check-link" data-id="${escHtml(p.id)}">Check availability</button>
+        ${availLink}
         ${action}
       </div>
     </div>`;
@@ -1056,6 +1070,7 @@ async function checkShopAvail() {
     let limitedCount = 0;
 
     renderedList.forEach(p => {
+      if (INQUIRE_ONLY_NAMES.has(p.name)) return;
       const inv         = invById.get(p.id);
       const available   = inv ? inv.available : 0;
       const stock       = inv ? inv.stock : (p.stock_count ?? 0);
