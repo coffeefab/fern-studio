@@ -108,6 +108,7 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .avail-badge.available{background:rgba(74,92,64,.85);color:var(--ivory)}
 .avail-badge.limited{background:rgba(181,146,74,.9);color:var(--ivory)}
 .avail-badge.booked{background:rgba(168,50,50,.82);color:var(--ivory)}
+.avail-badge.coming-soon{background:rgba(56,52,16,.82);color:var(--ivory);letter-spacing:.1em;text-transform:uppercase;font-weight:500}
 .shop-card-body{padding:1rem 1.1rem 1.1rem;flex:1;display:flex;flex-direction:column}
 .shop-card-name{font-family:'Cormorant Garamond',serif;font-size:1.18rem;color:var(--forest);line-height:1.2;margin-bottom:.22rem}
 .shop-card-sub{font-size:.72rem;color:var(--mist);line-height:1.4;letter-spacing:.02em;margin-bottom:.55rem}
@@ -677,6 +678,7 @@ const SKIP_SLUGS    = new Set(['delivery']);
 // from this set once the item is bookable in Booqable.
 const INQUIRE_ONLY_NAMES = new Set([
   "Floral Arch: 'The Harvest'",
+  "Floral Frame: The Peach",
 ]);
 
 // Lookup: product_group_id (what the catalog uses) -> item_id (what Booqable's
@@ -959,14 +961,17 @@ function renderShop() {
     const hasDetail = PDP_CATS.has(p.category);
     const pdpHref   = `product.html?id=${encodeURIComponent(p.id)}`;
     const linkable  = hasDetail && !isInquire;
+    const availSpan = isInquire
+      ? `<span class="avail-badge coming-soon" style="display:inline-block">Coming soon</span>`
+      : `<span class="avail-badge" id="avail-${escHtml(p.id)}"></span>`;
     const imgWrap   = linkable
       ? `<a href="${pdpHref}" class="shop-card-img" style="display:block;cursor:pointer">
            ${img}${catBadge}
-           <span class="avail-badge" id="avail-${escHtml(p.id)}"></span>
+           ${availSpan}
          </a>`
       : `<div class="shop-card-img">
            ${img}${catBadge}
-           <span class="avail-badge" id="avail-${escHtml(p.id)}"></span>
+           ${availSpan}
          </div>`;
     const nameWrap  = linkable
       ? `<a href="${pdpHref}" class="shop-card-name" style="display:block">${escHtml(p.name)}</a>`
