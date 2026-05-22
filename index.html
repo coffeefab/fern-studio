@@ -147,19 +147,25 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .bookings-dot{width:7px;height:7px;border-radius:50%;background:var(--sage);flex-shrink:0}
 
 /* ===== HERO FLORAL OVERLAY ===== */
-.hero-flowers{position:absolute;inset:-60px -45px;pointer-events:none;z-index:3}
+.hero-flowers{position:absolute;inset:-30px -25px;pointer-events:none;z-index:3}
 .hf{position:absolute;display:block;opacity:0;transform-origin:center;will-change:transform,opacity;filter:drop-shadow(0 10px 18px rgba(28,27,20,.22));animation:hfPop 1.1s cubic-bezier(.34,1.56,.64,1) var(--in,.6s) forwards,hfFloat var(--dur,7s) ease-in-out calc(var(--in,.6s) + 1.1s) infinite}
 .hf img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none;pointer-events:none}
-/* Top-left cluster */
-.hf-1{top:-40px;left:-36px;width:96px;--rot:-16deg;--in:.5s;--dur:7.4s;z-index:2}
-.hf-2{top:-14px;left:52px;width:52px;--rot:22deg;--in:.7s;--dur:6.2s;z-index:3}
-.hf-3{top:42px;left:-28px;width:62px;--rot:-26deg;--in:.85s;--dur:8.1s}
-.hf-4{top:82px;left:26px;width:38px;--rot:10deg;--in:1.05s;--dur:6.8s}
-/* Top-right cluster */
-.hf-5{top:-30px;right:-30px;width:88px;--rot:24deg;--in:.55s;--dur:7s;z-index:2}
-.hf-6{top:46px;right:-14px;width:58px;--rot:-14deg;--in:.95s;--dur:7.7s;z-index:3}
-.hf-7{top:108px;right:34px;width:42px;--rot:32deg;--in:1.15s;--dur:6.5s}
-.hf-8{top:-18px;right:64px;width:46px;--rot:-18deg;--in:.8s;--dur:8.3s}
+/* Top-left cluster (3) */
+.hf-1{top:-18px;left:-20px;width:82px;--rot:-16deg;--in:.5s;--dur:7.4s;z-index:2}
+.hf-2{top:-10px;left:54px;width:46px;--rot:22deg;--in:.72s;--dur:6.2s;z-index:3}
+.hf-3{top:54px;left:-14px;width:52px;--rot:-24deg;--in:.9s;--dur:8.1s}
+/* Top-right cluster (4) */
+.hf-4{top:-16px;right:-18px;width:88px;--rot:22deg;--in:.55s;--dur:7s;z-index:2}
+.hf-5{top:46px;right:-6px;width:54px;--rot:-14deg;--in:.85s;--dur:7.7s;z-index:3}
+.hf-6{top:-8px;right:60px;width:46px;--rot:-20deg;--in:.78s;--dur:8.3s}
+.hf-7{top:106px;right:22px;width:40px;--rot:30deg;--in:1.08s;--dur:6.5s}
+/* Mid-right (2) */
+.hf-8{top:36%;right:-10px;width:48px;--rot:18deg;--in:1.15s;--dur:7.2s;z-index:2}
+.hf-9{top:50%;right:22px;width:36px;--rot:-22deg;--in:1.32s;--dur:6.9s}
+/* Bottom-right cluster (3) */
+.hf-10{bottom:84px;right:-14px;width:64px;--rot:-18deg;--in:1s;--dur:7.5s;z-index:2}
+.hf-11{bottom:34px;right:30px;width:42px;--rot:24deg;--in:1.22s;--dur:6.8s;z-index:3}
+.hf-12{bottom:-6px;right:-2px;width:56px;--rot:16deg;--in:1.4s;--dur:7.6s;z-index:2}
 
 @keyframes hfPop{
   0%{opacity:0;transform:scale(.25) rotate(calc(var(--rot,0deg) - 30deg))}
@@ -182,17 +188,21 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
   .hero-photo{aspect-ratio:4/3;max-width:560px;margin:0 auto}
   .bookings-badge{right:.5rem}
   .hf{filter:drop-shadow(0 6px 12px rgba(28,27,20,.2))}
-  .hf-1{width:72px;top:-24px;left:-18px}
-  .hf-2{width:42px;left:36px;top:-8px}
-  .hf-3{width:50px;top:26px;left:-16px}
-  .hf-4{width:32px}
-  .hf-5{width:66px;right:-18px;top:-18px}
-  .hf-6{width:46px;right:-8px}
-  .hf-7{width:34px}
-  .hf-8{width:36px}
+  .hf-1{width:64px;top:-12px;left:-10px}
+  .hf-2{width:38px;left:42px;top:-6px}
+  .hf-3{width:42px;top:42px;left:-8px}
+  .hf-4{width:70px;right:-12px;top:-12px}
+  .hf-5{width:44px;right:-2px}
+  .hf-6{width:38px;right:46px}
+  .hf-7{width:32px;right:18px}
+  .hf-8{width:40px;right:-6px}
+  .hf-9{width:30px;right:18px}
+  .hf-10{width:52px;right:-10px}
+  .hf-11{width:36px;right:22px}
+  .hf-12{width:46px;right:0}
 }
 @media(max-width:480px){
-  .hf-4,.hf-7{display:none}
+  .hf-7,.hf-9,.hf-11{display:none}
 }
 @media(max-width:600px){
   .hero{padding:6rem 0 3rem}
@@ -589,11 +599,15 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
             <span class="hf hf-1"><img src="flowers/2.png" alt="" loading="lazy"></span>
             <span class="hf hf-2"><img src="flowers/3.png" alt="" loading="lazy"></span>
             <span class="hf hf-3"><img src="flowers/5.png" alt="" loading="lazy"></span>
-            <span class="hf hf-4"><img src="flowers/6.png" alt="" loading="lazy"></span>
-            <span class="hf hf-5"><img src="flowers/1.png" alt="" loading="lazy"></span>
-            <span class="hf hf-6"><img src="flowers/2.png" alt="" loading="lazy"></span>
-            <span class="hf hf-7"><img src="flowers/4.png" alt="" loading="lazy"></span>
-            <span class="hf hf-8"><img src="flowers/3.png" alt="" loading="lazy"></span>
+            <span class="hf hf-4"><img src="flowers/1.png" alt="" loading="lazy"></span>
+            <span class="hf hf-5"><img src="flowers/2.png" alt="" loading="lazy"></span>
+            <span class="hf hf-6"><img src="flowers/4.png" alt="" loading="lazy"></span>
+            <span class="hf hf-7"><img src="flowers/3.png" alt="" loading="lazy"></span>
+            <span class="hf hf-8"><img src="flowers/5.png" alt="" loading="lazy"></span>
+            <span class="hf hf-9"><img src="flowers/6.png" alt="" loading="lazy"></span>
+            <span class="hf hf-10"><img src="flowers/2.png" alt="" loading="lazy"></span>
+            <span class="hf hf-11"><img src="flowers/1.png" alt="" loading="lazy"></span>
+            <span class="hf hf-12"><img src="flowers/3.png" alt="" loading="lazy"></span>
           </div>
 
         </div>
