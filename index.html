@@ -154,18 +154,19 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .hf-1{top:6px;left:6px;width:78px;--rot:-16deg;--in:.5s;--dur:7.4s;z-index:2}
 .hf-2{top:18px;left:62px;width:44px;--rot:22deg;--in:.72s;--dur:6.2s;z-index:3}
 .hf-3{top:74px;left:12px;width:48px;--rot:-24deg;--in:.9s;--dur:8.1s}
-/* Top-right cluster (4) */
+/* Top-right cluster (7) */
 .hf-4{top:8px;right:8px;width:82px;--rot:22deg;--in:.55s;--dur:7s;z-index:2}
 .hf-5{top:64px;right:18px;width:50px;--rot:-14deg;--in:.85s;--dur:7.7s;z-index:3}
 .hf-6{top:24px;right:72px;width:44px;--rot:-20deg;--in:.78s;--dur:8.3s}
 .hf-7{top:126px;right:38px;width:38px;--rot:30deg;--in:1.08s;--dur:6.5s}
+.hf-13{top:46px;right:58px;width:42px;--rot:8deg;--in:.92s;--dur:7.3s;z-index:3}
+.hf-14{top:6px;right:96px;width:36px;--rot:-14deg;--in:1.02s;--dur:6.7s}
+.hf-15{top:108px;right:78px;width:34px;--rot:24deg;--in:1.18s;--dur:7.9s}
 /* Mid-right (2) */
 .hf-8{top:36%;right:8px;width:46px;--rot:18deg;--in:1.15s;--dur:7.2s;z-index:2}
 .hf-9{top:50%;right:42px;width:34px;--rot:-22deg;--in:1.32s;--dur:6.9s}
-/* Bottom-right cluster (3) */
-.hf-10{bottom:100px;right:10px;width:58px;--rot:-18deg;--in:1s;--dur:7.5s;z-index:2}
-.hf-11{bottom:50px;right:46px;width:40px;--rot:24deg;--in:1.22s;--dur:6.8s;z-index:3}
-.hf-12{bottom:10px;right:14px;width:52px;--rot:16deg;--in:1.4s;--dur:7.6s;z-index:2}
+/* Bottom-right (1) */
+.hf-10{bottom:80px;right:10px;width:56px;--rot:-18deg;--in:1s;--dur:7.5s;z-index:2}
 
 @keyframes hfPop{
   0%{opacity:0;transform:scale(.25) rotate(calc(var(--rot,0deg) - 30deg))}
@@ -197,12 +198,13 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
   .hf-7{width:30px;right:30px}
   .hf-8{width:38px;right:6px}
   .hf-9{width:28px;right:32px}
-  .hf-10{width:48px;right:8px}
-  .hf-11{width:34px;right:34px}
-  .hf-12{width:42px;right:10px}
+  .hf-10{width:46px;right:8px}
+  .hf-13{width:34px;right:48px}
+  .hf-14{width:30px;right:78px}
+  .hf-15{width:28px;right:62px}
 }
 @media(max-width:480px){
-  .hf-7,.hf-9,.hf-11{display:none}
+  .hf-7,.hf-9,.hf-14,.hf-15{display:none}
 }
 @media(max-width:600px){
   .hero{padding:6rem 0 3rem}
@@ -606,8 +608,9 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
             <span class="hf hf-8"><img src="flowers/5.png" alt="" loading="lazy"></span>
             <span class="hf hf-9"><img src="flowers/6.png" alt="" loading="lazy"></span>
             <span class="hf hf-10"><img src="flowers/2.png" alt="" loading="lazy"></span>
-            <span class="hf hf-11"><img src="flowers/1.png" alt="" loading="lazy"></span>
-            <span class="hf hf-12"><img src="flowers/3.png" alt="" loading="lazy"></span>
+            <span class="hf hf-13"><img src="flowers/3.png" alt="" loading="lazy"></span>
+            <span class="hf hf-14"><img src="flowers/6.png" alt="" loading="lazy"></span>
+            <span class="hf hf-15"><img src="flowers/4.png" alt="" loading="lazy"></span>
           </div>
 
         </div>
