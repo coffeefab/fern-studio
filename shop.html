@@ -140,7 +140,7 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .reviews-header .eyebrow::before{display:none}
 .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
 .review-card{background:var(--ivory);border-radius:var(--r8);padding:2rem;box-shadow:var(--shadow-sm)}
-.review-qdot{font-family:'Cormorant Garamond',serif;font-size:3.5rem;color:var(--gold-pale);line-height:1;margin-bottom:.3rem}
+.review-qdot{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;font-size:5rem;color:var(--pink-deep);line-height:.85;margin-bottom:.5rem;letter-spacing:-.04em}
 .review-text{font-size:.9rem;font-style:italic;color:var(--stone);line-height:1.82;margin-bottom:1.4rem}
 .review-stars{color:var(--gold);letter-spacing:.12em;font-size:.78rem;margin-bottom:1rem}
 .review-author{display:flex;align-items:center;gap:.7rem}
@@ -1500,7 +1500,7 @@ const REVIEWS = [
   const picks = [...REVIEWS].sort(() => Math.random() - .5).slice(0, 3);
   grid.innerHTML = picks.map((r, i) => `
     <div class="review-card reveal" style="transition-delay:${i * 0.1}s">
-      <div class="review-qdot">"</div>
+      <div class="review-qdot">“</div>
       <p class="review-text">${r.text.replace(/"/g, '&quot;')}</p>
       <div class="review-stars">★★★★★</div>
       <div class="review-author">
