@@ -6,7 +6,7 @@
 <title>Packages · Fern Event Rentals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,30..100;1,9..144,300..700,30..100&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -36,11 +36,11 @@
   --r4:4px;--r8:8px;
 }
 html{scroll-behavior:smooth;overflow-y:scroll;scrollbar-gutter:stable}
-body{font-family:'Jost',sans-serif;font-weight:300;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
+body{font-family:'Jost',sans-serif;font-weight:300;font-variation-settings:"opsz" 144,"SOFT" 100;color:var(--charcoal);background:var(--ivory);overflow-x:hidden;line-height:1.65}
 img{display:block;width:100%;object-fit:cover}
 a{text-decoration:none;color:inherit}
 button{font-family:'Jost',sans-serif;cursor:pointer}
-h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.05;letter-spacing:-.012em}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;line-height:1.05;letter-spacing:-.012em}
 h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 
 .wrap{max-width:1280px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4.5rem)}
@@ -56,7 +56,7 @@ h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 .nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .nav-toggle.open span:nth-child(2){opacity:0}
 .nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-.nav-logo{display:inline-flex;align-items:center;font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
+.nav-logo{display:inline-flex;align-items:center;font-family:'Fraunces',serif;font-size:1.45rem;font-weight:500;letter-spacing:.06em;color:var(--forest);transition:color var(--t)}
 .nav-logo img{height:60px;width:auto;display:block;filter:brightness(0)}
 .nav-links{display:flex;align-items:center;gap:2.5rem;list-style:none}
 .nav-links a{font-size:.73rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);transition:color var(--t)}
@@ -92,19 +92,19 @@ h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 .pkg-photo:hover img{transform:scale(1.04)}
 
 /* Floating number tag, top-right of photo */
-.pkg-num{position:absolute;top:1.2rem;right:1.2rem;background:rgba(247,244,239,.94);backdrop-filter:blur(8px);padding:.45rem .9rem;border-radius:2rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:var(--forest);letter-spacing:.04em;z-index:3;box-shadow:0 4px 14px rgba(28,27,20,.12)}
+.pkg-num{position:absolute;top:1.2rem;right:1.2rem;background:rgba(247,244,239,.94);backdrop-filter:blur(8px);padding:.45rem .9rem;border-radius:2rem;font-family:'Fraunces',serif;font-style:italic;font-size:.95rem;color:var(--forest);letter-spacing:.04em;z-index:3;box-shadow:0 4px 14px rgba(28,27,20,.12)}
 
 /* Content side */
 .pkg-content{position:relative}
-.pkg-number{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(3.5rem,7vw,5.5rem);font-weight:300;color:var(--gold);line-height:1;margin-bottom:.4rem;opacity:.45;letter-spacing:-.02em}
+.pkg-number{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(3.5rem,7vw,5.5rem);font-weight:300;color:var(--gold);line-height:1;margin-bottom:.4rem;opacity:.45;letter-spacing:-.02em}
 .pkg-tagline{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.95rem;font-weight:500}
-.pkg-name{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);color:var(--forest);margin-bottom:1rem;font-weight:400}
+.pkg-name{font-family:'Fraunces',serif;font-size:clamp(2rem,3.5vw,3rem);color:var(--forest);margin-bottom:1rem;font-weight:400}
 .pkg-name em{font-style:italic}
-.pkg-desc{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--stone);font-size:1.18rem;line-height:1.6;margin-bottom:1.6rem;max-width:42ch}
+.pkg-desc{font-family:'Fraunces',serif;font-style:italic;color:var(--stone);font-size:1.18rem;line-height:1.6;margin-bottom:1.6rem;max-width:42ch}
 
 .pkg-price-row{display:flex;align-items:baseline;gap:.7rem;margin-bottom:1.6rem;padding-bottom:1.4rem;border-bottom:1px solid rgba(28,27,20,.12)}
 .pkg-price-lbl{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);font-weight:500}
-.pkg-price{font-family:'Cormorant Garamond',serif;font-size:2.3rem;color:var(--forest);font-weight:500;line-height:1}
+.pkg-price{font-family:'Fraunces',serif;font-size:2.3rem;color:var(--forest);font-weight:500;line-height:1}
 .pkg-price-unit{font-size:.74rem;color:var(--mist);letter-spacing:.06em}
 
 .pkg-included-lbl{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);font-weight:500;margin-bottom:.85rem}
@@ -124,7 +124,7 @@ h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 .pm-overlay.open .pm{transform:translateY(0)}
 .pm-head{padding:1.6rem 1.8rem .4rem;position:relative}
 .pm-eyebrow{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:.4rem}
-.pm-head h3{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--forest);font-weight:500;margin-bottom:.3rem;line-height:1.15}
+.pm-head h3{font-family:'Fraunces',serif;font-size:1.7rem;color:var(--forest);font-weight:500;margin-bottom:.3rem;line-height:1.15}
 .pm-head p{font-size:.88rem;color:var(--stone);line-height:1.6}
 .pm-close{position:absolute;top:.9rem;right:1.1rem;background:none;border:none;font-size:1.6rem;line-height:1;color:var(--stone);cursor:pointer;width:32px;height:32px;padding:0}
 .pm-close:hover{color:var(--forest)}
@@ -141,14 +141,14 @@ h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 .pm-confirm{display:none;text-align:center;padding:2.4rem 1.5rem}
 .pm-confirm.show{display:block}
 .pm-confirm .check{width:54px;height:54px;background:rgba(74,92,64,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--sage);font-size:1.4rem;margin:0 auto 1.2rem}
-.pm-confirm h3{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--forest);margin-bottom:.6rem;line-height:1.15}
+.pm-confirm h3{font-family:'Fraunces',serif;font-size:1.9rem;color:var(--forest);margin-bottom:.6rem;line-height:1.15}
 .pm-confirm p{font-size:.98rem;color:var(--stone);line-height:1.7;max-width:34ch;margin:0 auto}
 
 /* ===== CUSTOM CTA ===== */
 .custom-cta{background:var(--forest);color:var(--ivory);padding:5rem 0;text-align:center;position:relative;overflow:hidden}
 .custom-cta .eyebrow{color:var(--gold-warm);justify-content:center}
 .custom-cta .eyebrow::before{background:var(--gold-warm)}
-.custom-cta h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);color:var(--ivory);margin-bottom:.8rem;font-weight:400}
+.custom-cta h2{font-family:'Fraunces',serif;font-size:clamp(2rem,4vw,3rem);color:var(--ivory);margin-bottom:.8rem;font-weight:400}
 .custom-cta h2 em{color:var(--gold-warm);font-style:italic}
 .custom-cta p{color:rgba(247,244,239,.7);font-size:.98rem;max-width:52ch;margin:0 auto 2rem;line-height:1.8}
 .btn-link{display:inline-flex;align-items:center;gap:.55rem;background:var(--gold);color:var(--white)!important;padding:.95rem 2rem;border-radius:var(--r4);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;transition:background var(--t),transform var(--t)}
@@ -157,7 +157,7 @@ h1{font-size:clamp(2.6rem,5.5vw,4.8rem)}
 /* ===== FOOTER ===== */
 footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
 .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.foot-brand{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
+.foot-brand{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--ivory);margin-bottom:.75rem}
 .foot-brand img{height:120px;width:auto;display:block;margin-bottom:.25rem}
 .foot-desc{font-size:.82rem;color:rgba(247,244,239,.52);line-height:1.8;max-width:26ch}
 .foot-head{font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-warm);margin-bottom:1.2rem;font-weight:500}
@@ -192,8 +192,8 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
   .nav-links{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:var(--ivory);flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:6rem clamp(2rem,8vw,3rem) 3rem;box-shadow:none;border-top:none;opacity:0;visibility:hidden;transform:translateY(-12px);transition:opacity .35s ease,visibility .35s ease,transform .4s ease;pointer-events:none;overflow-y:auto;z-index:90}
   .nav-links.open{opacity:1;visibility:visible;transform:translateY(0);pointer-events:auto}
   .nav-links li{width:100%}
-  .nav-links a:not(.nav-book){display:block;padding:1.15rem 0;border-bottom:1px solid rgba(28,27,20,.08);font-size:1.05rem;letter-spacing:.14em;color:var(--forest);font-family:'Cormorant Garamond',serif;font-weight:400;text-transform:none}
-  .nav-links .nav-cart-btn{padding:1.15rem 0!important;font-size:1.05rem!important;border-bottom:1px solid rgba(28,27,20,.08);color:var(--forest)!important;letter-spacing:.14em;font-family:'Cormorant Garamond',serif;text-transform:none}
+  .nav-links a:not(.nav-book){display:block;padding:1.15rem 0;border-bottom:1px solid rgba(28,27,20,.08);font-size:1.05rem;letter-spacing:.14em;color:var(--forest);font-family:'Fraunces',serif;font-weight:400;text-transform:none}
+  .nav-links .nav-cart-btn{padding:1.15rem 0!important;font-size:1.05rem!important;border-bottom:1px solid rgba(28,27,20,.08);color:var(--forest)!important;letter-spacing:.14em;font-family:'Fraunces',serif;text-transform:none}
   .nav-links .nav-cart-btn .cart-badge{position:static;margin-left:.5rem}
   .nav-links .nav-book{display:block;text-align:center;margin-top:1.5rem;padding:1rem 1rem!important;font-size:.85rem!important;letter-spacing:.16em}
 }
