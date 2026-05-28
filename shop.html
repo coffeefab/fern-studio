@@ -273,6 +273,8 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 .cart-ctrl:focus{border-color:var(--sage)}
 .cart-ctrl:disabled{background:rgba(28,27,20,.04);color:var(--mist);cursor:not-allowed}
 input.cart-ctrl{padding-right:.4rem}
+.cart-days-wrap{display:flex;align-items:center;gap:.55rem}
+.cart-days-suffix{font-size:.78rem;color:var(--stone);min-width:30px}
 .cart-days-ctrl{display:flex;align-items:center;border:1.5px solid rgba(28,27,20,.16);border-radius:var(--r4);overflow:hidden;height:32px}
 .cart-days-ctrl button{background:none;border:none;width:32px;height:30px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--stone);cursor:pointer;transition:background var(--t);font-family:'Jost',sans-serif}
 .cart-days-ctrl button:hover{background:var(--warm-stone)}
@@ -534,10 +536,13 @@ input.cart-ctrl{padding-right:.4rem}
       </div>
       <div class="cart-row">
         <span class="cart-row-lbl">Rental length</span>
-        <div class="cart-days-ctrl">
-          <button id="daysDown" aria-label="Fewer days">−</button>
-          <span id="rentalDaysDisplay">1</span>
-          <button id="daysUp" aria-label="More days">+</button>
+        <div class="cart-days-wrap">
+          <div class="cart-days-ctrl">
+            <button id="daysDown" aria-label="Fewer days">−</button>
+            <span id="rentalDaysDisplay">1</span>
+            <button id="daysUp" aria-label="More days">+</button>
+          </div>
+          <span class="cart-days-suffix" id="rentalDaysSuffix">day</span>
         </div>
       </div>
       <div class="cart-row">
@@ -1449,11 +1454,16 @@ document.getElementById('cartItemsList').addEventListener('click', e => {
 });
 
 // Rental days
+function updateRentalDaysDisplay() {
+  document.getElementById('rentalDaysDisplay').textContent = rentalDays;
+  const suffix = document.getElementById('rentalDaysSuffix');
+  if (suffix) suffix.textContent = rentalDays === 1 ? 'day' : 'days';
+}
 document.getElementById('daysDown').addEventListener('click', () => {
-  if (rentalDays > 1) { rentalDays--; document.getElementById('rentalDaysDisplay').textContent = rentalDays; renderCartItems(); updateFooter(); }
+  if (rentalDays > 1) { rentalDays--; updateRentalDaysDisplay(); renderCartItems(); updateFooter(); }
 });
 document.getElementById('daysUp').addEventListener('click', () => {
-  rentalDays++; document.getElementById('rentalDaysDisplay').textContent = rentalDays; renderCartItems(); updateFooter();
+  rentalDays++; updateRentalDaysDisplay(); renderCartItems(); updateFooter();
 });
 
 // Delivery yes/no toggle in cart footer
