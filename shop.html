@@ -270,6 +270,9 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 .cs-row.total{font-weight:600;color:var(--forest);font-size:.88rem;border-top:1px solid rgba(28,27,20,.1);padding-top:.45rem;margin-top:.2rem;margin-bottom:.3rem}
 .cs-row.deposit{color:var(--gold);font-weight:600;font-size:.84rem;margin-bottom:.85rem}
 .cs-row.delivery-row{align-items:center;margin-bottom:.45rem}
+.cs-row.time-row{align-items:center;margin-bottom:.35rem}
+.cart-time-input{padding:.32rem .55rem;border:1.5px solid rgba(28,27,20,.18);border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.78rem;color:var(--charcoal);background:var(--white);outline:none;transition:border-color var(--t)}
+.cart-time-input:focus{border-color:var(--sage)}
 .cart-fine-print{font-size:.78rem;color:var(--stone);line-height:1.55;margin:.15rem 0 .8rem;display:flex;flex-direction:column;gap:.18rem}
 .cart-fine-print strong{color:var(--forest);font-weight:500}
 .cart-terms-note{font-size:.72rem;color:var(--stone);text-align:center;margin-top:.65rem;line-height:1.5}
@@ -530,6 +533,12 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
         <button type="button" class="cart-yn-btn" data-val="no">Pickup</button>
       </div>
     </div>
+    <div class="cs-row time-row"><span id="cartDropoffLbl">Pickup time</span>
+      <input type="time" id="cartDropoff" class="cart-time-input" value="10:00">
+    </div>
+    <div class="cs-row time-row"><span>Return time</span>
+      <input type="time" id="cartReturn" class="cart-time-input" value="18:00">
+    </div>
     <div class="cart-fine-print">
       $40 delivery in Indy zipcodes. Pickup at our downtown Indy storage. Address shared in your rental agreement.
     </div>
@@ -691,6 +700,19 @@ const pgToItemId = new Map();
 
 // ===== CART STATE =====
 const CART_KEY = 'fern_cart_v1';
+const CART_TIMES_KEY = 'fern_cart_times_v1';
+function loadCartTimes() {
+  try {
+    const s = localStorage.getItem(CART_TIMES_KEY);
+    const v = s ? JSON.parse(s) : null;
+    return (v && v.dropoff && v.ret) ? v : { dropoff: '10:00', ret: '18:00' };
+  } catch (e) { return { dropoff: '10:00', ret: '18:00' }; }
+}
+function saveCartTimes() {
+  const dropoff = document.getElementById('cartDropoff')?.value || '10:00';
+  const ret     = document.getElementById('cartReturn')?.value  || '18:00';
+  try { localStorage.setItem(CART_TIMES_KEY, JSON.stringify({ dropoff, ret })); } catch (e) {}
+}
 function loadCart() {
   try { const s = localStorage.getItem(CART_KEY); const v = s ? JSON.parse(s) : []; return Array.isArray(v) ? v : []; }
   catch (e) { return []; }
@@ -1402,8 +1424,25 @@ document.getElementById('cartDeliveryToggle').addEventListener('click', e => {
   document.querySelectorAll('#cartDeliveryToggle .cart-yn-btn').forEach(b => b.classList.remove('active'));
   yn.classList.add('active');
   checkoutDelivery = yn.dataset.val === 'yes';
+  // Relabel the dropoff slot to match: we drop off when delivering, customer
+  // picks up otherwise.
+  const lbl = document.getElementById('cartDropoffLbl');
+  if (lbl) lbl.textContent = checkoutDelivery ? 'Delivery time' : 'Pickup time';
   updateFooter();
 });
+
+// Hydrate the cart's time inputs from localStorage and persist on change.
+(function initCartTimes() {
+  const { dropoff, ret } = loadCartTimes();
+  const dEl = document.getElementById('cartDropoff');
+  const rEl = document.getElementById('cartReturn');
+  if (dEl) dEl.value = dropoff;
+  if (rEl) rEl.value = ret;
+  ['cartDropoff','cartReturn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', saveCartTimes);
+  });
+})();
 
 // ===== CHECKOUT: hand cart off to Booqable's hosted checkout =====
 // The customer pays the 25% deposit on Booqable's page (which uses our
@@ -1433,8 +1472,21 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
   // adjust dates if needed.
   const today = new Date();
   const shopDateVal = document.getElementById('shopDate').value;
-  const startDate = shopDateVal ? new Date(shopDateVal) : new Date(today.getTime() + 86400000);
-  const stopDate  = new Date(startDate.getTime() + rentalDays * 86400000);
+  const baseStart = shopDateVal
+    ? new Date(`${shopDateVal}T00:00:00`)
+    : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const dropoffStr = document.getElementById('cartDropoff')?.value || '10:00';
+  const returnStr  = document.getElementById('cartReturn')?.value  || '18:00';
+  const [dh, dm] = dropoffStr.split(':').map(Number);
+  const [rh, rm] = returnStr.split(':').map(Number);
+  const startDate = new Date(baseStart);
+  startDate.setHours(dh, dm, 0, 0);
+  const stopDate  = new Date(baseStart);
+  stopDate.setDate(stopDate.getDate() + Math.max(0, rentalDays - 1));
+  stopDate.setHours(rh, rm, 0, 0);
+  // Safety: if return ends up before start (e.g. same-day with bad times),
+  // push the return to the next day so Booqable doesn't reject the window.
+  if (stopDate <= startDate) stopDate.setDate(stopDate.getDate() + 1);
 
   // Translate cart product_group_ids to item_ids. The map is populated by
   // loadItems() at page load; if it's empty (network blip) we abort.

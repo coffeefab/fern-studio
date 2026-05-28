@@ -75,9 +75,12 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.05;letter-sp
 .pdp-form-lbl{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
 .pdp-form-lbl svg{display:inline-block;color:var(--gold)}
 .pdp-form-row{display:grid;grid-template-columns:1fr 100px;gap:.7rem;margin-bottom:.9rem}
+.pdp-field{margin-bottom:.7rem}
 .pdp-field-lbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:.3rem;display:block}
 .pdp-field input{width:100%;padding:.65rem .8rem;border:1.5px solid rgba(28,27,20,.12);border-radius:var(--r4);background:var(--white);font-family:'Jost',sans-serif;font-size:.88rem;color:var(--charcoal);outline:none;transition:border-color var(--t)}
 .pdp-field input:focus{border-color:var(--sage)}
+.pdp-time-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.pdp-time-row .pdp-field{margin-bottom:.7rem}
 .pdp-avail-msg{font-size:.78rem;color:var(--stone);min-height:1.2rem;margin-bottom:.85rem}
 .pdp-avail-msg.available{color:var(--sage);font-weight:500}
 .pdp-avail-msg.booked{color:var(--err);font-weight:500}
@@ -376,6 +379,16 @@ function render() {
            <label class="pdp-field-lbl">Event date</label>
            <input type="date" id="pdpDate">
          </div>
+         <div class="pdp-time-row">
+           <div class="pdp-field">
+             <label class="pdp-field-lbl" for="pdpDropoff">Drop off / pickup</label>
+             <input type="time" id="pdpDropoff" value="10:00">
+           </div>
+           <div class="pdp-field">
+             <label class="pdp-field-lbl" for="pdpReturn">Return</label>
+             <input type="time" id="pdpReturn" value="18:00">
+           </div>
+         </div>
          <div class="pdp-avail-msg" id="pdpAvail">Pick a date to check availability.</div>
          <button class="pdp-cta" id="pdpAddBtn">Add to cart</button>
          <div class="pdp-fineprint">Items are reserved after deposit · 25% non refundable</div>
@@ -436,21 +449,30 @@ function setupAvailabilityCheck() {
   const dateEl = document.getElementById('pdpDate');
   const today = new Date().toISOString().split('T')[0];
   dateEl.min = today;
-  dateEl.addEventListener('change', checkPdpAvail);
+  // Re-check whenever the date or either time slot changes.
+  ['pdpDate', 'pdpDropoff', 'pdpReturn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', checkPdpAvail);
+  });
 }
 
 async function checkPdpAvail() {
-  const date = document.getElementById('pdpDate').value;
-  const msg  = document.getElementById('pdpAvail');
+  const date    = document.getElementById('pdpDate').value;
+  const dropoff = document.getElementById('pdpDropoff').value || '10:00';
+  const ret     = document.getElementById('pdpReturn').value  || '18:00';
+  const msg     = document.getElementById('pdpAvail');
   if (!date) { msg.textContent = 'Pick a date to check availability.'; msg.className = 'pdp-avail-msg'; return; }
 
   msg.textContent = 'Checking…';
   msg.className = 'pdp-avail-msg';
 
-  const tillDate = new Date(date); tillDate.setDate(tillDate.getDate() + 1);
-  const till = tillDate.toISOString().split('T')[0];
-  const fromISO = `${date}T00:00:00Z`;
-  const tillISO = `${till}T23:59:59Z`;
+  // Build the window in the browser's local time, then serialize to UTC for
+  // Booqable. If the return time is earlier than dropoff, assume next-day return.
+  const fromLocal = new Date(`${date}T${dropoff}:00`);
+  const tillLocal = new Date(`${date}T${ret}:00`);
+  if (tillLocal <= fromLocal) tillLocal.setDate(tillLocal.getDate() + 1);
+  const fromISO = fromLocal.toISOString();
+  const tillISO = tillLocal.toISOString();
 
   try {
     const res = await fetch(
