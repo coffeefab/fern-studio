@@ -260,27 +260,34 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 
 /* Cart footer */
 .cart-footer{padding:1.1rem 1.6rem;border-top:2px solid rgba(28,27,20,.07);background:var(--cream);flex-shrink:0}
-.cart-days-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem}
-.cart-days-lbl{font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--stone);font-weight:500;flex:1}
-.cart-days-ctrl{display:flex;align-items:center;border:1.5px solid rgba(28,27,20,.16);border-radius:var(--r4);overflow:hidden}
-.cart-days-ctrl button{background:none;border:none;width:27px;height:27px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--stone);cursor:pointer;transition:background var(--t);font-family:'Jost',sans-serif}
+/* Cart sections */
+.cart-section{margin-bottom:1rem}
+.cart-section-hd{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:.7rem;padding-bottom:.45rem;border-bottom:1px solid rgba(28,27,20,.08)}
+.cart-section-totals{margin-bottom:.9rem}
+.cart-section-totals .cs-row:first-child{margin-top:.1rem}
+
+/* Schedule rows: label left, control right, consistent across all fields */
+.cart-row{display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin-bottom:.5rem;min-height:32px}
+.cart-row-lbl{font-size:.82rem;color:var(--stone);flex:1;line-height:1.3}
+.cart-ctrl{padding:.36rem .65rem;border:1.5px solid rgba(28,27,20,.16);border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.82rem;color:var(--charcoal);background:var(--white);outline:none;transition:border-color var(--t);min-width:140px;height:32px}
+.cart-ctrl:focus{border-color:var(--sage)}
+.cart-ctrl:disabled{background:rgba(28,27,20,.04);color:var(--mist);cursor:not-allowed}
+input.cart-ctrl{padding-right:.4rem}
+.cart-days-ctrl{display:flex;align-items:center;border:1.5px solid rgba(28,27,20,.16);border-radius:var(--r4);overflow:hidden;height:32px}
+.cart-days-ctrl button{background:none;border:none;width:32px;height:30px;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--stone);cursor:pointer;transition:background var(--t);font-family:'Jost',sans-serif}
 .cart-days-ctrl button:hover{background:var(--warm-stone)}
-.cart-days-ctrl span{width:30px;text-align:center;font-size:.86rem;font-weight:500;color:var(--charcoal)}
-.cs-row{display:flex;justify-content:space-between;font-size:.79rem;color:var(--stone);margin-bottom:.3rem}
-.cs-row.total{font-weight:600;color:var(--forest);font-size:.88rem;border-top:1px solid rgba(28,27,20,.1);padding-top:.45rem;margin-top:.2rem;margin-bottom:.3rem}
-.cs-row.deposit{color:var(--gold);font-weight:600;font-size:.84rem;margin-bottom:.85rem}
-.cs-row.delivery-row{align-items:center;margin-bottom:.45rem}
-.cs-row.time-row{align-items:center;margin-bottom:.35rem}
-.cart-time-input{padding:.32rem .55rem;border:1.5px solid rgba(28,27,20,.18);border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.78rem;color:var(--charcoal);background:var(--white);outline:none;transition:border-color var(--t)}
-.cart-time-input:focus{border-color:var(--sage)}
-.cart-time-input:disabled{background:rgba(28,27,20,.04);color:var(--mist);cursor:not-allowed}
-.cart-fine-print{font-size:.78rem;color:var(--stone);line-height:1.55;margin:.15rem 0 .8rem;display:flex;flex-direction:column;gap:.18rem}
-.cart-fine-print strong{color:var(--forest);font-weight:500}
+.cart-days-ctrl span{width:40px;text-align:center;font-size:.84rem;font-weight:500;color:var(--charcoal)}
+.cart-hint{font-size:.7rem;color:var(--mist);line-height:1.55;margin-top:.35rem;padding-top:.5rem;border-top:1px dashed rgba(28,27,20,.08)}
+
+/* Totals rows */
+.cs-row{display:flex;justify-content:space-between;font-size:.82rem;color:var(--stone);margin-bottom:.3rem}
+.cs-row.total{font-weight:600;color:var(--forest);font-size:.92rem;border-top:1px solid rgba(28,27,20,.1);padding-top:.5rem;margin-top:.2rem;margin-bottom:.3rem}
+.cs-row.deposit{color:var(--gold);font-weight:600;font-size:.86rem;margin-bottom:.85rem}
 .cart-terms-note{font-size:.72rem;color:var(--stone);text-align:center;margin-top:.65rem;line-height:1.5}
 .cart-terms-note a{color:var(--gold);text-decoration:underline;text-underline-offset:2px}
 .cart-terms-note a:hover{color:var(--sage)}
-.cart-yn-ctrl{display:flex;gap:.35rem}
-.cart-yn-btn{padding:.28rem .7rem;border:1.5px solid rgba(28,27,20,.18);border-radius:2rem;background:none;font-family:'Jost',sans-serif;font-size:.7rem;color:var(--stone);cursor:pointer;transition:all var(--t)}
+.cart-yn-ctrl{display:flex;gap:.35rem;height:32px}
+.cart-yn-btn{padding:0 .9rem;height:32px;border:1.5px solid rgba(28,27,20,.18);border-radius:2rem;background:none;font-family:'Jost',sans-serif;font-size:.74rem;color:var(--stone);cursor:pointer;transition:all var(--t)}
 .cart-yn-btn:hover{border-color:var(--sage);color:var(--sage)}
 .cart-yn-btn.active{background:var(--sage);border-color:var(--sage);color:var(--ivory)}
 .cart-cta-btn{width:100%;padding:.8rem;background:var(--forest);color:var(--ivory);border:none;border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:background var(--t),transform var(--t)}
@@ -519,33 +526,42 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 
   <!-- Footer (step 1 only) -->
   <div class="cart-footer" id="cartFooter">
-    <div class="cart-days-row">
-      <span class="cart-days-lbl">Rental duration</span>
-      <div class="cart-days-ctrl">
-        <button id="daysDown">−</button>
-        <span id="rentalDaysDisplay">1</span>
-        <button id="daysUp">+</button>
+    <div class="cart-section">
+      <div class="cart-section-hd">Schedule</div>
+      <div class="cart-row">
+        <span class="cart-row-lbl">Event date</span>
+        <input type="date" id="cartDate" class="cart-ctrl">
       </div>
-      <span style="font-size:.72rem;color:var(--mist);margin-left:.4rem">day(s)</span>
-    </div>
-    <div class="cs-row time-row"><span id="cartDropoffLbl">Pickup time</span>
-      <select id="cartDropoff" class="cart-time-input" disabled><option>Pick a date</option></select>
-    </div>
-    <div class="cs-row time-row"><span>Return time</span>
-      <select id="cartReturn" class="cart-time-input" disabled><option>Pick a date</option></select>
-    </div>
-    <div class="cs-row delivery-row"><span>Delivery</span>
-      <div class="cart-yn-ctrl" id="cartDeliveryToggle">
-        <button type="button" class="cart-yn-btn" data-val="yes">Yes ($40)</button>
-        <button type="button" class="cart-yn-btn" data-val="no">Pickup</button>
+      <div class="cart-row">
+        <span class="cart-row-lbl">Rental length</span>
+        <div class="cart-days-ctrl">
+          <button id="daysDown" aria-label="Fewer days">−</button>
+          <span id="rentalDaysDisplay">1</span>
+          <button id="daysUp" aria-label="More days">+</button>
+        </div>
       </div>
+      <div class="cart-row">
+        <span class="cart-row-lbl" id="cartDropoffLbl">Pickup time</span>
+        <select id="cartDropoff" class="cart-ctrl" disabled><option>Pick a date</option></select>
+      </div>
+      <div class="cart-row">
+        <span class="cart-row-lbl">Return time</span>
+        <select id="cartReturn" class="cart-ctrl" disabled><option>Pick a date</option></select>
+      </div>
+      <div class="cart-row">
+        <span class="cart-row-lbl">Delivery</span>
+        <div class="cart-yn-ctrl" id="cartDeliveryToggle">
+          <button type="button" class="cart-yn-btn" data-val="yes">Yes ($40)</button>
+          <button type="button" class="cart-yn-btn" data-val="no">Pickup</button>
+        </div>
+      </div>
+      <div class="cart-hint">$40 delivery in Indy zipcodes. Pickup at our downtown Indy storage.</div>
     </div>
-    <div class="cart-fine-print">
-      $40 delivery in Indy zipcodes. Pickup at our downtown Indy storage. Address shared in your rental agreement.
+    <div class="cart-section cart-section-totals">
+      <div class="cs-row"><span>Subtotal</span><span id="cs-sub">—</span></div>
+      <div class="cs-row total"><span>Est. Total</span><span id="cs-tot">—</span></div>
+      <div class="cs-row deposit"><span>25% deposit today</span><span id="cs-dep">—</span></div>
     </div>
-    <div class="cs-row"><span>Subtotal</span><span id="cs-sub">—</span></div>
-    <div class="cs-row total"><span>Est. Total</span><span id="cs-tot">—</span></div>
-    <div class="cs-row deposit"><span>25% deposit today</span><span id="cs-dep">—</span></div>
     <button class="cart-cta-btn" id="cartCheckoutBtn" disabled>Checkout · pay deposit</button>
     <div class="cart-terms-note">By continuing, you agree to our <a href="terms.html" target="_blank" rel="noopener">terms</a>.</div>
   </div>
@@ -923,7 +939,7 @@ document.querySelectorAll('#filterBar .filter-btn').forEach(b => {
 
 // ===== SET MIN DATES =====
 const today = new Date().toISOString().split('T')[0];
-['shopDate','mDate'].forEach(id => {
+['shopDate','mDate','cartDate'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.min = today;
 });
@@ -933,6 +949,25 @@ if (urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate)) {
   const shopDateEl = document.getElementById('shopDate');
   if (shopDateEl) shopDateEl.value = urlDate;
 }
+
+// Keep the in-cart date picker in sync with the top date bar so users can
+// pick a date from either spot. Changes from either side fire the existing
+// shopDate change handler (which clears stale availability + repopulates
+// time selects).
+(function syncCartDate() {
+  const shopDateEl = document.getElementById('shopDate');
+  const cartDateEl = document.getElementById('cartDate');
+  if (!shopDateEl || !cartDateEl) return;
+  cartDateEl.value = shopDateEl.value;
+  cartDateEl.addEventListener('change', () => {
+    if (shopDateEl.value === cartDateEl.value) return;
+    shopDateEl.value = cartDateEl.value;
+    shopDateEl.dispatchEvent(new Event('change'));
+  });
+  shopDateEl.addEventListener('change', () => {
+    if (cartDateEl.value !== shopDateEl.value) cartDateEl.value = shopDateEl.value;
+  });
+})();
 
 // If the user picks a new date, the cached availability is stale — wipe the badges
 // and reset CTAs so nothing claims a status that no longer applies.
