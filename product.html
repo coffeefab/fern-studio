@@ -456,6 +456,11 @@ function setupAvailabilityCheck() {
   const dropEl = document.getElementById('pdpDropoff');
   const retEl  = document.getElementById('pdpReturn');
 
+  // Hydrate from the shared schedule so a date the user already picked in
+  // the cart (or on another product) shows up here without re-selecting.
+  const saved = BooqableTimes.loadSchedule();
+  if (!dateEl.value && saved.date)    dateEl.value = saved.date;
+
   // Load Booqable's hours + increments, then offer matching slots once the
   // user picks a date. Until then the selects stay disabled.
   BooqableTimes.load().then(() => {
@@ -469,18 +474,26 @@ function setupAvailabilityCheck() {
     const cfg = BooqableTimes.config();
     if (!cfg) return;
     const date = dateEl.value;
-    BooqableTimes.populateSelect(dropEl, date, dropEl.value || cfg.defaultStart);
+    const sched = BooqableTimes.loadSchedule();
+    BooqableTimes.populateSelect(dropEl, date, dropEl.value || sched.dropoff || cfg.defaultStart);
     // Returns are accepted as late as 11 PM, past the shop's standard hours.
-    BooqableTimes.populateSelect(retEl,  date, retEl.value  || cfg.defaultStop, { extendTill: '23:00' });
+    BooqableTimes.populateSelect(retEl,  date, retEl.value  || sched.ret     || cfg.defaultStop, { extendTill: '23:00' });
   }
 
   dateEl.addEventListener('change', () => {
+    BooqableTimes.saveSchedule({ date: dateEl.value });
     if (!BooqableTimes.config()) return; // load callback will run later
     repopulatePdpTimes();
     checkPdpAvail();
   });
-  dropEl.addEventListener('change', checkPdpAvail);
-  retEl.addEventListener('change',  checkPdpAvail);
+  dropEl.addEventListener('change', () => {
+    BooqableTimes.saveSchedule({ dropoff: dropEl.value });
+    checkPdpAvail();
+  });
+  retEl.addEventListener('change', () => {
+    BooqableTimes.saveSchedule({ ret: retEl.value });
+    checkPdpAvail();
+  });
 }
 
 async function checkPdpAvail() {

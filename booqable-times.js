@@ -230,6 +230,32 @@
     }
   }
 
+  // ============================================================
+  // Shared schedule persistence: the date / dropoff / return the customer
+  // last picked. The PDP and the shop cart both read and write here so a
+  // date chosen on the product page shows up in the cart and vice versa.
+  // ============================================================
+
+  const SCHEDULE_KEY = 'fern_cart_times_v1'; // legacy key, kept for continuity
+  const SCHEDULE_DEFAULTS = { date: '', dropoff: '10:00', ret: '18:00' };
+
+  function loadSchedule() {
+    try {
+      const s = localStorage.getItem(SCHEDULE_KEY);
+      const v = s ? JSON.parse(s) : null;
+      return {
+        date:    (v && typeof v.date    === 'string') ? v.date    : SCHEDULE_DEFAULTS.date,
+        dropoff: (v && typeof v.dropoff === 'string') ? v.dropoff : SCHEDULE_DEFAULTS.dropoff,
+        ret:     (v && typeof v.ret     === 'string') ? v.ret     : SCHEDULE_DEFAULTS.ret,
+      };
+    } catch (e) { return { ...SCHEDULE_DEFAULTS }; }
+  }
+
+  function saveSchedule(partial) {
+    const next = { ...loadSchedule(), ...(partial || {}) };
+    try { localStorage.setItem(SCHEDULE_KEY, JSON.stringify(next)); } catch (e) {}
+  }
+
   global.BooqableTimes = {
     load:                       loadBooqableTimeConfig,
     getValidSlots:              getValidTimeSlots,
@@ -239,5 +265,7 @@
     config:                     () => cache,
     loadItemMap:                loadItemMap,
     checkProductAvailability:   checkProductAvailability,
+    loadSchedule:               loadSchedule,
+    saveSchedule:               saveSchedule,
   };
 })(window);

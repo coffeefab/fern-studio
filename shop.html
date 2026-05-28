@@ -725,18 +725,14 @@ const pgToItemId = new Map();
 
 // ===== CART STATE =====
 const CART_KEY = 'fern_cart_v1';
-const CART_TIMES_KEY = 'fern_cart_times_v1';
-function loadCartTimes() {
-  try {
-    const s = localStorage.getItem(CART_TIMES_KEY);
-    const v = s ? JSON.parse(s) : null;
-    return (v && v.dropoff && v.ret) ? v : { dropoff: '10:00', ret: '18:00' };
-  } catch (e) { return { dropoff: '10:00', ret: '18:00' }; }
-}
+// Schedule persistence (date + times) is owned by booqable-times.js so the
+// product page and the cart see the same picks.
+function loadCartTimes() { return BooqableTimes.loadSchedule(); }
 function saveCartTimes() {
-  const dropoff = document.getElementById('cartDropoff')?.value || '10:00';
-  const ret     = document.getElementById('cartReturn')?.value  || '18:00';
-  try { localStorage.setItem(CART_TIMES_KEY, JSON.stringify({ dropoff, ret })); } catch (e) {}
+  BooqableTimes.saveSchedule({
+    dropoff: document.getElementById('cartDropoff')?.value || undefined,
+    ret:     document.getElementById('cartReturn')?.value  || undefined,
+  });
 }
 function loadCart() {
   try { const s = localStorage.getItem(CART_KEY); const v = s ? JSON.parse(s) : []; return Array.isArray(v) ? v : []; }
@@ -949,10 +945,18 @@ const today = new Date().toISOString().split('T')[0];
   if (el) el.min = today;
 });
 
-// Pre-fill date from URL (?date=YYYY-MM-DD)
-if (urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate)) {
+// Pre-fill date from URL (?date=YYYY-MM-DD), then fall back to whatever date
+// the customer last picked (e.g. on a product page) via the shared schedule.
+{
   const shopDateEl = document.getElementById('shopDate');
-  if (shopDateEl) shopDateEl.value = urlDate;
+  if (shopDateEl) {
+    if (urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate)) {
+      shopDateEl.value = urlDate;
+    } else {
+      const saved = BooqableTimes.loadSchedule();
+      if (saved.date) shopDateEl.value = saved.date;
+    }
+  }
 }
 
 // Keep the in-cart date picker in sync with the top date bar so users can
@@ -977,6 +981,7 @@ if (urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate)) {
 // If the user picks a new date, the cached availability is stale — wipe the badges
 // and reset CTAs so nothing claims a status that no longer applies.
 document.getElementById('shopDate').addEventListener('change', () => {
+  BooqableTimes.saveSchedule({ date: document.getElementById('shopDate').value });
   availCache.clear();
   document.querySelectorAll('.avail-badge').forEach(b => {
     if (b.classList.contains('coming-soon')) return;
