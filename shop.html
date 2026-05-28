@@ -273,6 +273,7 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 .cs-row.time-row{align-items:center;margin-bottom:.35rem}
 .cart-time-input{padding:.32rem .55rem;border:1.5px solid rgba(28,27,20,.18);border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.78rem;color:var(--charcoal);background:var(--white);outline:none;transition:border-color var(--t)}
 .cart-time-input:focus{border-color:var(--sage)}
+.cart-time-input:disabled{background:rgba(28,27,20,.04);color:var(--mist);cursor:not-allowed}
 .cart-fine-print{font-size:.78rem;color:var(--stone);line-height:1.55;margin:.15rem 0 .8rem;display:flex;flex-direction:column;gap:.18rem}
 .cart-fine-print strong{color:var(--forest);font-weight:500}
 .cart-terms-note{font-size:.72rem;color:var(--stone);text-align:center;margin-top:.65rem;line-height:1.5}
@@ -534,10 +535,10 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
       </div>
     </div>
     <div class="cs-row time-row"><span id="cartDropoffLbl">Pickup time</span>
-      <input type="time" id="cartDropoff" class="cart-time-input" value="10:00">
+      <select id="cartDropoff" class="cart-time-input" disabled><option>Pick a date</option></select>
     </div>
     <div class="cs-row time-row"><span>Return time</span>
-      <input type="time" id="cartReturn" class="cart-time-input" value="18:00">
+      <select id="cartReturn" class="cart-time-input" disabled><option>Pick a date</option></select>
     </div>
     <div class="cart-fine-print">
       $40 delivery in Indy zipcodes. Pickup at our downtown Indy storage. Address shared in your rental agreement.
@@ -677,8 +678,11 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 </div>
 
 <script>
-// ===== CONSTANTS =====
 const BOOQABLE_KEY  = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a';
+</script>
+<script src="booqable-times.js"></script>
+<script>
+// ===== CONSTANTS =====
 const PRODUCTS_URL  = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
 const ITEMS_URL     = `https://byfernstudio.booqable.com/api/boomerang/items?page%5Bsize%5D=200&fields%5Bitems%5D=name,product_group_id`;
 const CART_HOST     = 'https://byfernstudio.booqableshop.com';
@@ -1431,18 +1435,26 @@ document.getElementById('cartDeliveryToggle').addEventListener('click', e => {
   updateFooter();
 });
 
-// Hydrate the cart's time inputs from localStorage and persist on change.
-(function initCartTimes() {
-  const { dropoff, ret } = loadCartTimes();
-  const dEl = document.getElementById('cartDropoff');
-  const rEl = document.getElementById('cartReturn');
-  if (dEl) dEl.value = dropoff;
-  if (rEl) rEl.value = ret;
-  ['cartDropoff','cartReturn'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('change', saveCartTimes);
-  });
-})();
+// Hydrate the cart's time selects from Booqable's hours + time_increment, then
+// keep them in sync with the shop's date picker. Selected values persist via
+// localStorage so the choice survives page reloads.
+function repopulateCartTimes() {
+  const cfg = BooqableTimes.config();
+  if (!cfg) return;
+  const dEl   = document.getElementById('cartDropoff');
+  const rEl   = document.getElementById('cartReturn');
+  const date  = document.getElementById('shopDate').value;
+  const saved = loadCartTimes();
+  BooqableTimes.populateSelect(dEl, date, dEl.value || saved.dropoff || cfg.defaultStart);
+  BooqableTimes.populateSelect(rEl, date, rEl.value || saved.ret     || cfg.defaultStop);
+}
+
+BooqableTimes.load().then(() => repopulateCartTimes());
+document.getElementById('shopDate').addEventListener('change', repopulateCartTimes);
+['cartDropoff','cartReturn'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', saveCartTimes);
+});
 
 // ===== CHECKOUT: hand cart off to Booqable's hosted checkout =====
 // The customer pays the 25% deposit on Booqable's page (which uses our

@@ -77,8 +77,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.05;letter-sp
 .pdp-form-row{display:grid;grid-template-columns:1fr 100px;gap:.7rem;margin-bottom:.9rem}
 .pdp-field{margin-bottom:.7rem}
 .pdp-field-lbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-bottom:.3rem;display:block}
-.pdp-field input{width:100%;padding:.65rem .8rem;border:1.5px solid rgba(28,27,20,.12);border-radius:var(--r4);background:var(--white);font-family:'Jost',sans-serif;font-size:.88rem;color:var(--charcoal);outline:none;transition:border-color var(--t)}
-.pdp-field input:focus{border-color:var(--sage)}
+.pdp-field input,.pdp-field select{width:100%;padding:.65rem .8rem;border:1.5px solid rgba(28,27,20,.12);border-radius:var(--r4);background:var(--white);font-family:'Jost',sans-serif;font-size:.88rem;color:var(--charcoal);outline:none;transition:border-color var(--t)}
+.pdp-field input:focus,.pdp-field select:focus{border-color:var(--sage)}
+.pdp-field select:disabled{background:rgba(28,27,20,.04);color:var(--mist);cursor:not-allowed}
 .pdp-time-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .pdp-time-row .pdp-field{margin-bottom:.7rem}
 .pdp-avail-msg{font-size:.78rem;color:var(--stone);min-height:1.2rem;margin-bottom:.85rem}
@@ -247,6 +248,9 @@ footer{background:#1C1B14;padding:4.5rem 0 2.5rem}
 
 <script>
 const BOOQABLE_KEY = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94bfc945a';
+</script>
+<script src="booqable-times.js"></script>
+<script>
 const PRODUCTS_URL = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
 const CART_KEY = 'fern_cart_v1';
 const SKIP_SLUGS = new Set(['delivery']);
@@ -382,11 +386,11 @@ function render() {
          <div class="pdp-time-row">
            <div class="pdp-field">
              <label class="pdp-field-lbl" for="pdpDropoff">Drop off / pickup</label>
-             <input type="time" id="pdpDropoff" value="10:00">
+             <select id="pdpDropoff" disabled><option>Pick a date</option></select>
            </div>
            <div class="pdp-field">
              <label class="pdp-field-lbl" for="pdpReturn">Return</label>
-             <input type="time" id="pdpReturn" value="18:00">
+             <select id="pdpReturn" disabled><option>Pick a date</option></select>
            </div>
          </div>
          <div class="pdp-avail-msg" id="pdpAvail">Pick a date to check availability.</div>
@@ -449,19 +453,48 @@ function setupAvailabilityCheck() {
   const dateEl = document.getElementById('pdpDate');
   const today = new Date().toISOString().split('T')[0];
   dateEl.min = today;
-  // Re-check whenever the date or either time slot changes.
-  ['pdpDate', 'pdpDropoff', 'pdpReturn'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('change', checkPdpAvail);
+  const dropEl = document.getElementById('pdpDropoff');
+  const retEl  = document.getElementById('pdpReturn');
+
+  // Load Booqable's hours + increments, then offer matching slots once the
+  // user picks a date. Until then the selects stay disabled.
+  BooqableTimes.load().then(() => {
+    if (dateEl.value) {
+      repopulatePdpTimes();
+      checkPdpAvail();
+    }
   });
+
+  function repopulatePdpTimes() {
+    const cfg = BooqableTimes.config();
+    if (!cfg) return;
+    const date = dateEl.value;
+    BooqableTimes.populateSelect(dropEl, date, dropEl.value || cfg.defaultStart);
+    BooqableTimes.populateSelect(retEl,  date, retEl.value  || cfg.defaultStop);
+  }
+
+  dateEl.addEventListener('change', () => {
+    if (!BooqableTimes.config()) return; // load callback will run later
+    repopulatePdpTimes();
+    checkPdpAvail();
+  });
+  dropEl.addEventListener('change', checkPdpAvail);
+  retEl.addEventListener('change',  checkPdpAvail);
 }
 
 async function checkPdpAvail() {
+  const dropEl  = document.getElementById('pdpDropoff');
+  const retEl   = document.getElementById('pdpReturn');
   const date    = document.getElementById('pdpDate').value;
-  const dropoff = document.getElementById('pdpDropoff').value || '10:00';
-  const ret     = document.getElementById('pdpReturn').value  || '18:00';
+  const dropoff = dropEl.value;
+  const ret     = retEl.value;
   const msg     = document.getElementById('pdpAvail');
   if (!date) { msg.textContent = 'Pick a date to check availability.'; msg.className = 'pdp-avail-msg'; return; }
+  if (!dropoff || !ret) {
+    msg.textContent = 'We’re closed on this date. Try another.';
+    msg.className   = 'pdp-avail-msg booked';
+    return;
+  }
 
   msg.textContent = 'Checking…';
   msg.className = 'pdp-avail-msg';
