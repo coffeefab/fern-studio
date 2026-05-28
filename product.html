@@ -536,6 +536,18 @@ async function checkPdpAvail() {
 function setupAddToCart() {
   const btn = document.getElementById('pdpAddBtn');
   btn.addEventListener('click', () => {
+    // Belt-and-suspenders: explicitly capture the current schedule before
+    // navigating, since some browsers don't fire `change` on date/time
+    // inputs until blur and the customer often clicks Add to cart directly.
+    const dateEl = document.getElementById('pdpDate');
+    const dropEl = document.getElementById('pdpDropoff');
+    const retEl  = document.getElementById('pdpReturn');
+    BooqableTimes.saveSchedule({
+      date:    dateEl?.value || undefined,
+      dropoff: dropEl?.value || undefined,
+      ret:     retEl?.value  || undefined,
+    });
+
     const qty = 1;
     const p = currentProduct;
     let cart = loadCart();

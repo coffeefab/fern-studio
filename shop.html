@@ -859,6 +859,16 @@ function updateFooter() {
 
 // ===== OPEN / CLOSE =====
 function openCart() {
+  // Pick up any schedule changes that landed in localStorage after this page
+  // was first rendered (e.g. the customer chose a date on a PDP in another
+  // tab). syncCartDate keeps shopDate ↔ cartDate aligned, so updating either
+  // one would do — we update shopDate and let its change handler fan out.
+  const saved = BooqableTimes.loadSchedule();
+  const shopDateEl = document.getElementById('shopDate');
+  if (shopDateEl && saved.date && shopDateEl.value !== saved.date) {
+    shopDateEl.value = saved.date;
+    shopDateEl.dispatchEvent(new Event('change'));
+  }
   document.getElementById('cartOverlay').classList.add('open');
   document.getElementById('cartDrawer').classList.add('open');
   document.body.style.overflow = 'hidden';
