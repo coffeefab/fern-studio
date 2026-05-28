@@ -886,6 +886,8 @@ const urlDate    = urlParams.get('date');
 let allProducts  = [];
 let shopFilter   = VALID_CATS.has(urlCat) ? urlCat : 'flower-walls';
 let lastDate     = '';
+// productId → { available, stock, date } captured from the last availability check
+const availCache = new Map();
 
 // Sync the active filter button to the URL-selected category
 document.querySelectorAll('#filterBar .filter-btn').forEach(b => {
@@ -904,6 +906,26 @@ if (urlDate && /^\d{4}-\d{2}-\d{2}$/.test(urlDate)) {
   const shopDateEl = document.getElementById('shopDate');
   if (shopDateEl) shopDateEl.value = urlDate;
 }
+
+// If the user picks a new date, the cached availability is stale — wipe the badges
+// and reset CTAs so nothing claims a status that no longer applies.
+document.getElementById('shopDate').addEventListener('change', () => {
+  availCache.clear();
+  document.querySelectorAll('.avail-badge').forEach(b => {
+    if (b.classList.contains('coming-soon')) return;
+    b.style.display = 'none';
+    b.textContent = '';
+    b.className = 'avail-badge';
+  });
+  document.querySelectorAll('.shop-card-cta').forEach(c => {
+    if (c.tagName !== 'BUTTON') return; // ignore the anchor-styled "View details" / "Inquire"
+    c.disabled = false;
+    c.textContent = 'Add to cart';
+    delete c.dataset.reduceTo;
+  });
+  const noteEl = document.getElementById('shopAvailNote');
+  if (noteEl) { noteEl.textContent = ''; noteEl.className = ''; }
+});
 
 // ===== LOAD PRODUCTS =====
 async function loadProducts() {
@@ -987,9 +1009,11 @@ function renderShop() {
            <input type="number" class="shop-qty-input" id="qty-${escHtml(p.id)}" value="1" min="1" max="99">
            <button class="shop-card-cta" id="cta-${escHtml(p.id)}" data-product="${escHtml(p.name)}" data-id="${escHtml(p.id)}">Add to cart</button>
          </div>`;
-    const availLink = isInquire
-      ? ''
-      : `<button class="shop-check-link" data-id="${escHtml(p.id)}">Check availability</button>`;
+    // Only PDP-linked cards show the standalone "Check availability" link; qty-input cards
+    // get live availability from the qty field + global date picker instead.
+    const availLink = (hasDetail && !isInquire)
+      ? `<button class="shop-check-link" data-id="${escHtml(p.id)}">Check availability</button>`
+      : '';
 
     return `<div class="shop-card" id="product-${escHtml(p.id)}" data-cat="${escHtml(p.category)}">
       ${imgWrap}
@@ -1019,6 +1043,57 @@ function renderShop() {
 }
 
 // ===== AVAILABILITY CHECK =====
+// Writes the badge + CTA wording for a single card using a known `available` count
+// and the qty input's current value. Returns the flags the caller may want for tallies.
+function applyAvailToCard(productId, available) {
+  const qtyEl = document.getElementById(`qty-${productId}`);
+  const badge = document.getElementById(`avail-${productId}`);
+  const cta   = document.getElementById(`cta-${productId}`);
+  const wantQty     = qtyEl ? Math.max(1, parseInt(qtyEl.value) || 1) : 1;
+  const isAvailable = available > 0;
+  const enoughStock = available >= wantQty;
+
+  if (badge) {
+    badge.style.display = 'inline-block';
+    if (!isAvailable) {
+      badge.textContent = '✕ Booked';
+      badge.className   = 'avail-badge booked';
+    } else if (!enoughStock) {
+      badge.textContent = `Only ${available} avail.`;
+      badge.className   = 'avail-badge limited';
+    } else {
+      badge.textContent = wantQty > 1 ? `✓ ${wantQty} available` : '✓ Available';
+      badge.className   = 'avail-badge available';
+    }
+  }
+
+  if (cta) {
+    if (!isAvailable) {
+      cta.disabled = true;
+      cta.textContent = 'Booked out';
+      delete cta.dataset.reduceTo;
+    } else if (!enoughStock) {
+      // Keep clickable: tapping it sets qty = available and adds to cart.
+      cta.disabled = false;
+      cta.textContent = `Add ${available} to cart`;
+      cta.dataset.reduceTo = String(available);
+    } else {
+      cta.disabled = false;
+      cta.textContent = 'Add to cart';
+      delete cta.dataset.reduceTo;
+    }
+  }
+
+  return { isAvailable, enoughStock };
+}
+
+// Re-evaluate one card from cached availability (no network call) — used when qty changes.
+function refreshCardFromCache(productId) {
+  const c = availCache.get(productId);
+  if (!c) return;
+  applyAvailToCard(productId, c.available);
+}
+
 async function checkShopAvail() {
   const dateEl = document.getElementById('shopDate');
   const noteEl = document.getElementById('shopAvailNote');
@@ -1079,47 +1154,13 @@ async function checkShopAvail() {
 
     renderedList.forEach(p => {
       if (INQUIRE_ONLY_NAMES.has(p.name)) return;
-      const inv         = invById.get(p.id);
-      const available   = inv ? inv.available : 0;
-      const stock       = inv ? inv.stock : (p.stock_count ?? 0);
-      const qtyEl       = document.getElementById(`qty-${p.id}`);
-      const wantQty     = qtyEl ? Math.max(1, parseInt(qtyEl.value) || 1) : 1;
-      const isAvailable = available > 0;
-      const enoughStock = available >= wantQty;
-
+      const inv       = invById.get(p.id);
+      const available = inv ? inv.available : 0;
+      const stock     = inv ? inv.stock : (p.stock_count ?? 0);
+      availCache.set(p.id, { available, stock, date });
+      const { isAvailable, enoughStock } = applyAvailToCard(p.id, available);
       if (!isAvailable) bookedCount++;
       else if (!enoughStock) limitedCount++;
-
-      // Update availability badge
-      const badge = document.getElementById(`avail-${p.id}`);
-      if (badge) {
-        badge.style.display = 'inline-block';
-        if (!isAvailable) {
-          badge.textContent = '✕ Booked';
-          badge.className   = 'avail-badge booked';
-        } else if (!enoughStock) {
-          badge.textContent = `Only ${available} avail.`;
-          badge.className   = 'avail-badge limited';
-        } else {
-          badge.textContent = wantQty > 1 ? `✓ ${wantQty} available` : '✓ Available';
-          badge.className   = 'avail-badge available';
-        }
-      }
-
-      // Update CTA button
-      const cta = document.getElementById(`cta-${p.id}`);
-      if (cta) {
-        if (!isAvailable) {
-          cta.disabled    = true;
-          cta.textContent = 'Booked out';
-        } else if (!enoughStock) {
-          cta.disabled    = true;
-          cta.textContent = `Reduce to ${available}`;
-        } else {
-          cta.disabled    = false;
-          cta.textContent = 'Add to cart';
-        }
-      }
     });
 
     // Update availability note
@@ -1180,16 +1221,29 @@ document.getElementById('shopGrid').addEventListener('click', e => {
     return;
   }
 
-  // "Add to cart" button
+  // "Add to cart" button (also handles the "Reduce to N & add" state)
   const btn = e.target.closest('.shop-card-cta');
   if (!btn || btn.disabled) return;
   const qtyEl = document.getElementById(`qty-${btn.dataset.id}`);
-  const qty   = qtyEl ? Math.max(1, parseInt(qtyEl.value) || 1) : 1;
+  // If the CTA is in "Reduce to N" mode, snap the qty input to N before adding.
+  if (qtyEl && btn.dataset.reduceTo) {
+    qtyEl.value = btn.dataset.reduceTo;
+    refreshCardFromCache(btn.dataset.id);
+  }
+  const qty     = qtyEl ? Math.max(1, parseInt(qtyEl.value) || 1) : 1;
   const product = allProducts.find(p => p.id === btn.dataset.id);
   if (product) {
     addToCart(product, qty);
     openCart();
   }
+});
+
+// Live-update badge + CTA wording when the user types a new qty on a card.
+document.getElementById('shopGrid').addEventListener('input', e => {
+  const input = e.target.closest('.shop-qty-input');
+  if (!input) return;
+  const id = input.id.replace(/^qty-/, '');
+  refreshCardFromCache(id);
 });
 
 // ===== MODAL =====
