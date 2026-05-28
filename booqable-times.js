@@ -152,12 +152,92 @@
     return chosen;
   }
 
+  // ============================================================
+  // Availabilities: the recommended endpoint for bookability checks.
+  // Replaces the deprecated /api/4/inventory_levels for time-window
+  // questions. Respects per-product buffer times and other business rules.
+  // ============================================================
+
+  const ITEMS_URL = `https://byfernstudio.booqable.com/api/boomerang/items?page%5Bsize%5D=200&fields%5Bitems%5D=name,product_group_id`;
+  const itemIdByProductGroup = new Map();
+  let itemMapLoading = null;
+
+  function loadItemMap() {
+    if (itemIdByProductGroup.size > 0) return Promise.resolve(itemIdByProductGroup);
+    if (itemMapLoading) return itemMapLoading;
+    itemMapLoading = (async () => {
+      try {
+        const res = await fetch(ITEMS_URL, {
+          headers: {
+            'Authorization': `Bearer ${BOOQABLE_KEY}`,
+            'Accept':        'application/vnd.api+json',
+          },
+        });
+        if (!res.ok) return itemIdByProductGroup;
+        const { data } = await res.json();
+        (data || []).forEach(it => {
+          const pgId = it?.attributes?.product_group_id;
+          if (pgId) itemIdByProductGroup.set(pgId, it.id);
+        });
+      } catch (e) {}
+      return itemIdByProductGroup;
+    })();
+    return itemMapLoading;
+  }
+
+  // Check whether `productGroupId` is bookable from `dropoffHHMM` to `returnHHMM`
+  // on the local `dateStr` (YYYY-MM-DD). If the return is before the dropoff we
+  // roll it to the next day. Returns { status, records } where status is one of
+  // 'available' | 'partial' | 'unavailable' | 'unknown'. 'unknown' covers the
+  // cases where we don't have an item_id mapping or the API call failed.
+  async function checkProductAvailability(productGroupId, dateStr, dropoffHHMM, returnHHMM) {
+    if (!productGroupId || !dateStr || !dropoffHHMM || !returnHHMM) {
+      return { status: 'unknown', records: [] };
+    }
+    await loadItemMap();
+    const itemId = itemIdByProductGroup.get(productGroupId);
+    if (!itemId) return { status: 'unknown', records: [] };
+
+    const fromLocal = new Date(`${dateStr}T${dropoffHHMM}:00`);
+    const tillLocal = new Date(`${dateStr}T${returnHHMM}:00`);
+    if (tillLocal <= fromLocal) tillLocal.setDate(tillLocal.getDate() + 1);
+    const durHours = Math.max(1, Math.ceil((tillLocal - fromLocal) / 3600000));
+
+    const params = new URLSearchParams({
+      'filter[subject_type]':     'item',
+      'filter[subject_id]':       itemId,
+      'filter[year]':             String(fromLocal.getFullYear()),
+      'filter[month]':            String(fromLocal.getMonth() + 1),
+      'filter[day]':              String(fromLocal.getDate()),
+      'filter[starts_at]':        fromLocal.toISOString(),
+      'filter[duration_period]':  `PT${durHours}H`,
+    });
+
+    try {
+      const res = await fetch(
+        `https://byfernstudio.booqable.com/api/4/availabilities?${params.toString()}`,
+        { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}` } }
+      );
+      if (!res.ok) return { status: 'unknown', records: [] };
+      const { data } = await res.json();
+      const records = (data || []).map(r => r.attributes);
+      if (!records.length) return { status: 'unknown', records };
+      if (records.every(r => r.available === true))  return { status: 'available',   records };
+      if (records.every(r => r.available === false)) return { status: 'unavailable', records };
+      return { status: 'partial', records };
+    } catch (e) {
+      return { status: 'unknown', records: [] };
+    }
+  }
+
   global.BooqableTimes = {
-    load:             loadBooqableTimeConfig,
-    getValidSlots:    getValidTimeSlots,
-    populateSelect:   populateTimeSelect,
-    formatLabel:      formatTimeLabel,
-    nearest:          nearestSlot,
-    config:           () => cache,
+    load:                       loadBooqableTimeConfig,
+    getValidSlots:              getValidTimeSlots,
+    populateSelect:             populateTimeSelect,
+    formatLabel:                formatTimeLabel,
+    nearest:                    nearestSlot,
+    config:                     () => cache,
+    loadItemMap:                loadItemMap,
+    checkProductAvailability:   checkProductAvailability,
   };
 })(window);

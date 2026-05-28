@@ -500,36 +500,23 @@ async function checkPdpAvail() {
   msg.textContent = 'Checking…';
   msg.className = 'pdp-avail-msg';
 
-  // Build the window in the browser's local time, then serialize to UTC for
-  // Booqable. If the return time is earlier than dropoff, assume next-day return.
-  const fromLocal = new Date(`${date}T${dropoff}:00`);
-  const tillLocal = new Date(`${date}T${ret}:00`);
-  if (tillLocal <= fromLocal) tillLocal.setDate(tillLocal.getDate() + 1);
-  const fromISO = fromLocal.toISOString();
-  const tillISO = tillLocal.toISOString();
-
-  try {
-    const res = await fetch(
-      `https://byfernstudio.booqable.com/api/4/inventory_levels` +
-      `?filter%5Bitem_id%5D=${encodeURIComponent(currentProduct.id)}` +
-      `&filter%5Bfrom%5D=${encodeURIComponent(fromISO)}` +
-      `&filter%5Btill%5D=${encodeURIComponent(tillISO)}` +
-      `&per_page=10`,
-      { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}` } }
-    );
-    if (!res.ok) throw new Error();
-    const { data } = await res.json();
-    const available = data && data[0] ? data[0].attributes.location_available : 0;
-    if (available > 0) {
-      msg.textContent = `✓ Available on this date${available > 1 ? ` (${available} in stock)` : ''}`;
-      msg.className = 'pdp-avail-msg available';
-    } else {
-      msg.textContent = '✕ Booked on this date. Try another date or contact us.';
-      msg.className = 'pdp-avail-msg booked';
-    }
-  } catch {
+  // Use the availabilities endpoint instead of the deprecated inventory_levels:
+  // it respects per-product buffer times and other business rules Booqable's
+  // own checkout uses, so the answer here will match what the customer sees
+  // when they finalize the order.
+  const result = await BooqableTimes.checkProductAvailability(currentProduct.id, date, dropoff, ret);
+  if (result.status === 'available') {
+    msg.textContent = '✓ Available for the times you picked';
+    msg.className   = 'pdp-avail-msg available';
+  } else if (result.status === 'partial') {
+    msg.textContent = '✕ Partially booked during this window. Try different times.';
+    msg.className   = 'pdp-avail-msg booked';
+  } else if (result.status === 'unavailable') {
+    msg.textContent = '✕ Booked for this window. Try another date or contact us.';
+    msg.className   = 'pdp-avail-msg booked';
+  } else {
     msg.textContent = 'Unable to check right now.';
-    msg.className = 'pdp-avail-msg';
+    msg.className   = 'pdp-avail-msg';
   }
 }
 
