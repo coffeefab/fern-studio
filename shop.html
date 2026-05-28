@@ -805,6 +805,9 @@ function adjustQty(id, delta) {
 }
 
 // ===== RENDER ITEMS =====
+// Categories that are 1-of-a-kind installations — no qty stepper in the cart.
+const SINGLE_QTY_CATS = new Set(['flower-walls','floral-arches','floral-frames']);
+
 function renderCartItems() {
   const el = document.getElementById('cartItemsList');
   if (!el) return;
@@ -820,17 +823,20 @@ function renderCartItems() {
     const thumb = item.photo
       ? `<img src="${escHtml(item.photo)}" alt="">`
       : `<div class="cart-item-no-img">${CAT_ICON[item.category] || '✦'}</div>`;
+    const qtyControl = SINGLE_QTY_CATS.has(item.category)
+      ? ''
+      : `<div class="cqty">
+           <button data-dec="${escHtml(item.id)}">−</button>
+           <span>${item.qty}</span>
+           <button data-inc="${escHtml(item.id)}">+</button>
+         </div>`;
     return `<div class="cart-item">
       <div class="cart-item-thumb">${thumb}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${escHtml(item.name)}</div>
         <div class="cart-item-price">${fmtDollars(item.pricePerDay)} / day</div>
         <div class="cart-item-row">
-          <div class="cqty">
-            <button data-dec="${escHtml(item.id)}">−</button>
-            <span>${item.qty}</span>
-            <button data-inc="${escHtml(item.id)}">+</button>
-          </div>
+          ${qtyControl}
           <button class="ci-remove" data-rm="${escHtml(item.id)}" title="Remove">✕</button>
           <span class="ci-sub">${sub}</span>
         </div>
