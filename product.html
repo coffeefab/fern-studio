@@ -254,6 +254,9 @@ const BOOQABLE_KEY = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94b
 const PRODUCTS_URL = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
 const CART_KEY = 'fern_cart_v1';
 const SKIP_SLUGS = new Set(['delivery']);
+// Categories that have only one physical unit — repeat adds shouldn't stack.
+// Keep in sync with shop.html's SINGLE_QTY_CATS.
+const SINGLE_QTY_CATS = new Set(['flower-walls','floral-arches','floral-frames']);
 // Keep in sync with shop.html's INQUIRE_ONLY_NAMES — items shown as "Coming soon" with
 // an inquiry CTA instead of the date + add-to-cart flow.
 const INQUIRE_ONLY_NAMES = new Set([
@@ -550,21 +553,28 @@ function setupAddToCart() {
 
     const qty = 1;
     const p = currentProduct;
+    const isSingleQty = SINGLE_QTY_CATS.has(p.category);
     let cart = loadCart();
     const existing = cart.find(i => i.id === p.id);
-    if (existing) existing.qty = Math.max(1, existing.qty + qty);
-    else cart.push({
-      id: p.id,
-      name: p.name,
-      category: p.category,
-      pricePerDay: p.base_price_in_cents || 0,
-      photo: p.photo_url || null,
-      qty,
-    });
+    if (existing) {
+      // One-of-a-kind installations: silently cap at 1, since we only have
+      // one physical unit per date. Multi-qty items keep stacking.
+      if (!isSingleQty) existing.qty = Math.max(1, existing.qty + qty);
+      else existing.qty = 1;
+    } else {
+      cart.push({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        pricePerDay: p.base_price_in_cents || 0,
+        photo: p.photo_url || null,
+        qty,
+      });
+    }
     saveCart(cart);
     refreshBadge();
     btn.classList.add('added');
-    btn.textContent = '✓ Added · View cart →';
+    btn.textContent = isSingleQty && existing ? '✓ Already in cart · View cart →' : '✓ Added · View cart →';
     btn.onclick = () => { window.location.href = 'shop.html#cart'; };
   });
 }

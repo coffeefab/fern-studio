@@ -725,6 +725,10 @@ const pgToItemId = new Map();
 
 // ===== CART STATE =====
 const CART_KEY = 'fern_cart_v1';
+// Categories that are 1-of-a-kind installations — repeat adds shouldn't stack.
+// Defined here (rather than next to renderCartItems) so loadCart can clamp
+// items that may have crept above 1 in an older session.
+const SINGLE_QTY_CATS = new Set(['flower-walls','floral-arches','floral-frames']);
 // Schedule persistence (date + times) is owned by booqable-times.js so the
 // product page and the cart see the same picks.
 function loadCartTimes() { return BooqableTimes.loadSchedule(); }
@@ -735,8 +739,14 @@ function saveCartTimes() {
   });
 }
 function loadCart() {
-  try { const s = localStorage.getItem(CART_KEY); const v = s ? JSON.parse(s) : []; return Array.isArray(v) ? v : []; }
-  catch (e) { return []; }
+  try {
+    const s = localStorage.getItem(CART_KEY);
+    const v = s ? JSON.parse(s) : [];
+    if (!Array.isArray(v)) return [];
+    // Clamp single-qty installations down to 1 in case an older session
+    // managed to stack them.
+    return v.map(it => SINGLE_QTY_CATS.has(it && it.category) ? { ...it, qty: 1 } : it);
+  } catch (e) { return []; }
 }
 function saveCart() {
   try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {}
@@ -775,9 +785,10 @@ function refreshBadge() {
 
 // ===== ADD / REMOVE / UPDATE =====
 function addToCart(p, qty) {
+  const isSingleQty = SINGLE_QTY_CATS.has(p.category);
   const ex = cart.find(i => i.id === p.id);
-  if (ex) ex.qty = Math.max(1, ex.qty + qty);
-  else cart.push({ id: p.id, name: p.name, category: p.category, pricePerDay: p.base_price_in_cents, photo: p.photo_url || null, qty });
+  if (ex) ex.qty = isSingleQty ? 1 : Math.max(1, ex.qty + qty);
+  else cart.push({ id: p.id, name: p.name, category: p.category, pricePerDay: p.base_price_in_cents, photo: p.photo_url || null, qty: isSingleQty ? 1 : qty });
   saveCart();
   refreshBadge();
   renderCartItems();
@@ -805,9 +816,6 @@ function adjustQty(id, delta) {
 }
 
 // ===== RENDER ITEMS =====
-// Categories that are 1-of-a-kind installations — no qty stepper in the cart.
-const SINGLE_QTY_CATS = new Set(['flower-walls','floral-arches','floral-frames']);
-
 function renderCartItems() {
   const el = document.getElementById('cartItemsList');
   if (!el) return;
