@@ -470,7 +470,8 @@ function setupAvailabilityCheck() {
     if (!cfg) return;
     const date = dateEl.value;
     BooqableTimes.populateSelect(dropEl, date, dropEl.value || cfg.defaultStart);
-    BooqableTimes.populateSelect(retEl,  date, retEl.value  || cfg.defaultStop);
+    // Returns are accepted as late as 11 PM, past the shop's standard hours.
+    BooqableTimes.populateSelect(retEl,  date, retEl.value  || cfg.defaultStop, { extendTill: '23:00' });
   }
 
   dateEl.addEventListener('change', () => {

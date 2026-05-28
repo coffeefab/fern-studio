@@ -528,17 +528,17 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
       </div>
       <span style="font-size:.72rem;color:var(--mist);margin-left:.4rem">day(s)</span>
     </div>
-    <div class="cs-row delivery-row"><span>Delivery</span>
-      <div class="cart-yn-ctrl" id="cartDeliveryToggle">
-        <button type="button" class="cart-yn-btn" data-val="yes">Yes ($40)</button>
-        <button type="button" class="cart-yn-btn" data-val="no">Pickup</button>
-      </div>
-    </div>
     <div class="cs-row time-row"><span id="cartDropoffLbl">Pickup time</span>
       <select id="cartDropoff" class="cart-time-input" disabled><option>Pick a date</option></select>
     </div>
     <div class="cs-row time-row"><span>Return time</span>
       <select id="cartReturn" class="cart-time-input" disabled><option>Pick a date</option></select>
+    </div>
+    <div class="cs-row delivery-row"><span>Delivery</span>
+      <div class="cart-yn-ctrl" id="cartDeliveryToggle">
+        <button type="button" class="cart-yn-btn" data-val="yes">Yes ($40)</button>
+        <button type="button" class="cart-yn-btn" data-val="no">Pickup</button>
+      </div>
     </div>
     <div class="cart-fine-print">
       $40 delivery in Indy zipcodes. Pickup at our downtown Indy storage. Address shared in your rental agreement.
@@ -1446,7 +1446,8 @@ function repopulateCartTimes() {
   const date  = document.getElementById('shopDate').value;
   const saved = loadCartTimes();
   BooqableTimes.populateSelect(dEl, date, dEl.value || saved.dropoff || cfg.defaultStart);
-  BooqableTimes.populateSelect(rEl, date, rEl.value || saved.ret     || cfg.defaultStop);
+  // Returns are accepted as late as 11 PM, past the shop's standard hours.
+  BooqableTimes.populateSelect(rEl, date, rEl.value || saved.ret     || cfg.defaultStop, { extendTill: '23:00' });
 }
 
 BooqableTimes.load().then(() => repopulateCartTimes());

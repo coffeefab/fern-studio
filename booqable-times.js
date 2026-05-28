@@ -63,25 +63,41 @@
     return loading;
   }
 
+  function toMin(hhmm) {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  }
+
   // Build the list of valid HH:MM slots for a YYYY-MM-DD date based on the
   // shop's open hours and time_increment. Returns [] if the shop is closed
   // on that day or if business hours are disabled (caller can fall back).
-  function getValidTimeSlots(dateStr) {
+  //
+  // opts.extendTill = "HH:MM" — extend the latest open window's end time
+  // to this value if it's later. Used for return-time selects where the
+  // shop accepts after-hours drop-offs.
+  function getValidTimeSlots(dateStr, opts) {
+    opts = opts || {};
     if (!cache || !dateStr) return [];
     if (!cache.useBusinessHours) return [];
     const day = dayKeyFromDate(dateStr);
     const isWeekday = WEEKDAY_KEYS.includes(day);
     const windows = cache.rules
       .map(r => r[day] || (isWeekday ? r.weekday : null))
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(w => ({ from: w.from, till: w.till }));
+
+    if (opts.extendTill && windows.length) {
+      let latest = windows[0];
+      for (const w of windows) if (toMin(w.till) > toMin(latest.till)) latest = w;
+      if (toMin(opts.extendTill) > toMin(latest.till)) latest.till = opts.extendTill;
+    }
+
     const inc = cache.increment;
     const seen = new Set();
     const slots = [];
     for (const win of windows) {
-      const [fh, fm] = win.from.split(':').map(Number);
-      const [th, tm] = win.till.split(':').map(Number);
-      let mins = fh * 60 + fm;
-      const tillMins = th * 60 + tm;
+      let mins = toMin(win.from);
+      const tillMins = toMin(win.till);
       while (mins <= tillMins) {
         const h = Math.floor(mins / 60);
         const m = mins % 60;
@@ -118,9 +134,11 @@
   // Replace a <select>'s options with the valid slots for `dateStr`,
   // preserving the user's chosen value when possible. Returns the value
   // the select ended up with (so callers can persist it).
-  function populateTimeSelect(selectEl, dateStr, preferredValue) {
+  //
+  // opts is forwarded to getValidTimeSlots — see its docs for extendTill.
+  function populateTimeSelect(selectEl, dateStr, preferredValue, opts) {
     if (!selectEl) return '';
-    const slots = getValidTimeSlots(dateStr);
+    const slots = getValidTimeSlots(dateStr, opts);
     if (!slots.length) {
       selectEl.innerHTML = `<option value="">${dateStr ? 'Closed on this day' : 'Pick a date'}</option>`;
       selectEl.disabled = true;
