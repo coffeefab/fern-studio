@@ -1561,7 +1561,7 @@ async function preflightCartAvailability() {
   const dropoffVal = document.getElementById('cartDropoff')?.value || '';
   const returnVal  = document.getElementById('cartReturn')?.value  || '';
   if (!dropoffVal || !returnVal) {
-    return { ok: false, errors: ['Pickup and return times are required. If no slots appear for this date, the day is fully booked for delivery — please contact us at byfernstudio@gmail.com to coordinate.'] };
+    return { ok: false, errors: ['Pickup and return times are required. If no slots appear for this date, please pick a different date or contact us at byfernstudio@gmail.com to coordinate.'] };
   }
 
   // Build a full-day window covering every day of the rental, in local
