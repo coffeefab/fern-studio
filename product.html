@@ -474,14 +474,16 @@ function setupAvailabilityCheck() {
     }
   });
 
-  function repopulatePdpTimes() {
+  async function repopulatePdpTimes() {
     const cfg = BooqableTimes.config();
     if (!cfg) return;
     const date = dateEl.value;
     const sched = BooqableTimes.loadSchedule();
-    BooqableTimes.populateSelect(dropEl, date, dropEl.value || sched.dropoff || cfg.defaultStart);
+    // Hide slots the delivery driver is already booked for on this date.
+    const blocked = date ? await BooqableTimes.loadClaimedTimes(date) : new Set();
+    BooqableTimes.populateSelect(dropEl, date, dropEl.value || sched.dropoff || cfg.defaultStart, { blocked });
     // Returns are accepted as late as 11 PM, past the shop's standard hours.
-    BooqableTimes.populateSelect(retEl,  date, retEl.value  || sched.ret     || cfg.defaultStop, { extendTill: '23:00' });
+    BooqableTimes.populateSelect(retEl,  date, retEl.value  || sched.ret     || cfg.defaultStop, { extendTill: '23:00', blocked });
   }
 
   dateEl.addEventListener('change', () => {

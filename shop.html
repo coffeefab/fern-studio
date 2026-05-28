@@ -1512,17 +1512,20 @@ document.getElementById('cartDeliveryToggle').addEventListener('click', e => {
 
 // Hydrate the cart's time selects from Booqable's hours + time_increment, then
 // keep them in sync with the shop's date picker. Selected values persist via
-// localStorage so the choice survives page reloads.
-function repopulateCartTimes() {
+// localStorage so the choice survives page reloads. Also hides slots already
+// claimed by other orders' pickup/return on the same date — one driver,
+// one delivery at a time.
+async function repopulateCartTimes() {
   const cfg = BooqableTimes.config();
   if (!cfg) return;
   const dEl   = document.getElementById('cartDropoff');
   const rEl   = document.getElementById('cartReturn');
   const date  = document.getElementById('shopDate').value;
   const saved = loadCartTimes();
-  BooqableTimes.populateSelect(dEl, date, dEl.value || saved.dropoff || cfg.defaultStart);
+  const blocked = date ? await BooqableTimes.loadClaimedTimes(date) : new Set();
+  BooqableTimes.populateSelect(dEl, date, dEl.value || saved.dropoff || cfg.defaultStart, { blocked });
   // Returns are accepted as late as 11 PM, past the shop's standard hours.
-  BooqableTimes.populateSelect(rEl, date, rEl.value || saved.ret     || cfg.defaultStop, { extendTill: '23:00' });
+  BooqableTimes.populateSelect(rEl, date, rEl.value || saved.ret     || cfg.defaultStop, { extendTill: '23:00', blocked });
 }
 
 BooqableTimes.load().then(() => repopulateCartTimes());
@@ -1549,6 +1552,16 @@ async function preflightCartAvailability() {
   const shopDateVal = document.getElementById('shopDate').value;
   if (!shopDateVal) {
     return { ok: false, errors: ['Please pick a rental date before checkout.'] };
+  }
+
+  // The time selects go empty (with a "no slots available" placeholder) when
+  // the driver's other deliveries already claim every valid slot on this
+  // date. Don't let the silent '10:00' / '18:00' fallback further down book
+  // a window we explicitly hid.
+  const dropoffVal = document.getElementById('cartDropoff')?.value || '';
+  const returnVal  = document.getElementById('cartReturn')?.value  || '';
+  if (!dropoffVal || !returnVal) {
+    return { ok: false, errors: ['Pickup and return times are required. If no slots appear for this date, the day is fully booked for delivery — please contact us at byfernstudio@gmail.com to coordinate.'] };
   }
 
   // Build a full-day window covering every day of the rental, in local

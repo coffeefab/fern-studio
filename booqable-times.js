@@ -136,11 +136,22 @@
   // the select ended up with (so callers can persist it).
   //
   // opts is forwarded to getValidTimeSlots — see its docs for extendTill.
+  // opts.blocked (Set of "HH:MM") — slots to hide because the delivery
+  //   driver is already booked at that time.
   function populateTimeSelect(selectEl, dateStr, preferredValue, opts) {
     if (!selectEl) return '';
-    const slots = getValidTimeSlots(dateStr, opts);
+    opts = opts || {};
+    let slots = getValidTimeSlots(dateStr, opts);
+    const blocked = opts.blocked instanceof Set ? opts.blocked : null;
+    const allSlotsBlocked = blocked && slots.length > 0 && slots.every(s => blocked.has(s));
+    if (blocked && blocked.size) slots = slots.filter(s => !blocked.has(s));
     if (!slots.length) {
-      selectEl.innerHTML = `<option value="">${dateStr ? 'Closed on this day' : 'Pick a date'}</option>`;
+      const msg = !dateStr
+        ? 'Pick a date'
+        : allSlotsBlocked
+          ? 'All times claimed — call us'
+          : 'Closed on this day';
+      selectEl.innerHTML = `<option value="">${msg}</option>`;
       selectEl.disabled = true;
       return '';
     }
@@ -150,6 +161,43 @@
       .map(s => `<option value="${s}"${s === chosen ? ' selected' : ''}>${formatTimeLabel(s)}</option>`)
       .join('');
     return chosen;
+  }
+
+  // Fetch the local pickup / return times other Booqable orders already
+  // claim on `dateStr`, so the time selects can hide them. Calls the
+  // Netlify proxy at /api/claimed-times (which holds the admin key) and
+  // converts UTC ISO timestamps to local HH:MM, pinned to dateStr.
+  //
+  // Always resolves to a Set — empty on any failure so the dropdown still
+  // works if the proxy is down or the env var isn't set yet.
+  async function loadClaimedTimes(dateStr) {
+    if (!dateStr) return new Set();
+    try {
+      const res = await fetch(`/api/claimed-times?date=${encodeURIComponent(dateStr)}`);
+      if (!res.ok) return new Set();
+      const json = await res.json();
+      const blocked = new Set();
+      (json.items || []).forEach(item => {
+        ['starts_at', 'stops_at'].forEach(k => {
+          const iso = item && item[k];
+          if (!iso) return;
+          const d = new Date(iso);
+          if (isNaN(d.getTime())) return;
+          // Only block if this timestamp's LOCAL date matches the date the
+          // customer is picking from — an overnight rental on 6/14 → 6/15
+          // contributes a 6/14 pickup time and a 6/15 return time, not both
+          // to both days.
+          const localDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          if (localDate !== dateStr) return;
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          blocked.add(`${hh}:${mm}`);
+        });
+      });
+      return blocked;
+    } catch (e) {
+      return new Set();
+    }
   }
 
   // ============================================================
@@ -267,5 +315,6 @@
     checkProductAvailability:   checkProductAvailability,
     loadSchedule:               loadSchedule,
     saveSchedule:               saveSchedule,
+    loadClaimedTimes:           loadClaimedTimes,
   };
 })(window);
