@@ -1532,6 +1532,78 @@ document.getElementById('shopDate').addEventListener('change', repopulateCartTim
   if (el) el.addEventListener('change', saveCartTimes);
 });
 
+// ===== PREFLIGHT: per-day inventory check =====
+// Before redirecting to Booqable's hosted checkout, verify each cart item
+// against /api/4/inventory_levels for the FULL day(s) of the rental — not
+// just the customer's chosen pickup → return window. This is intentional:
+// chair / table / linens rentals require physical turnaround (pickup,
+// laundry, redelivery) that can't happen between two same-day windows,
+// so a "non-overlapping" second rental on the same day still consumes
+// the inventory we already promised to the first customer. Booqable's
+// /api/4/availabilities endpoint answers the narrower per-window question
+// and would let two same-day rentals through; the per-day inventory_levels
+// answer here is the hard cap we actually need to enforce.
+async function preflightCartAvailability() {
+  if (!cart.length) return { ok: true, errors: [] };
+
+  const shopDateVal = document.getElementById('shopDate').value;
+  if (!shopDateVal) {
+    return { ok: false, errors: ['Please pick a rental date before checkout.'] };
+  }
+
+  // Build a full-day window covering every day of the rental, in local
+  // time, then convert to UTC ISO for the API call. For a 1-day rental
+  // this is midnight → next midnight (a clean 24h block in local time);
+  // multi-day rentals extend the till.
+  const startDay = new Date(`${shopDateVal}T00:00:00`);
+  const endDay   = new Date(startDay);
+  endDay.setDate(endDay.getDate() + Math.max(1, rentalDays));
+  const fromISO  = startDay.toISOString();
+  const tillISO  = endDay.toISOString();
+
+  const itemIds = cart.map(ci => ci.id).join(',');
+  let data;
+  try {
+    const res = await fetch(
+      `https://byfernstudio.booqable.com/api/4/inventory_levels` +
+      `?filter%5Bitem_id%5D=${encodeURIComponent(itemIds)}` +
+      `&filter%5Bfrom%5D=${encodeURIComponent(fromISO)}` +
+      `&filter%5Btill%5D=${encodeURIComponent(tillISO)}` +
+      `&per_page=200`,
+      { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}` } }
+    );
+    if (!res.ok) {
+      return { ok: false, errors: ['We could not verify availability right now. Please try again in a moment.'] };
+    }
+    data = (await res.json()).data;
+  } catch (e) {
+    return { ok: false, errors: ['Network error while checking availability. Please try again.'] };
+  }
+
+  const invById = new Map(
+    (data || []).map(r => [r.attributes.item_id, r.attributes.location_available])
+  );
+  const niceDate = new Date(`${shopDateVal}T00:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const errors = [];
+  for (const ci of cart) {
+    const avail = invById.get(ci.id);
+    if (avail == null) {
+      // No inventory record came back for this item — fail safe rather than
+      // silently letting it through.
+      errors.push(`Could not verify availability for "${ci.name}". Please refresh and try again.`);
+      continue;
+    }
+    if (avail < ci.qty) {
+      if (avail <= 0) {
+        errors.push(`"${ci.name}" is fully booked on ${niceDate}. Please remove it or pick another date.`);
+      } else {
+        errors.push(`Only ${avail} of "${ci.name}" available on ${niceDate} — you have ${ci.qty} in your cart. Reduce the quantity or choose a different date.`);
+      }
+    }
+  }
+  return { ok: errors.length === 0, errors };
+}
+
 // ===== CHECKOUT: hand cart off to Booqable's hosted checkout =====
 // The customer pays the 25% deposit on Booqable's page (which uses our
 // connected Stripe account under the hood). We do not handle card data
@@ -1552,7 +1624,21 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
 
   const btn = document.getElementById('cartCheckoutBtn');
   const originalLabel = btn.textContent;
+  clearCartError();
   btn.disabled = true;
+  btn.textContent = 'Checking availability…';
+
+  // Hard cap: block checkout if any cart item would push past the day's
+  // inventory. Without this, Booqable's per-window availability lets two
+  // same-day rentals each book up to full stock.
+  const pre = await preflightCartAvailability();
+  if (!pre.ok) {
+    showCartError(pre.errors);
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    return;
+  }
+
   btn.textContent = 'Redirecting to checkout…';
 
   // Build the rental date range. Use the shop's date bar if set, otherwise
@@ -1651,7 +1737,7 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
   }
 });
 
-function showCartError(message) {
+function showCartError(messageOrList) {
   const btn = document.getElementById('cartCheckoutBtn');
   let errBox = document.getElementById('cartError');
   if (!errBox) {
@@ -1660,7 +1746,17 @@ function showCartError(message) {
     errBox.style.cssText = 'background:#fdecec;border:1px solid #e6b3b3;color:#8a2a2a;padding:.75rem 1rem;border-radius:6px;font-size:.82rem;margin:.6rem 0;line-height:1.5;text-align:left';
     btn.parentNode.insertBefore(errBox, btn);
   }
-  errBox.textContent = message;
+  const list = Array.isArray(messageOrList) ? messageOrList : [messageOrList];
+  if (list.length === 1) {
+    errBox.textContent = list[0];
+  } else {
+    errBox.innerHTML = '<ul style="margin:0;padding-left:1.1rem">' +
+      list.map(m => `<li>${escHtml(m)}</li>`).join('') + '</ul>';
+  }
+}
+function clearCartError() {
+  const errBox = document.getElementById('cartError');
+  if (errBox) errBox.remove();
 }
 
 
