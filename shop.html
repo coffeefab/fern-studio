@@ -682,6 +682,7 @@ const SKIP_SLUGS    = new Set(['delivery']);
 const INQUIRE_ONLY_NAMES = new Set([
   "Floral Arch: 'The Harvest'",
   "Floral Frame: The Peach",
+  "Flower Wall: 'The Havana'",
 ]);
 
 // Lookup: product_group_id (what the catalog uses) -> item_id (what Booqable's
@@ -1073,9 +1074,10 @@ function applyAvailToCard(productId, available) {
       cta.textContent = 'Booked out';
       delete cta.dataset.reduceTo;
     } else if (!enoughStock) {
-      // Keep clickable: tapping it sets qty = available and adds to cart.
+      // Keep clickable: tapping it just snaps the qty input down to what's available.
+      // The CTA then flips back to "Add to cart" so the user confirms intent.
       cta.disabled = false;
-      cta.textContent = `Add ${available} to cart`;
+      cta.textContent = `Update to ${available}`;
       cta.dataset.reduceTo = String(available);
     } else {
       cta.disabled = false;
@@ -1221,14 +1223,16 @@ document.getElementById('shopGrid').addEventListener('click', e => {
     return;
   }
 
-  // "Add to cart" button (also handles the "Reduce to N & add" state)
+  // "Add to cart" button (also handles the "Update to N" state)
   const btn = e.target.closest('.shop-card-cta');
   if (!btn || btn.disabled) return;
   const qtyEl = document.getElementById(`qty-${btn.dataset.id}`);
-  // If the CTA is in "Reduce to N" mode, snap the qty input to N before adding.
+  // "Update to N" mode — snap the qty input down to the available count and stop.
+  // The CTA will flip back to "Add to cart" so the user confirms the new qty.
   if (qtyEl && btn.dataset.reduceTo) {
     qtyEl.value = btn.dataset.reduceTo;
     refreshCardFromCache(btn.dataset.id);
+    return;
   }
   const qty     = qtyEl ? Math.max(1, parseInt(qtyEl.value) || 1) : 1;
   const product = allProducts.find(p => p.id === btn.dataset.id);

@@ -87,6 +87,10 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.05;letter-sp
 .pdp-cta.added{background:var(--sage)}
 .pdp-fineprint{font-size:.7rem;color:var(--mist);margin-top:.85rem;text-align:center;letter-spacing:.04em}
 .pdp-fineprint a{color:var(--sage);text-decoration:underline;text-underline-offset:2px}
+.pdp-cta-link{display:flex;align-items:center;justify-content:center;text-decoration:none}
+.pdp-coming-tag{color:var(--forest);text-transform:uppercase;letter-spacing:.16em;font-size:.62rem;font-weight:500;margin-bottom:.85rem;display:flex;align-items:center;gap:.5rem}
+.pdp-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-warm);display:inline-block;box-shadow:0 0 0 3px rgba(203,168,106,.22)}
+.pdp-inquire-msg{font-size:.86rem;color:var(--stone);line-height:1.7;margin-bottom:1.1rem;max-width:42ch}
 
 .pdp-specs{padding-top:1.6rem;border-top:1px solid rgba(28,27,20,.1)}
 .pdp-specs h3{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--forest);margin-bottom:1rem;font-weight:500}
@@ -243,6 +247,13 @@ const BOOQABLE_KEY = '28eab158038f0ce7e4662ddb9ea9b33c1caa9130e0134cf3e3e021f94b
 const PRODUCTS_URL = `https://byfernstudio.booqable.com/api/1/product_groups?api_key=${BOOQABLE_KEY}&per_page=100`;
 const CART_KEY = 'fern_cart_v1';
 const SKIP_SLUGS = new Set(['delivery']);
+// Keep in sync with shop.html's INQUIRE_ONLY_NAMES — items shown as "Coming soon" with
+// an inquiry CTA instead of the date + add-to-cart flow.
+const INQUIRE_ONLY_NAMES = new Set([
+  "Floral Arch: 'The Harvest'",
+  "Floral Frame: The Peach",
+  "Flower Wall: 'The Havana'",
+]);
 
 const CAT_LABELS = {
   'flower-walls': 'Flower Wall',
@@ -345,6 +356,30 @@ function render() {
   const inventoryLine = (p.stock_count != null)
     ? `${p.stock_count} available`
     : 'In studio';
+  const isInquire = INQUIRE_ONLY_NAMES.has(p.name);
+
+  const formBlock = isInquire
+    ? `<div class="pdp-form pdp-form-inquire">
+         <div class="pdp-form-lbl pdp-coming-tag">
+           <span class="pdp-dot"></span>Coming soon
+         </div>
+         <p class="pdp-inquire-msg">This piece is being built. Reach out and we'll let you know the moment it's bookable, or get a custom quote for your date.</p>
+         <a href="index.html#book" class="pdp-cta pdp-cta-link">Inquire about this piece →</a>
+         <div class="pdp-fineprint">We typically respond within 24 hours</div>
+       </div>`
+    : `<div class="pdp-form">
+         <div class="pdp-form-lbl">
+           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+           Check availability
+         </div>
+         <div class="pdp-field">
+           <label class="pdp-field-lbl">Event date</label>
+           <input type="date" id="pdpDate">
+         </div>
+         <div class="pdp-avail-msg" id="pdpAvail">Pick a date to check availability.</div>
+         <button class="pdp-cta" id="pdpAddBtn">Add to cart</button>
+         <div class="pdp-fineprint">Items are reserved after deposit · 25% non refundable</div>
+       </div>`;
 
   document.getElementById('pdpRoot').innerHTML = `
     <div class="pdp-crumbs">
@@ -364,19 +399,7 @@ function render() {
         <div class="pdp-price">${price}</div>
         <p class="pdp-desc">${escHtml(desc)}</p>
 
-        <div class="pdp-form">
-          <div class="pdp-form-lbl">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Check availability
-          </div>
-          <div class="pdp-field">
-            <label class="pdp-field-lbl">Event date</label>
-            <input type="date" id="pdpDate">
-          </div>
-          <div class="pdp-avail-msg" id="pdpAvail">Pick a date to check availability.</div>
-          <button class="pdp-cta" id="pdpAddBtn">Add to cart</button>
-          <div class="pdp-fineprint">Items are reserved after deposit · 25% non refundable</div>
-        </div>
+        ${formBlock}
 
         <div class="pdp-specs">
           <h3>Details</h3>
@@ -402,8 +425,10 @@ function render() {
       </div>
     </div>`;
 
-  setupAvailabilityCheck();
-  setupAddToCart();
+  if (!isInquire) {
+    setupAvailabilityCheck();
+    setupAddToCart();
+  }
   renderCompleteTheLook(p);
 }
 
