@@ -2,3 +2,7 @@
 node_modules/
 .netlify/
 .DS_Store
+
+# Personal documents — must never be published to the live site
+W2.pdf
+*.pdf
