@@ -968,6 +968,11 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 
           <!-- TIMING -->
           <div class="form-section-lbl">Timing</div>
+          <div class="fg full" id="fgPickupDate">
+            <label for="mPickupDate">Drop off / pickup date *</label>
+            <input type="date" id="mPickupDate">
+            <div class="field-hint">When you'd like the items delivered or to pick them up. Can be the day before your event.</div>
+          </div>
           <div class="fg" id="fgDropoff">
             <label for="mDropoff">Drop off / your pickup time *</label>
             <input type="time" id="mDropoff">
@@ -1350,7 +1355,14 @@ function renderWidgetResults(date, results, resEl) {
 
 // Set min date to today
 const today = new Date().toISOString().split('T')[0];
-['hDate','cDate','mDate'].forEach(id => { const e = document.getElementById(id); if (e) e.min = today; });
+['hDate','cDate','mDate','mPickupDate'].forEach(id => { const e = document.getElementById(id); if (e) e.min = today; });
+
+// Prefill the drop off / pickup date from the event date (same day by default;
+// customer can change it to the day before for early delivery/pickup).
+document.getElementById('mDate').addEventListener('change', () => {
+  const pickup = document.getElementById('mPickupDate');
+  if (pickup && !pickup.value) pickup.value = document.getElementById('mDate').value;
+});
 
 // Add selected widget items to the shop cart (localStorage)
 function addWidgetItemsToCart() {
@@ -1465,6 +1477,7 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     { id: 'mState',   fg: 'fgState' },
     { id: 'mZip',     fg: 'fgZip'   },
     { id: 'mDate',    fg: 'fgDate'  },
+    { id: 'mPickupDate', fg: 'fgPickupDate' },
     { id: 'mDropoff', fg: 'fgDropoff' },
     { id: 'mReturn',  fg: 'fgReturn'  },
     { id: 'mItems',   fg: 'fgItems'   },
@@ -1508,6 +1521,7 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     state:     document.getElementById('mState').value.trim(),
     zip:       document.getElementById('mZip').value.trim(),
     date:      document.getElementById('mDate').value,
+    pickupDate: document.getElementById('mPickupDate').value,
     eventType: document.querySelector('#eventTypePills .pill-opt.active')?.dataset.val || '',
     delivery:  document.querySelector('#deliveryToggle .yn-btn.active')?.dataset.val || '',
     dropoff:   document.getElementById('mDropoff').value,
@@ -1530,6 +1544,7 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     'Event type':   payload.eventType || '(not specified)',
     Address:        fullAddress,
     Delivery:       payload.delivery === 'yes' ? 'Yes ($40)' : 'No, picking up',
+    'Drop off / pickup date': payload.pickupDate,
     'Drop off / pickup time': payload.dropoff,
     'Return time':  payload.return,
     Items:          payload.items,
