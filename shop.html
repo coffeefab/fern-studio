@@ -544,6 +544,7 @@ input.cart-ctrl{padding-right:.4rem}
   <div class="cart-footer" id="cartFooter">
     <div class="cart-section">
       <div class="cart-section-hd">Schedule</div>
+      <div class="cart-hint" style="margin:.1rem 0 .7rem">Share your preferred times. We'll confirm the exact drop off and pickup with you.</div>
       <div class="cart-row">
         <span class="cart-row-lbl">Event date</span>
         <input type="date" id="cartDate" class="cart-ctrl">
@@ -560,11 +561,11 @@ input.cart-ctrl{padding-right:.4rem}
         </div>
       </div>
       <div class="cart-row">
-        <span class="cart-row-lbl" id="cartDropoffLbl">Pickup time</span>
+        <span class="cart-row-lbl" id="cartDropoffLbl">Preferred pickup time</span>
         <select id="cartDropoff" class="cart-ctrl" disabled><option>Pick a date</option></select>
       </div>
       <div class="cart-row">
-        <span class="cart-row-lbl">Return time</span>
+        <span class="cart-row-lbl">Preferred return time</span>
         <select id="cartReturn" class="cart-ctrl" disabled><option>Pick a date</option></select>
       </div>
       <div class="cart-row">
@@ -1519,7 +1520,7 @@ document.getElementById('cartDeliveryToggle').addEventListener('click', e => {
   // Relabel the dropoff slot to match: we drop off when delivering, customer
   // picks up otherwise.
   const lbl = document.getElementById('cartDropoffLbl');
-  if (lbl) lbl.textContent = checkoutDelivery ? 'Delivery time' : 'Pickup time';
+  if (lbl) lbl.textContent = checkoutDelivery ? 'Preferred delivery time' : 'Preferred pickup time';
   updateFooter();
 });
 
