@@ -1118,7 +1118,16 @@ function isPipeAndDrape(name) {
   const n = (name || '').toLowerCase();
   return n.includes('pipe') || n.includes('drape') || n.includes('drapery');
 }
+// Delivery / pickup fee add-ons are not rentable installations. They get
+// miscategorized into flower-walls (their name mentions "flower walls"), and
+// Booqable's inventory_levels endpoint 500s when such a service item is batched
+// with real items — which would blank out the whole availability check.
+function isFeeItem(name) {
+  const n = (name || '').toLowerCase();
+  return n.includes('delivery') || n.includes('required for');
+}
 function isWidgetItem(p) {
+  if (isFeeItem(p.name)) return false;
   return WIDGET_CATS.has(p.category) || isPipeAndDrape(p.name);
 }
 
@@ -1217,6 +1226,47 @@ function renderWidgetChips() {
 }
 
 // ===== WIDGET AVAILABILITY CHECK =====
+// Fetch live availability for a list of item ids. Tries one batched request;
+// if that fails (Booqable occasionally 500s on certain item combinations),
+// falls back to per-item requests so one bad item can't blank the whole widget.
+// Returns a Map of item_id -> available count. Items whose individual lookup
+// errors are treated as available (optimistic) since we confirm manually anyway.
+async function fetchInventory(ids, fromISO, tillISO) {
+  const url = idCsv =>
+    `https://byfernstudio.booqable.com/api/4/inventory_levels` +
+    `?filter%5Bitem_id%5D=${encodeURIComponent(idCsv)}` +
+    `&filter%5Bfrom%5D=${encodeURIComponent(fromISO)}` +
+    `&filter%5Btill%5D=${encodeURIComponent(tillISO)}` +
+    `&per_page=200`;
+  const headers = { 'Authorization': `Bearer ${BOOQABLE_KEY}` };
+
+  // Fast path: one batched call.
+  try {
+    const res = await fetch(url(ids.join(',')), { headers });
+    if (res.ok) {
+      const { data } = await res.json();
+      return new Map(data.map(r => [r.attributes.item_id, r.attributes.location_available]));
+    }
+  } catch {}
+
+  // Fallback: check each item on its own so one poison item can't fail them all.
+  const map = new Map();
+  let anyOk = false;
+  const settled = await Promise.allSettled(ids.map(async id => {
+    const res = await fetch(url(id), { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { data } = await res.json();
+    const row = data.find(r => r.attributes.item_id === id) || data[0];
+    return [id, row ? row.attributes.location_available : 0];
+  }));
+  settled.forEach((s, i) => {
+    if (s.status === 'fulfilled') { anyOk = true; map.set(s.value[0], s.value[1]); }
+    else { map.set(ids[i], 1); } // unknown -> show as available
+  });
+  if (!anyOk) throw new Error('inventory unavailable');
+  return map;
+}
+
 async function checkWidgetAvail() {
   const date  = document.getElementById('hDate').value;
   const resEl = document.getElementById('hRes');
@@ -1259,20 +1309,7 @@ async function checkWidgetAvail() {
     // /api/4/inventory_levels — date-aware live counts that respect existing reservations
     const fromISO = `${date}T00:00:00Z`;
     const tillISO = `${till}T23:59:59Z`;
-    const itemIds = pool.map(i => i.id).join(',');
-    const res = await fetch(
-      `https://byfernstudio.booqable.com/api/4/inventory_levels` +
-      `?filter%5Bitem_id%5D=${encodeURIComponent(itemIds)}` +
-      `&filter%5Bfrom%5D=${encodeURIComponent(fromISO)}` +
-      `&filter%5Btill%5D=${encodeURIComponent(tillISO)}` +
-      `&per_page=200`,
-      { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}` } }
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const { data } = await res.json();
-    const invById = new Map(
-      data.map(r => [r.attributes.item_id, r.attributes.location_available])
-    );
+    const invById = await fetchInventory(pool.map(i => i.id), fromISO, tillISO);
 
     const results = pool.map(i => {
       const available = invById.has(i.id) ? invById.get(i.id) : 0;
