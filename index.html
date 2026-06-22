@@ -954,18 +954,6 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
             <input type="date" id="mDate">
           </div>
 
-          <div class="fg full">
-            <label>Type of event</label>
-            <div class="pill-group" id="eventTypePills">
-              <button type="button" class="pill-opt" data-val="wedding">Wedding</button>
-              <button type="button" class="pill-opt" data-val="bridal-shower">Bridal Shower</button>
-              <button type="button" class="pill-opt" data-val="birthday">Birthday Party</button>
-              <button type="button" class="pill-opt" data-val="baby-shower">Baby Shower</button>
-              <button type="button" class="pill-opt" data-val="corporate">Corporate</button>
-              <button type="button" class="pill-opt" data-val="other">Other</button>
-            </div>
-          </div>
-
           <!-- TIMING -->
           <div class="form-section-lbl">Timing</div>
           <div class="fg full" id="fgPickupDate">
@@ -1439,13 +1427,6 @@ document.getElementById('addr2Toggle').addEventListener('click', e => {
 });
 
 // ===== EVENT TYPE PILLS =====
-document.getElementById('eventTypePills').addEventListener('click', e => {
-  const btn = e.target.closest('.pill-opt');
-  if (!btn) return;
-  document.querySelectorAll('#eventTypePills .pill-opt').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-});
-
 // ===== DELIVERY TOGGLE =====
 document.getElementById('deliveryToggle').addEventListener('click', e => {
   const btn = e.target.closest('.yn-btn');
@@ -1522,7 +1503,6 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     zip:       document.getElementById('mZip').value.trim(),
     date:      document.getElementById('mDate').value,
     pickupDate: document.getElementById('mPickupDate').value,
-    eventType: document.querySelector('#eventTypePills .pill-opt.active')?.dataset.val || '',
     delivery:  document.querySelector('#deliveryToggle .yn-btn.active')?.dataset.val || '',
     dropoff:   document.getElementById('mDropoff').value,
     return:    document.getElementById('mReturn').value,
@@ -1541,7 +1521,6 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     email:      payload.email,
     phone:      payload.phone,
     'Event date':   payload.date,
-    'Event type':   payload.eventType || '(not specified)',
     Address:        fullAddress,
     Delivery:       payload.delivery === 'yes' ? 'Yes ($40)' : 'No, picking up',
     'Drop off / pickup date': payload.pickupDate,
