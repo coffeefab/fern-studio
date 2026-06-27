@@ -1554,8 +1554,7 @@ function openNativeCart() {
   const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
   if (!el) return false;
   let t = el; while (t.firstElementChild) t = t.firstElementChild;
-  ['mousedown', 'mouseup', 'click'].forEach(type =>
-    t.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window })));
+  t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
   return true;
 }
 // Read the live item count from Booqable's own cart data (defensive about shape).
