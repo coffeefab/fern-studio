@@ -14,29 +14,69 @@
     body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--charcoal);margin:0;padding:2rem clamp(1rem,4vw,3rem) 6rem;line-height:1.6}
     .wrap{max-width:1100px;margin:0 auto}
     .eyebrow{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
-    h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(2rem,5vw,3rem);margin:.3rem 0 .4rem;color:var(--forest)}
-    p.sub{color:var(--sage);margin:0 0 2rem;max-width:46ch}
-    .note{background:var(--ivory);border:1px solid rgba(56,52,16,.15);border-radius:10px;padding:1rem 1.2rem;font-size:.85rem;margin-bottom:2rem}
+    h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(1.8rem,5vw,2.6rem);margin:.3rem 0 .4rem;color:var(--forest)}
+    h2{font-family:'Fraunces',serif;font-weight:500;color:var(--forest);margin:2.5rem 0 1rem;font-size:1.4rem}
+    p.sub{color:var(--sage);margin:0 0 1.5rem;max-width:56ch}
+    .note{background:var(--ivory);border:1px solid rgba(56,52,16,.15);border-radius:10px;padding:1rem 1.2rem;font-size:.85rem;margin-bottom:1.5rem}
     .booqable-datepicker{margin-bottom:2rem}
-    /* Tint Booqable's components toward the brand where it lets us */
-    .booqable-product-list,.booqable-datepicker{--bq-primary:#383410}
+    /* Custom card styling (mimics the real shop) — to prove your design + native button */
+    #customGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
+    .card{background:var(--ivory);border:1px solid rgba(56,52,16,.1);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .card img{width:100%;height:180px;object-fit:cover}
+    .card-body{padding:1rem 1.1rem 1.2rem}
+    .card-name{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--forest);margin:0 0 .2rem}
+    .card-price{color:var(--sage);font-size:.85rem;margin:0 0 .8rem}
+    /* Style Booqable's injected add-to-cart button to look like your CTA */
+    .card .booqable-product-button button,
+    .card .booqable-product-button [role=button]{width:100%!important;background:var(--forest)!important;color:var(--ivory)!important;border:none!important;border-radius:8px!important;padding:.7rem 1rem!important;font-family:'Jost',sans-serif!important;letter-spacing:.06em!important;text-transform:uppercase!important;font-size:.8rem!important;cursor:pointer}
+    .pill{display:inline-block;background:var(--forest);color:var(--ivory);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .7rem;border-radius:999px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="eyebrow">Test page · not linked publicly</div>
     <h1>Native cart test</h1>
-    <p class="sub">This page uses Booqable's own components (date picker, product list, and the native cart drawer) embedded directly on ferneventrentals.com. If you can pick a date, add an item, see the cart drawer, and reach checkout here, the native embed works on your domain.</p>
-    <div class="note">Pick a date first, then add a product. The cart button/drawer is Booqable's native one. Try a full checkout to confirm payment works end to end.</div>
+    <p class="sub">Two tests on this page. (1) Booqable's full native list (proven working already). (2) The real plan: YOUR custom cards, rendered dynamically by JS like the real shop, each with a Booqable add-to-cart button. If the buttons in the green section work, the rebuild is safe.</p>
+    <div class="note">Pick a date first. Then in the <b>"Your custom cards"</b> section below, click <b>Add to cart</b> on a card and confirm the native cart drawer opens with that item. These cards are injected by JavaScript 1.5s after load — exactly how your real grid renders.</div>
 
-    <!-- Booqable date picker -->
     <div class="booqable-datepicker"></div>
 
-    <!-- Booqable native product list (renders cards + add-to-cart + cart drawer) -->
+    <h2>1 · Booqable native list (reference)</h2>
     <div class="booqable-product-list"></div>
+
+    <h2 style="color:var(--sage)">2 · Your custom cards + native add-to-cart button (the real plan)</h2>
+    <div id="customGrid"><p style="color:var(--sage)">Loading your cards…</p></div>
   </div>
 
   <!-- Booqable embed loader (official Step 1 snippet) -->
   <script src="https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js"></script>
+
+  <script>
+    // Mimic the real shop: render custom cards dynamically AFTER load, each with
+    // a Booqable add-to-cart button (data-id = the product's v4 slug). Then ask
+    // Booqable to hydrate the newly-added buttons.
+    const SAMPLE = [
+      { name: "White Resin Chairs",            slug: "white-resin-chairs",            price: "$4.00 / day",  img: "chairs.jpg" },
+      { name: "Flower Wall: 'The Classic'",    slug: "flower-wall",                   price: "$200.00 / day", img: "flowerwall.jpg" },
+      { name: "Flower Wall: 'The Celeste'",    slug: "blue-flower-wall-the-celeste",  price: "$200.00 / day", img: "signature-backdrop.jpg" },
+    ];
+    setTimeout(() => {
+      const grid = document.getElementById('customGrid');
+      grid.innerHTML = SAMPLE.map(p => `
+        <div class="card">
+          <img src="${p.img}" alt="${p.name}">
+          <div class="card-body">
+            <div class="card-name">${p.name}</div>
+            <div class="card-price">${p.price}</div>
+            <div class="booqable-product-button" data-id="${p.slug}"></div>
+          </div>
+        </div>`).join('');
+      // Ask Booqable to scan for the newly-added buttons. Try common refresh
+      // hooks; harmless if they don't exist.
+      try { if (window.booqable && window.booqable.refresh) window.booqable.refresh(); } catch(e){}
+      try { if (window.Booqable && window.Booqable.refresh) window.Booqable.refresh(); } catch(e){}
+      document.dispatchEvent(new Event('booqable:refresh'));
+    }, 1500);
+  </script>
 </body>
 </html>
