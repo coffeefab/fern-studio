@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root{--forest:#383410;--cream:#EDE8DF;--ivory:#F7F4EF;--charcoal:#1C1B14;--gold:#B5924A;--sage:#4A5C40}
+    :root{--forest:#383410;--cream:#EDE8DF;--ivory:#F7F4EF;--charcoal:#1C1B14;--gold:#B5924A;--sage:#4A5C40;--mist:#B0A898;--stone:#6B6358;--warm-stone:#E8E0D5}
     *{box-sizing:border-box}
     body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--charcoal);margin:0;padding:2rem clamp(1rem,4vw,3rem) 6rem;line-height:1.6}
     .wrap{max-width:1100px;margin:0 auto}
@@ -19,17 +19,34 @@
     p.sub{color:var(--sage);margin:0 0 1.5rem;max-width:56ch}
     .note{background:var(--ivory);border:1px solid rgba(56,52,16,.15);border-radius:10px;padding:1rem 1.2rem;font-size:.85rem;margin-bottom:1.5rem}
     .booqable-datepicker{margin-bottom:2rem}
-    /* Custom card styling (mimics the real shop) — to prove your design + native button */
-    #customGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
-    .card{background:var(--ivory);border:1px solid rgba(56,52,16,.1);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-    .card img{width:100%;height:180px;object-fit:cover}
-    .card-body{padding:1rem 1.1rem 1.2rem}
-    .card-name{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--forest);margin:0 0 .2rem}
-    .card-price{color:var(--sage);font-size:.85rem;margin:0 0 .8rem}
-    /* Style Booqable's injected add-to-cart button to look like your CTA */
-    .card .booqable-product-button button,
-    .card .booqable-product-button [role=button]{width:100%!important;background:var(--forest)!important;color:var(--ivory)!important;border:none!important;border-radius:8px!important;padding:.7rem 1rem!important;font-family:'Jost',sans-serif!important;letter-spacing:.06em!important;text-transform:uppercase!important;font-size:.8rem!important;cursor:pointer}
-    .pill{display:inline-block;background:var(--forest);color:var(--ivory);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .7rem;border-radius:999px}
+    /* Custom card styling — matches the real shop's typography exactly */
+    #customGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:1.6rem}
+    .card{background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 14px rgba(28,27,20,.06)}
+    .card img{width:100%;aspect-ratio:3/4;object-fit:cover}
+    .card-body{padding:1rem 1.1rem 1.1rem;flex:1;display:flex;flex-direction:column}
+    .card-name{font-family:'Fraunces',serif;font-size:1.18rem;color:var(--forest);line-height:1.2;margin:0 0 .2rem}
+    .card-sub{font-size:.72rem;color:var(--mist);line-height:1.4;margin-bottom:.55rem}
+    .card-fromlbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-top:auto}
+    .card-price{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--forest);font-weight:400;line-height:1.15;margin-bottom:.7rem}
+    .card-price span{font-size:.7rem;font-family:'Jost',sans-serif;color:var(--mist);font-weight:300}
+    /* Make Booqable's injected add-to-cart button look like the brand CTA, full width.
+       Target the rendered button/link/role=button no matter how Booqable nests it. */
+    .booqable-product-button{width:100%;margin-top:auto}
+    .booqable-product-button *{box-sizing:border-box}
+    .booqable-product-button button,
+    .booqable-product-button a,
+    .booqable-product-button [role=button]{
+      display:flex!important;align-items:center!important;justify-content:center!important;
+      width:100%!important;min-width:0!important;
+      background:var(--sage)!important;color:#fff!important;border:none!important;border-radius:8px!important;
+      padding:.85rem 1rem!important;margin:0!important;
+      font-family:'Jost',sans-serif!important;font-size:.67rem!important;line-height:1!important;
+      letter-spacing:.11em!important;text-transform:uppercase!important;font-weight:500!important;
+      white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;transition:background .2s ease}
+    .booqable-product-button button:hover,
+    .booqable-product-button a:hover{background:var(--forest)!important}
+    /* hide any stray qty stepper Booqable might inject inside the button block */
+    .booqable-product-button input[type=number]{display:none!important}
   </style>
 </head>
 <body>
@@ -61,9 +78,9 @@
     // contains the buttons. This is the fix for the "redirect to full page"
     // problem (buttons that exist before the script loads get wired correctly).
     const SAMPLE = [
-      { name: "White Resin Chairs",            slug: "white-resin-chairs",            price: "$4.00 / day",  img: "chairs.jpg" },
-      { name: "Flower Wall: 'The Classic'",    slug: "flower-wall",                   price: "$200.00 / day", img: "flowerwall.jpg" },
-      { name: "Flower Wall: 'The Celeste'",    slug: "blue-flower-wall-the-celeste",  price: "$200.00 / day", img: "signature-backdrop.jpg" },
+      { name: "White Resin Chairs",         slug: "white-resin-chairs",           sub: "Padded folding chair · seats one",  price: "4.00",   img: "chairs.jpg" },
+      { name: "Flower Wall: 'The Classic'", slug: "flower-wall",                  sub: "Full-day rental · setup included",  price: "200.00", img: "flowerwall.jpg" },
+      { name: "Flower Wall: 'The Celeste'", slug: "blue-flower-wall-the-celeste", sub: "Full-day rental · setup included",  price: "200.00", img: "signature-backdrop.jpg" },
     ];
     setTimeout(() => {
       const grid = document.getElementById('customGrid');
@@ -72,7 +89,9 @@
           <img src="${p.img}" alt="${p.name}">
           <div class="card-body">
             <div class="card-name">${p.name}</div>
-            <div class="card-price">${p.price}</div>
+            <div class="card-sub">${p.sub}</div>
+            <div class="card-fromlbl">from</div>
+            <div class="card-price">$${p.price} <span>/ day</span></div>
             <div class="booqable-product-button" data-id="${p.slug}"></div>
           </div>
         </div>`).join('');
