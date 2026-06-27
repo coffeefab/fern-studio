@@ -29,35 +29,17 @@
     .card-fromlbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-top:auto}
     .card-price{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--forest);font-weight:400;line-height:1.15;margin-bottom:.7rem}
     .card-price span{font-size:.7rem;font-family:'Jost',sans-serif;color:var(--mist);font-weight:300}
-    /* The booqable-product-button renders a whole mini-widget (price, days,
-       availability, check-availability + add-to-cart). Slim it to just the
-       Add to cart button — the card already shows name + price, and live
-       availability shows in the cart drawer. */
-    .booqable-product-button .bq-product-price,
-    .booqable-product-button .bq-product-price-label,
-    .booqable-product-button .bq-product-availability,
-    .booqable-product-button .bq-product-info,
-    .booqable-product-button .bq-price,
-    .booqable-product-button .bq-price-details,
-    .booqable-product-button .bq-quantity,
-    .booqable-product-button .bq-quantity-toggle{display:none!important}
-    /* Make Booqable's add-to-cart button look like the brand CTA, full width. */
-    .booqable-product-button{width:100%;margin-top:auto}
-    .booqable-product-button *{box-sizing:border-box}
-    .booqable-product-button button,
-    .booqable-product-button a,
-    .booqable-product-button [role=button]{
-      display:flex!important;align-items:center!important;justify-content:center!important;
-      width:100%!important;min-width:0!important;
-      background:var(--sage)!important;color:#fff!important;border:none!important;border-radius:8px!important;
-      padding:.85rem 1rem!important;margin:0!important;
-      font-family:'Jost',sans-serif!important;font-size:.67rem!important;line-height:1!important;
-      letter-spacing:.11em!important;text-transform:uppercase!important;font-weight:500!important;
-      white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;transition:background .2s ease}
-    .booqable-product-button button:hover,
-    .booqable-product-button a:hover{background:var(--forest)!important}
-    /* hide any stray qty stepper Booqable might inject inside the button block */
-    .booqable-product-button input[type=number]{display:none!important}
+    /* PROXY PATTERN: your own button is the only visible one. Booqable's whole
+       product-button widget is rendered but fully hidden behind it; clicking
+       your button programmatically clicks Booqable's. Your card stays exact. */
+    .brand-cta{margin-top:auto;width:100%;display:flex;align-items:center;justify-content:center;
+      background:var(--sage);color:#fff;border:none;border-radius:8px;padding:.8rem 1rem;
+      font-family:'Jost',sans-serif;font-size:.67rem;line-height:1;letter-spacing:.11em;
+      text-transform:uppercase;font-weight:500;cursor:pointer;transition:background .2s ease}
+    .brand-cta:hover{background:var(--forest)}
+    .brand-cta:disabled{background:var(--mist);cursor:default}
+    /* Booqable's real button: present + functional, but visually hidden. */
+    .bq-proxy{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none;left:-9999px}
   </style>
 </head>
 <body>
@@ -103,9 +85,19 @@
             <div class="card-sub">${p.sub}</div>
             <div class="card-fromlbl">from</div>
             <div class="card-price">$${p.price} <span>/ day</span></div>
-            <div class="booqable-product-button" data-id="${p.slug}"></div>
+            <button type="button" class="brand-cta">Add to cart</button>
+            <div class="booqable-product-button bq-proxy" data-id="${p.slug}"></div>
           </div>
         </div>`).join('');
+      // Clicking your visible button fires Booqable's hidden one.
+      grid.addEventListener('click', (e) => {
+        const cta = e.target.closest('.brand-cta');
+        if (!cta) return;
+        const box = cta.parentNode.querySelector('.booqable-product-button');
+        const realBtn = box && box.querySelector('button, a, [role=button]');
+        if (realBtn) realBtn.click();
+        else alert('Booqable button not ready yet — pick a date and try again.');
+      });
       // Configure the embed BEFORE loading it: enable the floating cart
       // launcher so add-to-cart opens a cart on THIS page instead of redirecting.
       window.booqableOptions = window.booqableOptions || {
