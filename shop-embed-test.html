@@ -48,13 +48,12 @@
     <div id="customGrid"><p style="color:var(--sage)">Loading your cards…</p></div>
   </div>
 
-  <!-- Booqable embed loader (official Step 1 snippet) -->
-  <script src="https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js"></script>
-
   <script>
-    // Mimic the real shop: render custom cards dynamically AFTER load, each with
-    // a Booqable add-to-cart button (data-id = the product's v4 slug). Then ask
-    // Booqable to hydrate the newly-added buttons.
+    // Mimic the real shop: render the custom cards dynamically (as if from an
+    // API fetch), each with a Booqable add-to-cart button (data-id = v4 slug).
+    // THEN load Booqable's embed script, so it scans a DOM that already
+    // contains the buttons. This is the fix for the "redirect to full page"
+    // problem (buttons that exist before the script loads get wired correctly).
     const SAMPLE = [
       { name: "White Resin Chairs",            slug: "white-resin-chairs",            price: "$4.00 / day",  img: "chairs.jpg" },
       { name: "Flower Wall: 'The Classic'",    slug: "flower-wall",                   price: "$200.00 / day", img: "flowerwall.jpg" },
@@ -71,12 +70,11 @@
             <div class="booqable-product-button" data-id="${p.slug}"></div>
           </div>
         </div>`).join('');
-      // Ask Booqable to scan for the newly-added buttons. Try common refresh
-      // hooks; harmless if they don't exist.
-      try { if (window.booqable && window.booqable.refresh) window.booqable.refresh(); } catch(e){}
-      try { if (window.Booqable && window.Booqable.refresh) window.Booqable.refresh(); } catch(e){}
-      document.dispatchEvent(new Event('booqable:refresh'));
-    }, 1500);
+      // Now that the buttons exist in the DOM, load the Booqable embed.
+      const s = document.createElement('script');
+      s.src = 'https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js';
+      document.body.appendChild(s);
+    }, 1200);
   </script>
 </body>
 </html>
