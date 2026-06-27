@@ -1514,12 +1514,28 @@ document.getElementById('btnSubmit').onclick = e => {
 };
 
 // ===== CART EVENT LISTENERS =====
-document.getElementById('navCart').addEventListener('click', e => { e.preventDefault(); openNativeCart(); });
-// Open Booqable's native cart drawer (the floating launcher the embed renders).
+document.getElementById('navCart').addEventListener('click', e => {
+  e.preventDefault();
+  if (!openNativeCart()) setTimeout(openNativeCart, 500);  // retry if embed still mounting
+});
+// Open Booqable's native cart drawer by clicking its floating launcher.
 function openNativeCart() {
   const launcher = document.querySelector('.bq-minicart-launcher, .bq-minicart-button, [class*="minicart-launcher"], [class*="minicart-button"]');
-  if (launcher) launcher.click();
+  if (launcher) { launcher.click(); return true; }
+  return false;
 }
+// The old local-cart badge is dead now (items live in Booqable). Clear any
+// stale count and mirror the native launcher's count onto the nav Cart badge.
+try { localStorage.removeItem('fern_cart_v1'); } catch (e) {}
+setInterval(() => {
+  const badge = document.getElementById('cartBadge');
+  if (!badge) return;
+  const launcher = document.querySelector('.bq-minicart-launcher, .bq-minicart-button, [class*="minicart-launcher"]');
+  const m = launcher && (launcher.textContent || '').match(/\d+/);
+  const n = m ? m[0] : '0';
+  badge.textContent = n;
+  badge.style.display = (n !== '0') ? 'flex' : 'none';
+}, 1000);
 // Booking Request CTA → opens the homepage booking modal
 document.getElementById('navBook').addEventListener('click', e => { e.preventDefault(); window.location.href = 'index.html#book'; });
 document.getElementById('stickyBook').addEventListener('click', () => { window.location.href = 'index.html#book'; });
