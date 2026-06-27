@@ -147,7 +147,23 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .shop-card-cta:disabled{background:var(--mist);cursor:default;opacity:.65}
 /* Booqable's real add-to-cart button: rendered + functional, but hidden behind
    our own .shop-card-cta (proxy pattern). Our button forwards the click. */
-.bq-proxy{position:absolute!important;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none;left:-9999px}
+/* Booqable's native add-to-cart button, styled as the brand CTA. The widget
+   also renders price/availability/quantity — we hide all of that (the card
+   already shows name + price; live availability is in the cart drawer) and keep
+   only the button. font-size:0 nukes any stray text the class hides miss. */
+.bq-cardbtn{margin-top:auto;width:100%;font-size:0!important}
+.bq-cardbtn .bq-product-price,.bq-cardbtn .bq-product-price-label,
+.bq-cardbtn .bq-product-availability,.bq-cardbtn .bq-product-info,
+.bq-cardbtn .bq-status-quantity,.bq-cardbtn .bq-price,.bq-cardbtn .bq-price-details,
+.bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle{display:none!important}
+.bq-cardbtn button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;background:var(--sage)!important;color:var(--ivory)!important;border:none!important;
+  border-radius:var(--r4)!important;padding:.72rem 1rem!important;margin:0!important;
+  font-family:'Jost',sans-serif!important;font-size:.67rem!important;line-height:1!important;
+  letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
+  white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;text-decoration:none!important}
+.bq-cardbtn button:hover,.bq-cardbtn .bq-cart-button:hover,.bq-cardbtn a:hover{background:var(--forest)!important}
 /* "Added to cart" indicator: bump the nav Cart when the count increases. */
 @keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.96)}100%{transform:scale(1)}}
 .nav-cart-btn.cart-bump{animation:cartBump .55s ease;color:var(--gold)!important}
@@ -1175,8 +1191,7 @@ function renderShop() {
       ? `<a href="index.html#book" class="shop-card-cta" style="text-align:center;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">Inquire →</a>`
       : hasDetail
       ? `<a href="${pdpHref}" class="shop-card-cta" style="text-align:center;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">View details →</a>`
-      : `<button type="button" class="shop-card-cta bq-add" data-slug="${escHtml(p.slug || '')}" data-product="${escHtml(p.name)}">Add to cart</button>
-         <div class="booqable-product-button bq-proxy" data-id="${escHtml(p.slug || '')}"></div>`;
+      : `<div class="booqable-product-button bq-cardbtn" data-id="${escHtml(p.slug || '')}"></div>`;
     // Only PDP-linked cards show the standalone "Check availability" link; qty-input cards
     // get live availability from the qty field + global date picker instead.
     const availLink = (hasDetail && !isInquire)
