@@ -155,9 +155,11 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .bq-cardbtn .bq-product-price,.bq-cardbtn .bq-product-price-label,
 .bq-cardbtn .bq-product-availability,.bq-cardbtn .bq-product-info,
 .bq-cardbtn .bq-status-quantity,.bq-cardbtn .bq-price,.bq-cardbtn .bq-price-details,
-.bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle{display:none!important}
-/* The widget wraps the button in flex rows — force those wrappers full width. */
-.bq-cardbtn > *,.bq-cardbtn .booqable-component,.bq-cardbtn .booqable-component > *{width:100%!important}
+.bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle,
+.bq-cardbtn .bq-available,.bq-cardbtn .bq-unavailable,
+.bq-cardbtn [class*="Availability"]:not([class*="Link"]){display:none!important}
+/* Nested flex wrappers — force every div full width so the button fills. */
+.bq-cardbtn div{width:100%!important}
 /* PRIMARY — Add to cart: full-width green (everything except the availability link) */
 .bq-cardbtn button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a:not([class*="AvailabilityLink"]){
   display:flex!important;align-items:center!important;justify-content:center!important;
@@ -172,8 +174,8 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
   display:flex!important;align-items:center!important;justify-content:center!important;
   width:100%!important;background:transparent!important;color:var(--sage)!important;
   border:1px solid rgba(74,92,64,.45)!important;border-radius:var(--r4)!important;
-  padding:.5rem 1rem!important;margin:0 0 .5rem 0!important;
-  font-family:'Jost',sans-serif!important;font-size:.6rem!important;line-height:1!important;
+  padding:.78rem 1rem!important;margin:0 0 .55rem 0!important;
+  font-family:'Jost',sans-serif!important;font-size:.62rem!important;line-height:1!important;
   letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
   text-decoration:none!important;cursor:pointer!important}
 .bq-cardbtn [class*="AvailabilityLink"]:hover{background:rgba(74,92,64,.08)!important;color:var(--forest)!important}
