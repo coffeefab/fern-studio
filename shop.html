@@ -1642,6 +1642,11 @@ async function goToBooqableCart() {
   const trigger = document.getElementById('navCart');
   if (trigger) trigger.classList.add('cart-loading');
 
+  // Open the new tab NOW, synchronously inside the click, so popup blockers
+  // allow it. We point it at the cart URL once the cart is built below; if it
+  // was blocked (null) we fall back to navigating this tab.
+  const cartTab = window.open('about:blank', '_blank');
+
   // Use the shop's date bar if set, otherwise default to tomorrow. Times
   // default to 10am–6pm; the customer adjusts exact dates/times (and picks
   // delivery vs pickup) on Booqable's cart page, and we confirm with them.
@@ -1653,7 +1658,7 @@ async function goToBooqableCart() {
   // availability on Booqable's cart page.
   if (shopDateVal) {
     const pre = await preflightCartAvailability();
-    if (!pre.ok) { showCartToast(pre.errors); if (trigger) trigger.classList.remove('cart-loading'); return; }
+    if (!pre.ok) { showCartToast(pre.errors); if (cartTab) cartTab.close(); if (trigger) trigger.classList.remove('cart-loading'); return; }
   }
 
   const baseStart = shopDateVal
@@ -1672,6 +1677,7 @@ async function goToBooqableCart() {
     const itemId = pgToItemId.get(ci.id);
     if (!itemId) {
       showCartToast(`We could not look up "${ci.name}" in the rental inventory. Please refresh and try again.`);
+      if (cartTab) cartTab.close();
       if (trigger) trigger.classList.remove('cart-loading');
       return;
     }
@@ -1732,10 +1738,13 @@ async function goToBooqableCart() {
     // Keep the local cart as-is: it's the customer's working selection. Each
     // visit to Booqable's cart is rebuilt fresh from it, so a back-button
     // return (to add more) still has their items.
-    window.location.href = handoffUrl;
+    if (cartTab && !cartTab.closed) cartTab.location.href = handoffUrl;  // new tab
+    else window.location.href = handoffUrl;                              // popup blocked → same tab
+    if (trigger) trigger.classList.remove('cart-loading');
   } catch (err) {
     console.error('Booqable cart handoff failed:', err);
     showCartToast(`We could not open your cart (${err.message}). Please try again, or email byfernstudio@gmail.com.`);
+    if (cartTab) cartTab.close();
     if (trigger) trigger.classList.remove('cart-loading');
   }
 }
