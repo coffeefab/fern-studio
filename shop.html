@@ -1721,7 +1721,13 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
     const dateData = await dateRes.json();
     const cartId   = dateData?.cart?.id;
     if (!cartId)   throw new Error('Booqable did not return a cart id');
-    let checkoutUrl = dateData?.cart?.checkout_url;
+    // Hand off to the cart PAGE (`cart_url`, /carts/<id>), NOT the checkout
+    // deep-link (`checkout_url`, /checkouts/<id>). Booqable now instantly
+    // redirects /checkouts/<id> for API-created carts to /expired_cart, so
+    // the old checkout_url handoff broke every checkout. The cart page renders
+    // fine and its "Checkout" button reaches the real payment flow. Verified
+    // 2026-06-26 by completing the flow to "Continue to payment" in-browser.
+    let handoffUrl = dateData?.cart?.cart_url || `${CART_HOST}/carts/${cartId}`;
 
     // Step 2: POST one cart_booking per line item, binding to the same cart
     // via the ?id= query param (CORS strips the session cookie so we rely
@@ -1746,16 +1752,16 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
         throw new Error(`Booqable line-item add failed (HTTP ${bookingRes.status}). ${errBody.slice(0, 160)}`);
       }
       const bookingData = await bookingRes.json();
-      if (bookingData?.cart?.checkout_url) checkoutUrl = bookingData.cart.checkout_url;
+      if (bookingData?.cart?.cart_url) handoffUrl = bookingData.cart.cart_url;
     }
 
-    if (!checkoutUrl) throw new Error('Booqable did not return a checkout URL');
+    if (!handoffUrl) throw new Error('Booqable did not return a cart URL');
 
     // Clear local cart so a back-button visit starts fresh.
     cart = [];
     saveCart();
 
-    window.location.href = checkoutUrl;
+    window.location.href = handoffUrl;
   } catch (err) {
     console.error('Booqable checkout handoff failed:', err);
     showCartError(`We could not start checkout (${err.message}). Please try again, or email byfernstudio@gmail.com.`);
