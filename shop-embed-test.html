@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Native cart test · Fern Event Rentals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--forest:#383410;--cream:#EDE8DF;--ivory:#F7F4EF;--charcoal:#1C1B14;--gold:#B5924A;--sage:#4A5C40}
+    *{box-sizing:border-box}
+    body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--charcoal);margin:0;padding:2rem clamp(1rem,4vw,3rem) 6rem;line-height:1.6}
+    .wrap{max-width:1100px;margin:0 auto}
+    .eyebrow{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
+    h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(2rem,5vw,3rem);margin:.3rem 0 .4rem;color:var(--forest)}
+    p.sub{color:var(--sage);margin:0 0 2rem;max-width:46ch}
+    .note{background:var(--ivory);border:1px solid rgba(56,52,16,.15);border-radius:10px;padding:1rem 1.2rem;font-size:.85rem;margin-bottom:2rem}
+    .booqable-datepicker{margin-bottom:2rem}
+    /* Tint Booqable's components toward the brand where it lets us */
+    .booqable-product-list,.booqable-datepicker{--bq-primary:#383410}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Test page · not linked publicly</div>
+    <h1>Native cart test</h1>
+    <p class="sub">This page uses Booqable's own components (date picker, product list, and the native cart drawer) embedded directly on ferneventrentals.com. If you can pick a date, add an item, see the cart drawer, and reach checkout here, the native embed works on your domain.</p>
+    <div class="note">Pick a date first, then add a product. The cart button/drawer is Booqable's native one. Try a full checkout to confirm payment works end to end.</div>
+
+    <!-- Booqable date picker -->
+    <div class="booqable-datepicker"></div>
+
+    <!-- Booqable native product list (renders cards + add-to-cart + cart drawer) -->
+    <div class="booqable-product-list"></div>
+  </div>
+
+  <!-- Booqable embed loader (official Step 1 snippet) -->
+  <script src="https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js"></script>
+</body>
+</html>
