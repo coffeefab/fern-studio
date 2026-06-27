@@ -148,6 +148,9 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 /* Booqable's real add-to-cart button: rendered + functional, but hidden behind
    our own .shop-card-cta (proxy pattern). Our button forwards the click. */
 .bq-proxy{position:absolute!important;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none;left:-9999px}
+/* Filtered-out cards: moved off-screen (still display:block) so Booqable keeps
+   their add-to-cart buttons active. */
+.shop-card.bq-hidden{position:absolute!important;left:-99999px!important;top:0!important;width:1px!important;height:1px!important;overflow:hidden!important}
 .shop-state{grid-column:1/-1;text-align:center;padding:4rem;color:var(--mist);font-size:.9rem;line-height:1.8}
 
 /* ===== REVIEWS ===== */
@@ -1058,6 +1061,21 @@ function initBooqableEmbed() {
   window.booqableOptions = window.booqableOptions || { company: 'byfernstudio', primaryColor: '#383410', disableLauncher: false };
   const s = document.createElement('script');
   s.src = BQ_EMBED_SRC;
+  s.onload = () => {
+    // Wait for Booqable to hydrate the add-to-cart buttons (while all cards are
+    // still visible), THEN apply the category filter and reveal the grid.
+    let tries = 0;
+    const t = setInterval(() => {
+      tries++;
+      const hydrated = document.querySelector('#shopGrid .booqable-product-button .booqable-component, #shopGrid .booqable-product-button button');
+      if (hydrated || tries > 24) {  // up to ~6s
+        clearInterval(t);
+        applyShopFilter();
+        const grid = document.getElementById('shopGrid');
+        if (grid) grid.style.visibility = '';
+      }
+    }, 250);
+  };
   document.body.appendChild(s);
 }
 
@@ -1077,9 +1095,14 @@ async function loadProducts() {
       .filter(p => !SKIP_SLUGS.has(p.slug))
       .map(p => ({ ...p, category: categorizeProduct(p.name), slug: nameToSlug[p.name] || '' }))
       .sort((a, b) => CAT_ORDER.indexOf(a.category) - CAT_ORDER.indexOf(b.category));
-    renderShop();        // renders ALL cards
-    applyShopFilter();   // shows only the active category
-    initBooqableEmbed(); // hydrate the (now-present) add-to-cart buttons
+    renderShop();        // renders ALL cards (all visible)
+    // Hide the grid briefly so the customer doesn't see every category flash by
+    // before we filter. Booqable must hydrate the add-to-cart buttons while
+    // their cards are VISIBLE (it marks buttons in display:none cards inert),
+    // so we filter only AFTER the embed has mounted.
+    const grid = document.getElementById('shopGrid');
+    if (grid) grid.style.visibility = 'hidden';
+    initBooqableEmbed();
   } catch (err) {
     document.getElementById('shopGrid').innerHTML =
       `<div class="shop-state">Couldn't load right now. <a href="#" onclick="openModal(null);return false" style="color:var(--sage)">Contact us</a> for pricing.</div>`;
@@ -1337,11 +1360,13 @@ document.getElementById('filterBar').addEventListener('click', e => {
   if (lastDate) setTimeout(() => checkShopAvail(), 50);
 });
 
-// Show only the active category's cards (CSS-based so the cards — and the
-// Booqable buttons hydrated inside them — are never destroyed/recreated).
+// Show only the active category. Hidden cards are moved OFF-SCREEN (not
+// display:none) so Booqable keeps their add-to-cart buttons active — it marks
+// buttons inside display:none containers inert.
 function applyShopFilter() {
   document.querySelectorAll('#shopGrid .shop-card').forEach(c => {
-    c.style.display = (shopFilter === 'all' || c.dataset.cat === shopFilter) ? '' : 'none';
+    const show = (shopFilter === 'all' || c.dataset.cat === shopFilter);
+    c.classList.toggle('bq-hidden', !show);
   });
 }
 
@@ -1375,13 +1400,9 @@ document.getElementById('shopGrid').addEventListener('click', e => {
   // "Add to cart": fire the hidden Booqable button behind this card (proxy
   // pattern). Booqable adds the item and opens its native cart drawer.
   const btn = e.target.closest('.shop-card-cta.bq-add');
-  if (!btn || btn.disabled) {
-    if (e.target.closest('.shop-card-cta')) alert('DEBUG: clicked a CTA but not matched. disabled=' + (e.target.closest('.shop-card-cta')||{}).disabled + ' classes=' + e.target.className);
-    return;
-  }
+  if (!btn || btn.disabled) return;
   const box = btn.parentNode.querySelector('.booqable-product-button');
   const realBtn = box && box.querySelector('button, a, [role=button]');
-  alert('DEBUG: box=' + !!box + ' hydrated(realBtn)=' + !!realBtn + ' boxHTML=' + (box ? box.innerHTML.slice(0,100) : 'NO BOX'));
   if (realBtn) {
     realBtn.click();
     if (!btn.dataset.added) {
