@@ -1375,9 +1375,13 @@ document.getElementById('shopGrid').addEventListener('click', e => {
   // "Add to cart": fire the hidden Booqable button behind this card (proxy
   // pattern). Booqable adds the item and opens its native cart drawer.
   const btn = e.target.closest('.shop-card-cta.bq-add');
-  if (!btn || btn.disabled) return;
+  if (!btn || btn.disabled) {
+    if (e.target.closest('.shop-card-cta')) alert('DEBUG: clicked a CTA but not matched. disabled=' + (e.target.closest('.shop-card-cta')||{}).disabled + ' classes=' + e.target.className);
+    return;
+  }
   const box = btn.parentNode.querySelector('.booqable-product-button');
   const realBtn = box && box.querySelector('button, a, [role=button]');
+  alert('DEBUG: box=' + !!box + ' hydrated(realBtn)=' + !!realBtn + ' boxHTML=' + (box ? box.innerHTML.slice(0,100) : 'NO BOX'));
   if (realBtn) {
     realBtn.click();
     if (!btn.dataset.added) {
