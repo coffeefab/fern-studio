@@ -156,14 +156,25 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .bq-cardbtn .bq-product-availability,.bq-cardbtn .bq-product-info,
 .bq-cardbtn .bq-status-quantity,.bq-cardbtn .bq-price,.bq-cardbtn .bq-price-details,
 .bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle{display:none!important}
-.bq-cardbtn button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a{
+/* PRIMARY — Add to cart: full-width green (everything except the availability link) */
+.bq-cardbtn button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a:not([class*="AvailabilityLink"]){
   display:flex!important;align-items:center!important;justify-content:center!important;
   width:100%!important;background:var(--sage)!important;color:var(--ivory)!important;border:none!important;
   border-radius:var(--r4)!important;padding:.72rem 1rem!important;margin:0!important;
   font-family:'Jost',sans-serif!important;font-size:.67rem!important;line-height:1!important;
   letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
   white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;text-decoration:none!important}
-.bq-cardbtn button:hover,.bq-cardbtn .bq-cart-button:hover,.bq-cardbtn a:hover{background:var(--forest)!important}
+.bq-cardbtn button:hover,.bq-cardbtn .bq-cart-button:hover,.bq-cardbtn a:not([class*="AvailabilityLink"]):hover{background:var(--forest)!important}
+/* SECONDARY — Check availability: quiet outlined link, sits above Add to cart */
+.bq-cardbtn [class*="AvailabilityLink"]{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;background:transparent!important;color:var(--sage)!important;
+  border:1px solid rgba(74,92,64,.45)!important;border-radius:var(--r4)!important;
+  padding:.5rem 1rem!important;margin:0 0 .5rem 0!important;
+  font-family:'Jost',sans-serif!important;font-size:.6rem!important;line-height:1!important;
+  letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
+  text-decoration:none!important;cursor:pointer!important}
+.bq-cardbtn [class*="AvailabilityLink"]:hover{background:rgba(74,92,64,.08)!important;color:var(--forest)!important}
 /* "Added to cart" indicator: bump the nav Cart when the count increases. */
 @keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.96)}100%{transform:scale(1)}}
 .nav-cart-btn.cart-bump{animation:cartBump .55s ease;color:var(--gold)!important}
