@@ -1543,11 +1543,14 @@ document.getElementById('navCart').addEventListener('click', e => {
   e.preventDefault();
   if (!openNativeCart()) setTimeout(openNativeCart, 500);  // retry if embed still mounting
 });
-// Open Booqable's native cart drawer by clicking its floating launcher.
+// Open Booqable's native cart drawer by triggering its floating launcher.
 function openNativeCart() {
-  const launcher = document.querySelector('.bq-minicart-launcher, .bq-minicart-button, [class*="minicart-launcher"], [class*="minicart-button"]');
-  if (launcher) { launcher.click(); return true; }
-  return false;
+  const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
+  if (!el) return false;
+  const target = el.querySelector('button, a, [role=button]') || el;
+  ['mousedown', 'mouseup', 'click'].forEach(type =>
+    target.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window })));
+  return true;
 }
 // The old local-cart badge is dead now (items live in Booqable). Clear any
 // stale count and mirror the native launcher's count onto the nav Cart badge.
