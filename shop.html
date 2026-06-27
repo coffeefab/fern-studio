@@ -1348,7 +1348,15 @@ document.getElementById('shopGrid').addEventListener('click', e => {
   const product = allProducts.find(p => p.id === btn.dataset.id);
   if (product) {
     addToCart(product, qty);
-    openCart();
+    // Quick confirmation, then keep them browsing — the cart now lives on
+    // Booqable and opens via the Cart icon, not a slide-out.
+    if (!btn.dataset.added) {
+      const orig = btn.textContent;
+      btn.dataset.added = '1';
+      btn.textContent = 'Added ✓';
+      btn.classList.add('added');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('added'); delete btn.dataset.added; }, 1300);
+    }
   }
 });
 
@@ -1471,18 +1479,19 @@ document.getElementById('btnSubmit').onclick = e => {
 };
 
 // ===== CART EVENT LISTENERS =====
-document.getElementById('navCart').addEventListener('click', e => { e.preventDefault(); openCart(); });
+document.getElementById('navCart').addEventListener('click', e => { e.preventDefault(); goToBooqableCart(); });
 // Booking Request CTA → opens the homepage booking modal
 document.getElementById('navBook').addEventListener('click', e => { e.preventDefault(); window.location.href = 'index.html#book'; });
 document.getElementById('stickyBook').addEventListener('click', () => { window.location.href = 'index.html#book'; });
 
-// Hydrate badge for persisted cart, and open drawer if arriving via #cart
+// Hydrate badge for persisted cart, and jump to the Booqable cart if arriving
+// via #cart (e.g. a "view cart" link elsewhere).
 refreshBadge();
 renderCartItems();
 updateFooter();
 if (location.hash === '#cart') {
   history.replaceState(null, '', location.pathname + location.search);
-  openCart();
+  goToBooqableCart();
 }
 document.getElementById('cartOverlay').addEventListener('click', closeCart);
 document.getElementById('cartDrawerClose').addEventListener('click', closeCart);
@@ -1568,17 +1577,9 @@ async function preflightCartAvailability() {
     return { ok: false, errors: ['Please pick a rental date before checkout.'] };
   }
 
-  // The time selects go empty (with a "no slots available" placeholder) when
-  // the driver's other deliveries already claim every valid slot on this
-  // date. Don't let the silent '10:00' / '18:00' fallback further down book
-  // a window we explicitly hid.
-  const dropoffVal = document.getElementById('cartDropoff')?.value || '';
-  const returnVal  = document.getElementById('cartReturn')?.value  || '';
-  if (!dropoffVal || !returnVal) {
-    return { ok: false, errors: ['Pickup and return times are required. If no slots appear for this date, please pick a different date or contact us at byfernstudio@gmail.com to coordinate.'] };
-  }
-
-  // Build a full-day window covering every day of the rental, in local
+  // Pickup/return times are now chosen on Booqable's cart page, so we only
+  // gate on date + inventory here. Build a full-day window covering every day
+  // of the rental, in local
   // time, then convert to UTC ISO for the API call. For a 1-day rental
   // this is midnight → next midnight (a clean 24h block in local time);
   // multi-day rentals extend the till.
@@ -1631,79 +1632,50 @@ async function preflightCartAvailability() {
   return { ok: errors.length === 0, errors };
 }
 
-// ===== CHECKOUT: hand cart off to Booqable's hosted checkout =====
-// The customer pays the 25% deposit on Booqable's page (which uses our
-// connected Stripe account under the hood). We do not handle card data
-// or PCI scope on this site.
-document.getElementById('cartCheckoutBtn').addEventListener('click', async () => {
-  if (!cart.length) return;
+// ===== CART → Booqable: build a real Booqable cart from the local items and
+// send the customer to Booqable's cart page. There they confirm dates, choose
+// delivery, and check out + pay the 25% deposit (our connected Stripe account,
+// no card data on this site). One cart, not two — the old slide-out is retired.
+async function goToBooqableCart() {
+  if (!cart.length) { showCartToast('Your cart is empty — add a few items first.'); return; }
 
-  // Delivery choice must be made before redirect, since Booqable's hosted
-  // checkout treats delivery as just another line item.
-  if (checkoutDelivery === null) {
-    const ctrl = document.getElementById('cartDeliveryToggle');
-    if (ctrl) {
-      ctrl.style.outline = '2px solid var(--err)';
-      setTimeout(() => ctrl.style.outline = '', 2500);
-    }
-    return;
-  }
+  const trigger = document.getElementById('navCart');
+  if (trigger) trigger.classList.add('cart-loading');
 
-  const btn = document.getElementById('cartCheckoutBtn');
-  const originalLabel = btn.textContent;
-  clearCartError();
-  btn.disabled = true;
-  btn.textContent = 'Checking availability…';
-
-  // Hard cap: block checkout if any cart item would push past the day's
-  // inventory. Without this, Booqable's per-window availability lets two
-  // same-day rentals each book up to full stock.
-  const pre = await preflightCartAvailability();
-  if (!pre.ok) {
-    showCartError(pre.errors);
-    btn.disabled = false;
-    btn.textContent = originalLabel;
-    return;
-  }
-
-  btn.textContent = 'Redirecting to checkout…';
-
-  // Build the rental date range. Use the shop's date bar if set, otherwise
-  // a default starting tomorrow. Booqable's hosted page lets customers
-  // adjust dates if needed.
+  // Use the shop's date bar if set, otherwise default to tomorrow. Times
+  // default to 10am–6pm; the customer adjusts exact dates/times (and picks
+  // delivery vs pickup) on Booqable's cart page, and we confirm with them.
   const today = new Date();
   const shopDateVal = document.getElementById('shopDate').value;
+
+  // Hard cap: if a date is chosen, block items that would exceed the day's
+  // stock before sending them onward. With no date yet, they'll set it and see
+  // availability on Booqable's cart page.
+  if (shopDateVal) {
+    const pre = await preflightCartAvailability();
+    if (!pre.ok) { showCartToast(pre.errors); if (trigger) trigger.classList.remove('cart-loading'); return; }
+  }
+
   const baseStart = shopDateVal
     ? new Date(`${shopDateVal}T00:00:00`)
     : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-  const dropoffStr = document.getElementById('cartDropoff')?.value || '10:00';
-  const returnStr  = document.getElementById('cartReturn')?.value  || '18:00';
-  const [dh, dm] = dropoffStr.split(':').map(Number);
-  const [rh, rm] = returnStr.split(':').map(Number);
-  const startDate = new Date(baseStart);
-  startDate.setHours(dh, dm, 0, 0);
-  const stopDate  = new Date(baseStart);
-  stopDate.setDate(stopDate.getDate() + Math.max(0, rentalDays - 1));
-  stopDate.setHours(rh, rm, 0, 0);
-  // Safety: if return ends up before start (e.g. same-day with bad times),
-  // push the return to the next day so Booqable doesn't reject the window.
+  const startDate = new Date(baseStart); startDate.setHours(10, 0, 0, 0);
+  const stopDate  = new Date(baseStart); stopDate.setHours(18, 0, 0, 0);
+  // Safety: keep the return strictly after the start.
   if (stopDate <= startDate) stopDate.setDate(stopDate.getDate() + 1);
 
   // Translate cart product_group_ids to item_ids. The map is populated by
-  // loadItems() at page load; if it's empty (network blip) we abort.
+  // loadItems() at page load; if it's empty (network blip) we abort. Delivery
+  // is offered as an add-on on Booqable's cart page, so we don't inject it.
   const lines = [];
   for (const ci of cart) {
     const itemId = pgToItemId.get(ci.id);
     if (!itemId) {
-      showCartError(`We could not look up "${ci.name}" in the rental inventory. Please refresh and try again.`);
-      btn.disabled = false;
-      btn.textContent = originalLabel;
+      showCartToast(`We could not look up "${ci.name}" in the rental inventory. Please refresh and try again.`);
+      if (trigger) trigger.classList.remove('cart-loading');
       return;
     }
     lines.push({ itemId, quantity: ci.qty });
-  }
-  if (checkoutDelivery === true) {
-    lines.push({ itemId: DELIVERY_ITEM_ID, quantity: 1 });
   }
 
   try {
@@ -1757,18 +1729,35 @@ document.getElementById('cartCheckoutBtn').addEventListener('click', async () =>
 
     if (!handoffUrl) throw new Error('Booqable did not return a cart URL');
 
-    // Clear local cart so a back-button visit starts fresh.
-    cart = [];
-    saveCart();
-
+    // Keep the local cart as-is: it's the customer's working selection. Each
+    // visit to Booqable's cart is rebuilt fresh from it, so a back-button
+    // return (to add more) still has their items.
     window.location.href = handoffUrl;
   } catch (err) {
-    console.error('Booqable checkout handoff failed:', err);
-    showCartError(`We could not start checkout (${err.message}). Please try again, or email byfernstudio@gmail.com.`);
-    btn.disabled = false;
-    btn.textContent = originalLabel;
+    console.error('Booqable cart handoff failed:', err);
+    showCartToast(`We could not open your cart (${err.message}). Please try again, or email byfernstudio@gmail.com.`);
+    if (trigger) trigger.classList.remove('cart-loading');
   }
-});
+}
+
+// Lightweight toast for cart issues (availability / network). The slide-out
+// drawer is retired, so we surface these as a brief top-of-screen banner.
+function showCartToast(messageOrList) {
+  const list = Array.isArray(messageOrList) ? messageOrList : [messageOrList];
+  let t = document.getElementById('cartToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'cartToast';
+    t.style.cssText = 'position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:9999;max-width:90vw;background:#fdecec;border:1px solid #e6b3b3;color:#8a2a2a;padding:.8rem 1.1rem;border-radius:8px;font-size:.88rem;line-height:1.5;box-shadow:0 6px 24px rgba(0,0,0,.14);text-align:left';
+    document.body.appendChild(t);
+  }
+  t.innerHTML = list.length === 1
+    ? escHtml(list[0])
+    : '<ul style="margin:0;padding-left:1.1rem">' + list.map(m => `<li>${escHtml(m)}</li>`).join('') + '</ul>';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 6000);
+}
 
 function showCartError(messageOrList) {
   const btn = document.getElementById('cartCheckoutBtn');
