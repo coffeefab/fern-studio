@@ -29,8 +29,19 @@
     .card-fromlbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);font-weight:500;margin-top:auto}
     .card-price{font-family:'Fraunces',serif;font-size:1.35rem;color:var(--forest);font-weight:400;line-height:1.15;margin-bottom:.7rem}
     .card-price span{font-size:.7rem;font-family:'Jost',sans-serif;color:var(--mist);font-weight:300}
-    /* Make Booqable's injected add-to-cart button look like the brand CTA, full width.
-       Target the rendered button/link/role=button no matter how Booqable nests it. */
+    /* The booqable-product-button renders a whole mini-widget (price, days,
+       availability, check-availability + add-to-cart). Slim it to just the
+       Add to cart button — the card already shows name + price, and live
+       availability shows in the cart drawer. */
+    .booqable-product-button .bq-product-price,
+    .booqable-product-button .bq-product-price-label,
+    .booqable-product-button .bq-product-availability,
+    .booqable-product-button .bq-product-info,
+    .booqable-product-button .bq-price,
+    .booqable-product-button .bq-price-details,
+    .booqable-product-button .bq-quantity,
+    .booqable-product-button .bq-quantity-toggle{display:none!important}
+    /* Make Booqable's add-to-cart button look like the brand CTA, full width. */
     .booqable-product-button{width:100%;margin-top:auto}
     .booqable-product-button *{box-sizing:border-box}
     .booqable-product-button button,
