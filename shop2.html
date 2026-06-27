@@ -148,6 +148,9 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 /* Booqable's real add-to-cart button: rendered + functional, but hidden behind
    our own .shop-card-cta (proxy pattern). Our button forwards the click. */
 .bq-proxy{position:absolute!important;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none;left:-9999px}
+/* "Added to cart" indicator: bump the nav Cart when the count increases. */
+@keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.96)}100%{transform:scale(1)}}
+.nav-cart-btn.cart-bump{animation:cartBump .55s ease;color:var(--gold)!important}
 /* Filtered-out cards: moved off-screen (still display:block) so Booqable keeps
    their add-to-cart buttons active. */
 .shop-card.bq-hidden{position:absolute!important;left:-99999px!important;top:0!important;width:1px!important;height:1px!important;overflow:hidden!important}
@@ -1544,26 +1547,52 @@ document.getElementById('navCart').addEventListener('click', e => {
   if (!openNativeCart()) setTimeout(openNativeCart, 500);  // retry if embed still mounting
 });
 // Open Booqable's native cart drawer by triggering its floating launcher.
+// React listens via delegation at its root, so we fire the click on the
+// launcher's DEEPEST element — the event bubbles up to whatever node holds the
+// real handler.
 function openNativeCart() {
   const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
   if (!el) return false;
-  const target = el.querySelector('button, a, [role=button]') || el;
+  let t = el; while (t.firstElementChild) t = t.firstElementChild;
   ['mousedown', 'mouseup', 'click'].forEach(type =>
-    target.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window })));
+    t.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window })));
   return true;
+}
+// Read the live item count from Booqable's own cart data (defensive about shape).
+function nativeCartCount() {
+  try {
+    const c = window.Booqable && window.Booqable.cartData;
+    if (!c) return null;
+    if (typeof c.item_count === 'number') return c.item_count;
+    const lines = c.lines || c.items || c.cart_lines;
+    if (Array.isArray(lines)) return lines.reduce((s, l) => s + (l.quantity || l.qty || 1), 0);
+  } catch (e) {}
+  return null;
 }
 // The old local-cart badge is dead now (items live in Booqable). Clear any
 // stale count and mirror the native launcher's count onto the nav Cart badge.
 try { localStorage.removeItem('fern_cart_v1'); } catch (e) {}
+let lastCartN = 0;
 setInterval(() => {
   const badge = document.getElementById('cartBadge');
+  const navCartEl = document.getElementById('navCart');
   if (!badge) return;
-  const launcher = document.querySelector('.bq-minicart-launcher, .bq-minicart-button, [class*="minicart-launcher"]');
-  const m = launcher && (launcher.textContent || '').match(/\d+/);
-  const n = m ? m[0] : '0';
+  // Prefer Booqable's own cart data; fall back to the launcher's badge text.
+  let n = nativeCartCount();
+  if (n == null) {
+    const launcher = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"]');
+    const m = launcher && (launcher.textContent || '').match(/\d+/);
+    n = m ? parseInt(m[0]) : 0;
+  }
   badge.textContent = n;
-  badge.style.display = (n !== '0') ? 'flex' : 'none';
-}, 1000);
+  badge.style.display = (n > 0) ? 'flex' : 'none';
+  // Pulse the nav Cart when the count goes up (the "added!" indicator).
+  if (n > lastCartN && navCartEl) {
+    navCartEl.classList.add('cart-bump');
+    setTimeout(() => navCartEl.classList.remove('cart-bump'), 600);
+  }
+  lastCartN = n;
+}, 800);
 // Booking Request CTA → opens the homepage booking modal
 document.getElementById('navBook').addEventListener('click', e => { e.preventDefault(); window.location.href = 'index.html#book'; });
 document.getElementById('stickyBook').addEventListener('click', () => { window.location.href = 'index.html#book'; });
