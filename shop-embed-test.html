@@ -41,11 +41,17 @@
 
     <div class="booqable-datepicker"></div>
 
-    <h2>1 · Booqable native list (reference)</h2>
-    <div class="booqable-product-list"></div>
-
-    <h2 style="color:var(--sage)">2 · Your custom cards + native add-to-cart button (the real plan)</h2>
+    <h2 style="color:var(--sage)">Your custom cards + native add-to-cart button (the real plan)</h2>
+    <p class="sub">Test: pick a date, then click Add to cart below. Watch for (a) a floating cart icon appearing, or (b) the cart elements I placed here filling in. Goal = a cart shows up <b>on this page</b>, no new tab.</p>
     <div id="customGrid"><p style="color:var(--sage)">Loading your cards…</p></div>
+
+    <h2 style="color:var(--sage)">Cart element candidates (one of these should become a real cart)</h2>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;border:1px dashed var(--sage);padding:1rem;border-radius:10px">
+      <div>A: <div class="booqable-cart" style="display:inline-block"></div></div>
+      <div>B: <div class="booqable-cart-button" style="display:inline-block"></div></div>
+      <div>C: <div class="booqable-minicart" style="display:inline-block"></div></div>
+      <div>D: <bq-minicart-button></bq-minicart-button></div>
+    </div>
   </div>
 
   <script>
@@ -70,6 +76,13 @@
             <div class="booqable-product-button" data-id="${p.slug}"></div>
           </div>
         </div>`).join('');
+      // Configure the embed BEFORE loading it: enable the floating cart
+      // launcher so add-to-cart opens a cart on THIS page instead of redirecting.
+      window.booqableOptions = window.booqableOptions || {
+        company: 'byfernstudio',
+        primaryColor: '#383410',
+        disableLauncher: false
+      };
       // Now that the buttons exist in the DOM, load the Booqable embed.
       const s = document.createElement('script');
       s.src = 'https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js';
