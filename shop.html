@@ -737,6 +737,9 @@ const INQUIRE_ONLY_NAMES = new Set([
 // Lookup: product_group_id (what the catalog uses) -> item_id (what Booqable's
 // cart_bookings endpoint requires). Populated by loadItems() at page load.
 const pgToItemId = new Map();
+// Promise handle for the in-flight loadItems() so the cart can await it before
+// translating ids (a fast Cart click or a #cart deep-link load can beat it).
+let itemsReady = null;
 
 // ===== CART STATE =====
 const CART_KEY = 'fern_cart_v1';
@@ -1669,9 +1672,15 @@ async function goToBooqableCart() {
   // Safety: keep the return strictly after the start.
   if (stopDate <= startDate) stopDate.setDate(stopDate.getDate() + 1);
 
-  // Translate cart product_group_ids to item_ids. The map is populated by
-  // loadItems() at page load; if it's empty (network blip) we abort. Delivery
-  // is offered as an add-on on Booqable's cart page, so we don't inject it.
+  // The product_group -> item_id map loads async at page open, so a fast click
+  // (or a #cart deep-link load) can arrive first. Wait for it; kick off the
+  // load ourselves if it hasn't started yet.
+  if (pgToItemId.size === 0) {
+    try { await (itemsReady || (itemsReady = loadItems())); } catch (e) {}
+  }
+
+  // Translate cart product_group_ids to item_ids. Delivery is offered as an
+  // add-on on Booqable's cart page, so we don't inject it here.
   const lines = [];
   for (const ci of cart) {
     const itemId = pgToItemId.get(ci.id);
@@ -1844,7 +1853,7 @@ const REVIEWS = [
 
 // ===== INIT =====
 loadProducts();
-loadItems();
+itemsReady = loadItems();
 
 // ===== MOBILE NAV TOGGLE =====
 (function(){
