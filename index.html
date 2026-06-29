@@ -1828,5 +1828,41 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 <!-- WhatsApp FAB -->
 <a href="https://wa.me/13174429621" target="_blank" rel="noopener" class="wa-fab" aria-label="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.05 4.91A9.82 9.82 0 0012.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zM12.04 20.15h-.01a8.23 8.23 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.21 8.21 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 012.41 5.83c0 4.54-3.7 8.23-8.22 8.23zm4.51-6.16c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.55.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.55-1.34-.76-1.83-.2-.48-.4-.42-.55-.43-.14-.01-.31-.01-.47-.01-.16 0-.43.06-.66.31-.23.25-.86.84-.86 2.06s.88 2.39 1.01 2.55c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.66-1.18.2-.58.2-1.07.14-1.18-.06-.11-.22-.17-.47-.29z"/></svg></a>
+<!-- Booqable native cart: nav Cart opens the drawer in place, count synced -->
+<script>
+(function(){
+  window.booqableOptions = window.booqableOptions || { company:'byfernstudio', primaryColor:'#383410', disableLauncher:false };
+  var s=document.createElement('script');
+  s.src='https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js';
+  document.body.appendChild(s);
+  function openNativeCart(){
+    var el=document.querySelector('[class*="minicart-launcher"],[class*="minicart-button"],bq-minicart-launcher,bq-minicart-button');
+    if(!el) return false;
+    var t=el; while(t.firstElementChild) t=t.firstElementChild;
+    t.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
+    return true;
+  }
+  function nativeCartCount(){
+    try{ var c=window.Booqable&&window.Booqable.cartData; if(!c) return null;
+      if(typeof c.item_count==='number') return c.item_count;
+      var lines=c.lines||c.items||c.cart_lines;
+      if(Array.isArray(lines)) return lines.reduce(function(a,l){return a+(l.quantity||l.qty||1);},0);
+    }catch(e){} return null;
+  }
+  try{localStorage.removeItem('fern_cart_v1');}catch(e){}
+  ['navCart','navCartMobile'].forEach(function(id){
+    var n=document.getElementById(id);
+    if(n) n.addEventListener('click',function(e){ e.preventDefault(); if(!openNativeCart()) setTimeout(openNativeCart,500); });
+  });
+  setInterval(function(){
+    var n=nativeCartCount();
+    if(n==null){ var l=document.querySelector('[class*="minicart-launcher"],[class*="minicart-button"]'); var m=l&&(l.textContent||'').match(/\d+/); n=m?parseInt(m[0]):0; }
+    var badge=document.getElementById('cartBadge'); if(badge){ badge.textContent=n; badge.style.display=n>0?'flex':'none'; }
+    var mob=document.getElementById('cartBadgeMobile'); if(mob){ mob.textContent=n; }
+    var mobBtn=document.getElementById('navCartMobile'); if(mobBtn){ mobBtn.classList.toggle('has-items', n>0); }
+  },1000);
+})();
+</script>
+
 </body>
 </html>
