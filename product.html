@@ -110,12 +110,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.05;letter-sp
   letter-spacing:.12em!important;text-transform:uppercase!important;font-weight:500!important;white-space:nowrap!important;
   cursor:pointer!important;box-shadow:none!important;text-decoration:none!important}
 .bq-cardbtn button:hover,.bq-cardbtn .bq-button:hover,.bq-cardbtn a:not([class*="AvailabilityLink"]):hover{background:var(--sage)!important}
-.bq-cardbtn [class*="AvailabilityLink"]{
-  display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;background:transparent!important;
-  color:var(--sage)!important;border:1px solid rgba(74,92,64,.45)!important;border-radius:var(--r4)!important;padding:.78rem 1rem!important;
-  margin:0 0 .6rem 0!important;font-family:'Jost',sans-serif!important;font-size:.66rem!important;line-height:1!important;letter-spacing:.1em!important;
-  text-transform:uppercase!important;font-weight:500!important;text-decoration:none!important;cursor:pointer!important}
-.bq-cardbtn [class*="AvailabilityLink"]:hover{background:rgba(74,92,64,.08)!important;color:var(--forest)!important}
+/* On the product page the date picker already shows the chosen dates, so the
+   "Check availability" link is redundant — hide it. */
+.bq-cardbtn [class*="AvailabilityLink"]{display:none!important}
 .pdp-coming-tag{color:var(--forest);text-transform:uppercase;letter-spacing:.16em;font-size:.62rem;font-weight:500;margin-bottom:.85rem;display:flex;align-items:center;gap:.5rem}
 .pdp-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-warm);display:inline-block;box-shadow:0 0 0 3px rgba(203,168,106,.22)}
 .pdp-inquire-msg{font-size:.86rem;color:var(--stone);line-height:1.7;margin-bottom:1.1rem;max-width:42ch}
