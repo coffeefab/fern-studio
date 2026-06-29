@@ -379,7 +379,10 @@ function openNativeCart() {
   const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
   if (!el) return false;
   let t = el; while (t.firstElementChild) t = t.firstElementChild;
-  t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+  ['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ty){
+    var E=/pointer/.test(ty)&&window.PointerEvent?PointerEvent:MouseEvent;
+    try{ t.dispatchEvent(new E(ty,{bubbles:true,cancelable:true,view:window})); }catch(e){}
+  });
   return true;
 }
 
