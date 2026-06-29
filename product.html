@@ -375,15 +375,9 @@ function initBooqableEmbed() {
   document.body.appendChild(s);
 }
 // Open Booqable's native cart drawer via its floating launcher's deepest node.
-function openNativeCart() {
-  const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
-  if (!el) return false;
-  let t = el; while (t.firstElementChild) t = t.firstElementChild;
-  ['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ty){
-    var E=/pointer/.test(ty)&&window.PointerEvent?PointerEvent:MouseEvent;
-    try{ t.dispatchEvent(new E(ty,{bubbles:true,cancelable:true,view:window})); }catch(e){}
-  });
-  return true;
+function openNativeCart(){
+  try{ var st=(window.booqableGetStore&&window.booqableGetStore())||window.booqableStore; if(st&&st.dispatch){ st.dispatch({type:"TOGGLE_CART",payload:{cartOpen:true}}); return true; } }catch(e){}
+  return false;
 }
 
 async function loadAll() {

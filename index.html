@@ -1836,15 +1836,9 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   s.src='https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js';
   document.body.appendChild(s);
   function openNativeCart(){
-    var el=document.querySelector('[class*="minicart-launcher"],[class*="minicart-button"],bq-minicart-launcher,bq-minicart-button');
-    if(!el) return false;
-    var t=el; while(t.firstElementChild) t=t.firstElementChild;
-    ['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ty){
-    var E=/pointer/.test(ty)&&window.PointerEvent?PointerEvent:MouseEvent;
-    try{ t.dispatchEvent(new E(ty,{bubbles:true,cancelable:true,view:window})); }catch(e){}
-  });
-    return true;
-  }
+  try{ var st=(window.booqableGetStore&&window.booqableGetStore())||window.booqableStore; if(st&&st.dispatch){ st.dispatch({type:"TOGGLE_CART",payload:{cartOpen:true}}); return true; } }catch(e){}
+  return false;
+}
   function nativeCartCount(){
     try{ var c=window.Booqable&&window.Booqable.cartData; if(!c) return null;
       if(typeof c.item_count==='number') return c.item_count;

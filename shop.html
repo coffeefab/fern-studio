@@ -1559,28 +1559,13 @@ document.getElementById('navCart').addEventListener('click', e => {
 });
 // Open Booqable's native date-picker popup (the calendar modal) by clicking the
 // hidden datepicker's deepest node.
-function openDatePicker() {
-  const dp = document.querySelector('.booqable-datepicker');
-  if (!dp) return;
-  let t = dp; while (t.firstElementChild) t = t.firstElementChild;
-  ['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ty){
-    var E=/pointer/.test(ty)&&window.PointerEvent?PointerEvent:MouseEvent;
-    try{ t.dispatchEvent(new E(ty,{bubbles:true,cancelable:true,view:window})); }catch(e){}
-  });
+function openDatePicker(){
+  try{ var st=(window.booqableGetStore&&window.booqableGetStore())||window.booqableStore; if(st&&st.dispatch){ st.dispatch({type:"TOGGLE_PICKER",payload:{modalPickerOpen:true}}); return true; } }catch(e){}
+  return false;
 }
-// Open Booqable's native cart drawer by triggering its floating launcher.
-// React listens via delegation at its root, so we fire the click on the
-// launcher's DEEPEST element — the event bubbles up to whatever node holds the
-// real handler.
-function openNativeCart() {
-  const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
-  if (!el) return false;
-  let t = el; while (t.firstElementChild) t = t.firstElementChild;
-  ['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ty){
-    var E=/pointer/.test(ty)&&window.PointerEvent?PointerEvent:MouseEvent;
-    try{ t.dispatchEvent(new E(ty,{bubbles:true,cancelable:true,view:window})); }catch(e){}
-  });
-  return true;
+function openNativeCart(){
+  try{ var st=(window.booqableGetStore&&window.booqableGetStore())||window.booqableStore; if(st&&st.dispatch){ st.dispatch({type:"TOGGLE_CART",payload:{cartOpen:true}}); return true; } }catch(e){}
+  return false;
 }
 // Read the live item count from Booqable's own cart data (defensive about shape).
 function nativeCartCount() {
