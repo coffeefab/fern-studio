@@ -138,6 +138,10 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .hero-sub strong{color:var(--charcoal);font-weight:500}
 /* Widget card */
 .hero-widget-card{background:var(--white);border-radius:14px;padding:1.4rem 1.6rem;box-shadow:0 4px 28px rgba(28,27,20,.09),0 0 0 1px rgba(28,27,20,.05);margin-bottom:1.5rem;max-width:440px}
+.hero-cta-wrap{margin-bottom:2rem;max-width:440px}
+.hero-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--forest);color:var(--ivory);padding:1.05rem 2.2rem;border-radius:8px;font-family:'Jost',sans-serif;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background var(--t),transform var(--t)}
+.hero-cta:hover{background:var(--sage);transform:translateY(-1px)}
+.hero-cta-wrap .widget-trust{margin-top:1rem}
 .widget-label{display:flex;align-items:center;gap:.4rem;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem;font-weight:500}
 .hero-avail-row{display:grid;grid-template-columns:1fr 1fr auto;gap:.5rem;align-items:center}
 .hero-avail-row input,.hero-avail-row select{padding:.6rem .75rem;border:1.5px solid rgba(28,27,20,.12);border-radius:8px;font-family:'Jost',sans-serif;font-size:.84rem;color:var(--charcoal);background:var(--ivory);outline:none;transition:border-color var(--t);appearance:none;-webkit-appearance:none;width:100%}
@@ -561,22 +565,9 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
         <h1>Event rentals for <em>beautiful days.</em></h1>
         <p class="hero-sub">Floral installations, flower walls, arches, tables, chairs, and LED signs. <strong>Delivered, styled, and picked up</strong> by our team. Serving Greater Indianapolis.</p>
 
-        <div class="hero-widget-card" id="heroCard">
-          <div class="widget-label">
-            <span style="display:inline-flex;vertical-align:middle"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V5c0-1.5.7-2.5 2-3"/><path d="M12 17c-3-.5-5-2-7-4"/><path d="M12 17c3-.5 5-2 7-4"/><path d="M12 13c-2-.5-3.5-1.5-5-3"/><path d="M12 13c2-.5 3.5-1.5 5-3"/><path d="M12 9c-1.5-.5-2.5-1.2-3-2"/><path d="M12 9c1.5-.5 2.5-1.2 3-2"/></svg></span> Check floral installation availability
-          </div>
-          <div class="widget-date-row">
-            <span class="widget-date-lbl">Event date</span>
-            <input type="date" id="hDate" class="widget-date-input">
-          </div>
-          <div class="widget-items-section" id="wItemsSection" style="display:none">
-            <div class="widget-items-lbl">Tap the floral installations you want for this date</div>
-            <div class="widget-chips" id="wChips"></div>
-            <button class="widget-show-more" id="wShowMore" type="button" style="display:none">Show more</button>
-            <button class="widget-check-full" onclick="checkWidgetAvail()" style="margin-top:.9rem">Check date →</button>
-          </div>
-          <div class="avail-results" id="hRes"></div>
-          <div class="widget-trust">Reply within 24 hours · No obligation · Free quote</div>
+        <div class="hero-cta-wrap">
+          <a href="shop.html" class="hero-cta">Browse rentals &amp; book →</a>
+          <div class="widget-trust">Real pricing · Live availability · Reserve with a 25% deposit</div>
         </div>
 
         <div class="hero-proof-row">
@@ -1107,15 +1098,16 @@ function renderResults(dateStr, data, container) {
   container.classList.add('open');
 }
 
-// Hero widget: show item chips when date is picked
-document.getElementById('hDate').addEventListener('change', () => {
+// Hero widget retired (replaced by a CTA to the shop). Guard in case the
+// element is gone so the rest of the page script still runs.
+const _hDate = document.getElementById('hDate');
+if (_hDate) _hDate.addEventListener('change', () => {
   const section = document.getElementById('wItemsSection');
   const resEl   = document.getElementById('hRes');
   resEl.innerHTML = ''; resEl.classList.remove('open');
   section.style.display = 'block';
   renderWidgetChips();
-  // Auto-run availability check so every chip shows its inline status
-  if (document.getElementById('hDate').value) {
+  if (_hDate.value) {
     requestAnimationFrame(() => checkWidgetAvail());
   }
 });
