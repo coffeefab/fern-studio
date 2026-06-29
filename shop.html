@@ -93,7 +93,9 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .page-hd-sub{color:var(--stone);font-size:.95rem;line-height:1.8;max-width:50ch;margin-bottom:2rem}
 
 /* Availability checker bar */
-.avail-check-bar{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--white);border-radius:var(--r8);padding:1rem 1.4rem;box-shadow:var(--shadow-sm);border:1px solid rgba(28,27,20,.07);max-width:760px}
+/* Top date bar is hidden but kept in the DOM (off-screen) so its native date
+   picker still powers the "Check availability" popups on the cards. */
+.avail-check-bar{position:absolute!important;left:-99999px!important;top:0;width:1px;height:1px;overflow:hidden}
 .avail-check-bar label{font-size:.67rem;letter-spacing:.13em;text-transform:uppercase;color:var(--stone);font-weight:500;white-space:nowrap;flex-shrink:0}
 .avail-check-bar input[type=date]{padding:.58rem .9rem;border:1.5px solid rgba(28,27,20,.14);border-radius:var(--r4);font-family:'Jost',sans-serif;font-size:.88rem;color:var(--charcoal);background:var(--ivory);outline:none;transition:border-color var(--t);flex:1;min-width:160px}
 .avail-check-bar input[type=date]:focus{border-color:var(--sage)}
@@ -1410,30 +1412,10 @@ function applyShopFilter() {
 
 // ===== SHOP GRID CLICK =====
 document.getElementById('shopGrid').addEventListener('click', e => {
-  // "Check availability" per-card link
+  // "Check availability" — open Booqable's native date-picker popup (same date
+  // popup the tables/seating cards use), instead of a separate top date bar.
   const link = e.target.closest('.shop-check-link');
-  if (link) {
-    const date = document.getElementById('shopDate').value;
-    if (!date) {
-      const bar = document.querySelector('.avail-check-bar');
-      bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const dateEl = document.getElementById('shopDate');
-      dateEl.style.outline = '2px solid var(--sage)';
-      dateEl.focus();
-      setTimeout(() => dateEl.style.outline = '', 2200);
-      document.getElementById('shopAvailNote').textContent = 'Pick a date above to check availability.';
-      document.getElementById('shopAvailNote').className = '';
-    } else {
-      checkShopAvail();
-      // Briefly highlight the badge for this card once results arrive
-      const id = link.dataset.id;
-      setTimeout(() => {
-        const badge = document.getElementById(`avail-${id}`);
-        if (badge) { badge.style.outline = '2px solid rgba(255,255,255,.6)'; setTimeout(() => badge.style.outline='', 1200); }
-      }, 700);
-    }
-    return;
-  }
+  if (link) { openDatePicker(); return; }
 
   // "Add to cart": fire the hidden Booqable button behind this card (proxy
   // pattern). Booqable adds the item and opens its native cart drawer.
@@ -1581,6 +1563,14 @@ document.getElementById('navCart').addEventListener('click', e => {
   e.preventDefault();
   if (!openNativeCart()) setTimeout(openNativeCart, 500);  // retry if embed still mounting
 });
+// Open Booqable's native date-picker popup (the calendar modal) by clicking the
+// hidden datepicker's deepest node.
+function openDatePicker() {
+  const dp = document.querySelector('.booqable-datepicker');
+  if (!dp) return;
+  let t = dp; while (t.firstElementChild) t = t.firstElementChild;
+  t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+}
 // Open Booqable's native cart drawer by triggering its floating launcher.
 // React listens via delegation at its root, so we fire the click on the
 // launcher's DEEPEST element — the event bubbles up to whatever node holds the
