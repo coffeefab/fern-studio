@@ -96,6 +96,26 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:400;line-height:1.05;letter-sp
 .pdp-fineprint{font-size:.7rem;color:var(--mist);margin-top:.85rem;text-align:center;letter-spacing:.04em}
 .pdp-fineprint a{color:var(--sage);text-decoration:underline;text-underline-offset:2px}
 .pdp-cta-link{display:flex;align-items:center;justify-content:center;text-decoration:none}
+/* Booqable native add-to-cart button, styled as the brand CTA (same as shop). */
+.bq-cardbtn{width:100%;font-size:0!important}
+.bq-cardbtn .bq-product-price,.bq-cardbtn .bq-product-price-label,.bq-cardbtn .bq-product-availability,
+.bq-cardbtn .bq-product-info,.bq-cardbtn .bq-status-quantity,.bq-cardbtn .bq-price,.bq-cardbtn .bq-price-details,
+.bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle,.bq-cardbtn .bq-available,.bq-cardbtn .bq-unavailable,
+.bq-cardbtn [class*="Availability"]:not([class*="Link"]){display:none!important}
+.bq-cardbtn div{width:100%!important;display:block!important}
+.bq-cardbtn button,.bq-cardbtn .bq-button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a:not([class*="AvailabilityLink"]){
+  display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-width:100%!important;
+  background:var(--forest)!important;color:var(--ivory)!important;border:none!important;border-radius:var(--r4)!important;
+  padding:.95rem 1rem!important;margin:0!important;font-family:'Jost',sans-serif!important;font-size:.78rem!important;line-height:1!important;
+  letter-spacing:.12em!important;text-transform:uppercase!important;font-weight:500!important;white-space:nowrap!important;
+  cursor:pointer!important;box-shadow:none!important;text-decoration:none!important}
+.bq-cardbtn button:hover,.bq-cardbtn .bq-button:hover,.bq-cardbtn a:not([class*="AvailabilityLink"]):hover{background:var(--sage)!important}
+.bq-cardbtn [class*="AvailabilityLink"]{
+  display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;background:transparent!important;
+  color:var(--sage)!important;border:1px solid rgba(74,92,64,.45)!important;border-radius:var(--r4)!important;padding:.78rem 1rem!important;
+  margin:0 0 .6rem 0!important;font-family:'Jost',sans-serif!important;font-size:.66rem!important;line-height:1!important;letter-spacing:.1em!important;
+  text-transform:uppercase!important;font-weight:500!important;text-decoration:none!important;cursor:pointer!important}
+.bq-cardbtn [class*="AvailabilityLink"]:hover{background:rgba(74,92,64,.08)!important;color:var(--forest)!important}
 .pdp-coming-tag{color:var(--forest);text-transform:uppercase;letter-spacing:.16em;font-size:.62rem;font-weight:500;margin-bottom:.85rem;display:flex;align-items:center;gap:.5rem}
 .pdp-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-warm);display:inline-block;box-shadow:0 0 0 3px rgba(203,168,106,.22)}
 .pdp-inquire-msg{font-size:.86rem;color:var(--stone);line-height:1.7;margin-bottom:1.1rem;max-width:42ch}
@@ -304,15 +324,34 @@ function loadCart() {
   catch (e) { return []; }
 }
 function saveCart(cart) { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {} }
+// Nav cart badge now mirrors Booqable's native cart (the old local cart is dead).
+function nativeCartCount() {
+  try {
+    const c = window.Booqable && window.Booqable.cartData;
+    if (!c) return null;
+    if (typeof c.item_count === 'number') return c.item_count;
+    const lines = c.lines || c.items || c.cart_lines;
+    if (Array.isArray(lines)) return lines.reduce((s,l)=>s+(l.quantity||l.qty||1),0);
+  } catch (e) {}
+  return null;
+}
 function refreshBadge() {
-  const cart = loadCart();
-  const n = cart.reduce((s,i) => s + (i.qty||0), 0);
   const b = document.getElementById('cartBadge');
   if (!b) return;
-  b.textContent = n;
-  b.style.display = n > 0 ? 'flex' : 'none';
+  let n = nativeCartCount();
+  if (n == null) {
+    const l = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"]');
+    const m = l && (l.textContent || '').match(/\d+/); n = m ? parseInt(m[0]) : 0;
+  }
+  b.textContent = n; b.style.display = n > 0 ? 'flex' : 'none';
 }
+try { localStorage.removeItem('fern_cart_v1'); } catch (e) {}
 refreshBadge();
+setInterval(refreshBadge, 1000);
+document.getElementById('navCart')?.addEventListener('click', e => {
+  e.preventDefault();
+  if (!openNativeCart()) setTimeout(openNativeCart, 500);
+});
 
 // Nav scroll behavior
 const nav = document.getElementById('nav');
@@ -327,15 +366,42 @@ let currentProduct = null;
 const urlParams = new URLSearchParams(window.location.search);
 const productId = urlParams.get('id');
 
+// ===== Booqable native embed =====
+const BQ_EMBED_SRC = 'https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js';
+const SLUGS_URL    = `https://byfernstudio.booqable.com/api/4/products?page%5Bsize%5D=200&fields%5Bproducts%5D=name,slug`;
+let booqableEmbedLoaded = false;
+function initBooqableEmbed() {
+  if (booqableEmbedLoaded) return;
+  booqableEmbedLoaded = true;
+  window.booqableOptions = window.booqableOptions || { company: 'byfernstudio', primaryColor: '#383410', disableLauncher: false };
+  const s = document.createElement('script');
+  s.src = BQ_EMBED_SRC;
+  document.body.appendChild(s);
+}
+// Open Booqable's native cart drawer via its floating launcher's deepest node.
+function openNativeCart() {
+  const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
+  if (!el) return false;
+  let t = el; while (t.firstElementChild) t = t.firstElementChild;
+  t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+  return true;
+}
+
 async function loadAll() {
   try {
-    const res = await fetch(PRODUCTS_URL);
+    const [res, slugRes] = await Promise.all([
+      fetch(PRODUCTS_URL),
+      fetch(SLUGS_URL, { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}`, 'Accept': 'application/vnd.api+json' } }).catch(() => null),
+    ]);
     if (!res.ok) throw new Error();
     const { product_groups } = await res.json();
+    const nameToSlug = {};
+    try { const sd = slugRes && await slugRes.json(); (sd && sd.data || []).forEach(p => { if (p.attributes) nameToSlug[p.attributes.name] = p.attributes.slug; }); } catch (e) {}
     allProducts = product_groups
       .filter(p => !SKIP_SLUGS.has(p.slug))
-      .map(p => ({ ...p, category: categorizeProduct(p.name) }));
+      .map(p => ({ ...p, category: categorizeProduct(p.name), slug: nameToSlug[p.name] || '' }));
     render();
+    initBooqableEmbed();
   } catch (e) {
     document.getElementById('pdpRoot').innerHTML = `
       <div class="pdp-loading">
@@ -384,24 +450,10 @@ function render() {
     : `<div class="pdp-form">
          <div class="pdp-form-lbl">
            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-           Check availability
+           Choose your dates
          </div>
-         <div class="pdp-field">
-           <label class="pdp-field-lbl">Event date</label>
-           <input type="date" id="pdpDate">
-         </div>
-         <div class="pdp-time-row">
-           <div class="pdp-field">
-             <label class="pdp-field-lbl" for="pdpDropoff">Drop off / pickup</label>
-             <select id="pdpDropoff" disabled><option>Pick a date</option></select>
-           </div>
-           <div class="pdp-field">
-             <label class="pdp-field-lbl" for="pdpReturn">Return</label>
-             <select id="pdpReturn" disabled><option>Pick a date</option></select>
-           </div>
-         </div>
-         <div class="pdp-avail-msg" id="pdpAvail">Pick a date to check availability.</div>
-         <button class="pdp-cta" id="pdpAddBtn">Add to cart</button>
+         <div class="booqable-datepicker" style="margin:.4rem 0 1rem"></div>
+         <div class="booqable-product-button bq-cardbtn" data-id="${escHtml(p.slug || '')}"></div>
          <div class="pdp-fineprint">Items are reserved after deposit · 25% non refundable</div>
        </div>`;
 
@@ -458,6 +510,7 @@ function render() {
 
 function setupAvailabilityCheck() {
   const dateEl = document.getElementById('pdpDate');
+  if (!dateEl) return;  // native Booqable date picker is used instead
   const today = new Date().toISOString().split('T')[0];
   dateEl.min = today;
   const dropEl = document.getElementById('pdpDropoff');
@@ -544,6 +597,7 @@ async function checkPdpAvail() {
 
 function setupAddToCart() {
   const btn = document.getElementById('pdpAddBtn');
+  if (!btn) return;  // native Booqable add-to-cart button is used instead
   btn.addEventListener('click', () => {
     // Belt-and-suspenders: explicitly capture the current schedule before
     // navigating, since some browsers don't fire `change` on date/time
