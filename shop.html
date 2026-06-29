@@ -145,6 +145,47 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .shop-qty-row .shop-card-cta{flex:1}
 .shop-card-cta:hover:not(:disabled){background:var(--forest)}
 .shop-card-cta:disabled{background:var(--mist);cursor:default;opacity:.65}
+/* Booqable's real add-to-cart button: rendered + functional, but hidden behind
+   our own .shop-card-cta (proxy pattern). Our button forwards the click. */
+/* Booqable's native add-to-cart button, styled as the brand CTA. The widget
+   also renders price/availability/quantity — we hide all of that (the card
+   already shows name + price; live availability is in the cart drawer) and keep
+   only the button. font-size:0 nukes any stray text the class hides miss. */
+.bq-cardbtn{margin-top:auto;width:100%;font-size:0!important}
+.bq-cardbtn .bq-product-price,.bq-cardbtn .bq-product-price-label,
+.bq-cardbtn .bq-product-availability,.bq-cardbtn .bq-product-info,
+.bq-cardbtn .bq-status-quantity,.bq-cardbtn .bq-price,.bq-cardbtn .bq-price-details,
+.bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle,
+.bq-cardbtn .bq-available,.bq-cardbtn .bq-unavailable,
+.bq-cardbtn [class*="Availability"]:not([class*="Link"]){display:none!important}
+/* Nested flex wrappers — force to full-width block so the button can't be
+   right-aligned/shrunk inside a flex row. */
+.bq-cardbtn div{width:100%!important;display:block!important;justify-content:stretch!important}
+/* PRIMARY — Add to cart: full-width green (everything except the availability link) */
+.bq-cardbtn button,.bq-cardbtn .bq-button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a:not([class*="AvailabilityLink"]){
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;min-width:100%!important;flex:1 1 100%!important;background:var(--sage)!important;color:var(--ivory)!important;border:none!important;
+  border-radius:var(--r4)!important;padding:.72rem 1rem!important;margin:0!important;
+  font-family:'Jost',sans-serif!important;font-size:.67rem!important;line-height:1!important;
+  letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
+  white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;text-decoration:none!important}
+.bq-cardbtn button:hover,.bq-cardbtn .bq-cart-button:hover,.bq-cardbtn a:not([class*="AvailabilityLink"]):hover{background:var(--forest)!important}
+/* SECONDARY — Check availability: quiet outlined link, sits above Add to cart */
+.bq-cardbtn [class*="AvailabilityLink"]{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;background:transparent!important;color:var(--sage)!important;
+  border:1px solid rgba(74,92,64,.45)!important;border-radius:var(--r4)!important;
+  padding:.78rem 1rem!important;margin:0 0 .55rem 0!important;
+  font-family:'Jost',sans-serif!important;font-size:.62rem!important;line-height:1!important;
+  letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
+  text-decoration:none!important;cursor:pointer!important}
+.bq-cardbtn [class*="AvailabilityLink"]:hover{background:rgba(74,92,64,.08)!important;color:var(--forest)!important}
+/* "Added to cart" indicator: bump the nav Cart when the count increases. */
+@keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.96)}100%{transform:scale(1)}}
+.nav-cart-btn.cart-bump{animation:cartBump .55s ease;color:var(--gold)!important}
+/* Filtered-out cards: moved off-screen (still display:block) so Booqable keeps
+   their add-to-cart buttons active. */
+.shop-card.bq-hidden{position:absolute!important;left:-99999px!important;top:0!important;width:1px!important;height:1px!important;overflow:hidden!important}
 .shop-state{grid-column:1/-1;text-align:center;padding:4rem;color:var(--mist);font-size:.9rem;line-height:1.8}
 
 /* ===== REVIEWS ===== */
@@ -429,10 +470,12 @@ input.cart-ctrl{padding-right:.4rem}
       <div class="eyebrow reveal">Browse &amp; Book</div>
       <h1 class="reveal" style="transition-delay:.08s">Our full collection</h1>
       <p class="page-hd-sub reveal" style="transition-delay:.14s">Every item with real pricing. Select a date to see what's available.</p>
-      <div class="avail-check-bar reveal" style="transition-delay:.2s">
-        <label for="shopDate">Check availability for your date:</label>
-        <input type="date" id="shopDate" placeholder="Select date">
-        <button class="btn-check-avail" onclick="checkShopAvail()">Check availability →</button>
+      <div class="avail-check-bar reveal" style="transition-delay:.2s;flex-direction:column;align-items:flex-start;gap:.5rem">
+        <label>Choose your rental dates:</label>
+        <!-- Booqable's native date picker — sets the rental period for the cart. -->
+        <div class="booqable-datepicker"></div>
+        <!-- kept (hidden) so legacy availability code references don't break -->
+        <input type="hidden" id="shopDate">
         <span id="shopAvailNote"></span>
       </div>
     </div>
@@ -1041,17 +1084,60 @@ document.getElementById('shopDate').addEventListener('change', () => {
   if (noteEl) { noteEl.textContent = ''; noteEl.className = ''; }
 });
 
+// ===== BOOQABLE NATIVE EMBED (loads once, after the grid renders) =====
+const BQ_EMBED_SRC = 'https://60c0a8ac-f6cf-4ea1-aaeb-6ce91a45922e.assets.booqable.com/v2/booqable.js';
+const SLUGS_URL    = `https://byfernstudio.booqable.com/api/4/products?page%5Bsize%5D=200&fields%5Bproducts%5D=name,slug`;
+let booqableEmbedLoaded = false;
+function initBooqableEmbed() {
+  if (booqableEmbedLoaded) return;
+  booqableEmbedLoaded = true;
+  // disableLauncher:false → the floating native cart launcher + drawer (this
+  // replaces the old custom cart). primaryColor tints Booqable's UI on-brand.
+  window.booqableOptions = window.booqableOptions || { company: 'byfernstudio', primaryColor: '#383410', disableLauncher: false };
+  const s = document.createElement('script');
+  s.src = BQ_EMBED_SRC;
+  s.onload = () => {
+    // Wait for Booqable to hydrate the add-to-cart buttons (while all cards are
+    // still visible), THEN apply the category filter and reveal the grid.
+    let tries = 0;
+    const t = setInterval(() => {
+      tries++;
+      const hydrated = document.querySelector('#shopGrid .booqable-product-button .booqable-component, #shopGrid .booqable-product-button button');
+      if (hydrated || tries > 24) {  // up to ~6s
+        clearInterval(t);
+        applyShopFilter();
+        const grid = document.getElementById('shopGrid');
+        if (grid) grid.style.visibility = '';
+      }
+    }, 250);
+  };
+  document.body.appendChild(s);
+}
+
 // ===== LOAD PRODUCTS =====
 async function loadProducts() {
   try {
-    const res = await fetch(PRODUCTS_URL);
+    const [res, slugRes] = await Promise.all([
+      fetch(PRODUCTS_URL),
+      fetch(SLUGS_URL, { headers: { 'Authorization': `Bearer ${BOOQABLE_KEY}`, 'Accept': 'application/vnd.api+json' } }).catch(() => null),
+    ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const { product_groups } = await res.json();
+    // Map product name -> v4 slug (the data-id Booqable's add-to-cart needs).
+    const nameToSlug = {};
+    try { const sd = slugRes && await slugRes.json(); (sd && sd.data || []).forEach(p => { if (p.attributes) nameToSlug[p.attributes.name] = p.attributes.slug; }); } catch (e) {}
     allProducts = product_groups
       .filter(p => !SKIP_SLUGS.has(p.slug))
-      .map(p => ({ ...p, category: categorizeProduct(p.name) }))
+      .map(p => ({ ...p, category: categorizeProduct(p.name), slug: nameToSlug[p.name] || '' }))
       .sort((a, b) => CAT_ORDER.indexOf(a.category) - CAT_ORDER.indexOf(b.category));
-    renderShop();
+    renderShop();        // renders ALL cards (all visible)
+    // Hide the grid briefly so the customer doesn't see every category flash by
+    // before we filter. Booqable must hydrate the add-to-cart buttons while
+    // their cards are VISIBLE (it marks buttons in display:none cards inert),
+    // so we filter only AFTER the embed has mounted.
+    const grid = document.getElementById('shopGrid');
+    if (grid) grid.style.visibility = 'hidden';
+    initBooqableEmbed();
   } catch (err) {
     document.getElementById('shopGrid').innerHTML =
       `<div class="shop-state">Couldn't load right now. <a href="#" onclick="openModal(null);return false" style="color:var(--sage)">Contact us</a> for pricing.</div>`;
@@ -1080,7 +1166,9 @@ async function loadItems() {
 
 // ===== RENDER SHOP GRID =====
 function renderShop() {
-  const list = shopFilter === 'all' ? allProducts : allProducts.filter(p => p.category === shopFilter);
+  // Render ALL cards once; visibility is handled by applyShopFilter() so the
+  // Booqable buttons hydrated inside cards are never destroyed on filtering.
+  const list = allProducts;
   if (!list.length) {
     document.getElementById('shopGrid').innerHTML = '<div class="shop-state">No items in this category.</div>';
     return;
@@ -1119,10 +1207,7 @@ function renderShop() {
       ? `<a href="index.html#book" class="shop-card-cta" style="text-align:center;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">Inquire →</a>`
       : hasDetail
       ? `<a href="${pdpHref}" class="shop-card-cta" style="text-align:center;display:inline-flex;align-items:center;justify-content:center;text-decoration:none">View details →</a>`
-      : `<div class="shop-qty-row">
-           <input type="number" class="shop-qty-input" id="qty-${escHtml(p.id)}" value="1" min="1" max="99">
-           <button class="shop-card-cta" id="cta-${escHtml(p.id)}" data-product="${escHtml(p.name)}" data-id="${escHtml(p.id)}">Add to cart</button>
-         </div>`;
+      : `<div class="booqable-product-button bq-cardbtn" data-id="${escHtml(p.slug || '')}"></div>`;
     // Only PDP-linked cards show the standalone "Check availability" link; qty-input cards
     // get live availability from the qty field + global date picker instead.
     const availLink = (hasDetail && !isInquire)
@@ -1304,10 +1389,20 @@ document.getElementById('filterBar').addEventListener('click', e => {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   shopFilter = btn.dataset.cat;
-  renderShop();
-  // If date already checked, re-apply badges after render
+  applyShopFilter();   // show/hide cards (don't re-render — keeps Booqable buttons wired)
+  // If date already checked, re-apply badges
   if (lastDate) setTimeout(() => checkShopAvail(), 50);
 });
+
+// Show only the active category. Hidden cards are moved OFF-SCREEN (not
+// display:none) so Booqable keeps their add-to-cart buttons active — it marks
+// buttons inside display:none containers inert.
+function applyShopFilter() {
+  document.querySelectorAll('#shopGrid .shop-card').forEach(c => {
+    const show = (shopFilter === 'all' || c.dataset.cat === shopFilter);
+    c.classList.toggle('bq-hidden', !show);
+  });
+}
 
 // ===== SHOP GRID CLICK =====
 document.getElementById('shopGrid').addEventListener('click', e => {
@@ -1336,23 +1431,14 @@ document.getElementById('shopGrid').addEventListener('click', e => {
     return;
   }
 
-  // "Add to cart" button (also handles the "Update to N" state)
-  const btn = e.target.closest('.shop-card-cta');
+  // "Add to cart": fire the hidden Booqable button behind this card (proxy
+  // pattern). Booqable adds the item and opens its native cart drawer.
+  const btn = e.target.closest('.shop-card-cta.bq-add');
   if (!btn || btn.disabled) return;
-  const qtyEl = document.getElementById(`qty-${btn.dataset.id}`);
-  // "Update to N" mode — snap the qty input down to the available count and stop.
-  // The CTA will flip back to "Add to cart" so the user confirms the new qty.
-  if (qtyEl && btn.dataset.reduceTo) {
-    qtyEl.value = btn.dataset.reduceTo;
-    refreshCardFromCache(btn.dataset.id);
-    return;
-  }
-  const qty     = qtyEl ? Math.max(1, parseInt(qtyEl.value) || 1) : 1;
-  const product = allProducts.find(p => p.id === btn.dataset.id);
-  if (product) {
-    addToCart(product, qty);
-    // Quick confirmation, then keep them browsing — the cart now lives on
-    // Booqable and opens via the Cart icon, not a slide-out.
+  const box = btn.parentNode.querySelector('.booqable-product-button');
+  const realBtn = box && box.querySelector('button, a, [role=button]');
+  if (realBtn) {
+    realBtn.click();
     if (!btn.dataset.added) {
       const orig = btn.textContent;
       btn.dataset.added = '1';
@@ -1360,6 +1446,11 @@ document.getElementById('shopGrid').addEventListener('click', e => {
       btn.classList.add('added');
       setTimeout(() => { btn.textContent = orig; btn.classList.remove('added'); delete btn.dataset.added; }, 1300);
     }
+  } else {
+    // Embed not hydrated yet (rare) — nudge to retry.
+    const orig = btn.textContent;
+    btn.textContent = 'One moment…';
+    setTimeout(() => { btn.textContent = orig; }, 1200);
   }
 });
 
@@ -1482,7 +1573,56 @@ document.getElementById('btnSubmit').onclick = e => {
 };
 
 // ===== CART EVENT LISTENERS =====
-document.getElementById('navCart').addEventListener('click', e => { e.preventDefault(); goToBooqableCart(); });
+document.getElementById('navCart').addEventListener('click', e => {
+  e.preventDefault();
+  if (!openNativeCart()) setTimeout(openNativeCart, 500);  // retry if embed still mounting
+});
+// Open Booqable's native cart drawer by triggering its floating launcher.
+// React listens via delegation at its root, so we fire the click on the
+// launcher's DEEPEST element — the event bubbles up to whatever node holds the
+// real handler.
+function openNativeCart() {
+  const el = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"], bq-minicart-launcher, bq-minicart-button');
+  if (!el) return false;
+  let t = el; while (t.firstElementChild) t = t.firstElementChild;
+  t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+  return true;
+}
+// Read the live item count from Booqable's own cart data (defensive about shape).
+function nativeCartCount() {
+  try {
+    const c = window.Booqable && window.Booqable.cartData;
+    if (!c) return null;
+    if (typeof c.item_count === 'number') return c.item_count;
+    const lines = c.lines || c.items || c.cart_lines;
+    if (Array.isArray(lines)) return lines.reduce((s, l) => s + (l.quantity || l.qty || 1), 0);
+  } catch (e) {}
+  return null;
+}
+// The old local-cart badge is dead now (items live in Booqable). Clear any
+// stale count and mirror the native launcher's count onto the nav Cart badge.
+try { localStorage.removeItem('fern_cart_v1'); } catch (e) {}
+let lastCartN = 0;
+setInterval(() => {
+  const badge = document.getElementById('cartBadge');
+  const navCartEl = document.getElementById('navCart');
+  if (!badge) return;
+  // Prefer Booqable's own cart data; fall back to the launcher's badge text.
+  let n = nativeCartCount();
+  if (n == null) {
+    const launcher = document.querySelector('[class*="minicart-launcher"], [class*="minicart-button"]');
+    const m = launcher && (launcher.textContent || '').match(/\d+/);
+    n = m ? parseInt(m[0]) : 0;
+  }
+  badge.textContent = n;
+  badge.style.display = (n > 0) ? 'flex' : 'none';
+  // Pulse the nav Cart when the count goes up (the "added!" indicator).
+  if (n > lastCartN && navCartEl) {
+    navCartEl.classList.add('cart-bump');
+    setTimeout(() => navCartEl.classList.remove('cart-bump'), 600);
+  }
+  lastCartN = n;
+}, 800);
 // Booking Request CTA → opens the homepage booking modal
 document.getElementById('navBook').addEventListener('click', e => { e.preventDefault(); window.location.href = 'index.html#book'; });
 document.getElementById('stickyBook').addEventListener('click', () => { window.location.href = 'index.html#book'; });
@@ -1494,7 +1634,7 @@ renderCartItems();
 updateFooter();
 if (location.hash === '#cart') {
   history.replaceState(null, '', location.pathname + location.search);
-  goToBooqableCart();
+  setTimeout(openNativeCart, 1500);  // give the embed a moment to mount the launcher
 }
 document.getElementById('cartOverlay').addEventListener('click', closeCart);
 document.getElementById('cartDrawerClose').addEventListener('click', closeCart);
@@ -1877,7 +2017,5 @@ itemsReady = loadItems();
 })();
 </script>
 
-<!-- WhatsApp FAB -->
-<a href="https://wa.me/13174429621" target="_blank" rel="noopener" class="wa-fab" aria-label="Message us on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.05 4.91A9.82 9.82 0 0012.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.91-7.01zM12.04 20.15h-.01a8.23 8.23 0 01-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.21 8.21 0 01-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 012.41 5.83c0 4.54-3.7 8.23-8.22 8.23zm4.51-6.16c-.25-.12-1.46-.72-1.68-.8-.23-.08-.39-.12-.55.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.71-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.55-1.34-.76-1.83-.2-.48-.4-.42-.55-.43-.14-.01-.31-.01-.47-.01-.16 0-.43.06-.66.31-.23.25-.86.84-.86 2.06s.88 2.39 1.01 2.55c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.46-.6 1.66-1.18.2-.58.2-1.07.14-1.18-.06-.11-.22-.17-.47-.29z"/></svg></a>
 </body>
 </html>
