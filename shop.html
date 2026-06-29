@@ -177,15 +177,10 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
   white-space:nowrap!important;cursor:pointer!important;box-shadow:none!important;text-decoration:none!important}
 .bq-cardbtn button:hover,.bq-cardbtn .bq-cart-button:hover,.bq-cardbtn a:not([class*="AvailabilityLink"]):hover{background:var(--forest)!important}
 /* SECONDARY — Check availability: quiet outlined link, sits above Add to cart */
-.bq-cardbtn [class*="AvailabilityLink"]{
-  display:flex!important;align-items:center!important;justify-content:center!important;
-  width:100%!important;background:transparent!important;color:var(--sage)!important;
-  border:1px solid rgba(74,92,64,.45)!important;border-radius:var(--r4)!important;
-  padding:.78rem 1rem!important;margin:0 0 .55rem 0!important;
-  font-family:'Jost',sans-serif!important;font-size:.62rem!important;line-height:1!important;
-  letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
-  text-decoration:none!important;cursor:pointer!important}
-.bq-cardbtn [class*="AvailabilityLink"]:hover{background:rgba(74,92,64,.08)!important;color:var(--forest)!important}
+/* Hide Booqable's built-in "Check availability" (its small inline popup). We use
+   our own .shop-check-link instead, which opens the full date-picker modal —
+   consistent across every card type. */
+.bq-cardbtn [class*="AvailabilityLink"]{display:none!important}
 /* "Added to cart" indicator: bump the nav Cart when the count increases. */
 @keyframes cartBump{0%{transform:scale(1)}30%{transform:scale(1.18)}60%{transform:scale(.96)}100%{transform:scale(1)}}
 .nav-cart-btn.cart-bump{animation:cartBump .55s ease;color:var(--gold)!important}
@@ -1216,7 +1211,7 @@ function renderShop() {
       : `<div class="booqable-product-button bq-cardbtn" data-id="${escHtml(p.slug || '')}"></div>`;
     // Only PDP-linked cards show the standalone "Check availability" link; qty-input cards
     // get live availability from the qty field + global date picker instead.
-    const availLink = (hasDetail && !isInquire)
+    const availLink = (!isInquire)
       ? `<button class="shop-check-link" data-id="${escHtml(p.id)}">Check availability</button>`
       : '';
 
