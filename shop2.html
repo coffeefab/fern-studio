@@ -158,12 +158,13 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .bq-cardbtn .bq-quantity,.bq-cardbtn .bq-quantity-toggle,
 .bq-cardbtn .bq-available,.bq-cardbtn .bq-unavailable,
 .bq-cardbtn [class*="Availability"]:not([class*="Link"]){display:none!important}
-/* Nested flex wrappers — force every div full width so the button fills. */
-.bq-cardbtn div{width:100%!important}
+/* Nested flex wrappers — force to full-width block so the button can't be
+   right-aligned/shrunk inside a flex row. */
+.bq-cardbtn div{width:100%!important;display:block!important;justify-content:stretch!important}
 /* PRIMARY — Add to cart: full-width green (everything except the availability link) */
-.bq-cardbtn button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a:not([class*="AvailabilityLink"]){
+.bq-cardbtn button,.bq-cardbtn .bq-button,.bq-cardbtn .bq-cart-button,.bq-cardbtn [role=button],.bq-cardbtn a:not([class*="AvailabilityLink"]){
   display:flex!important;align-items:center!important;justify-content:center!important;
-  width:100%!important;flex:1 1 100%!important;background:var(--sage)!important;color:var(--ivory)!important;border:none!important;
+  width:100%!important;min-width:100%!important;flex:1 1 100%!important;background:var(--sage)!important;color:var(--ivory)!important;border:none!important;
   border-radius:var(--r4)!important;padding:.72rem 1rem!important;margin:0!important;
   font-family:'Jost',sans-serif!important;font-size:.67rem!important;line-height:1!important;
   letter-spacing:.09em!important;text-transform:uppercase!important;font-weight:500!important;
