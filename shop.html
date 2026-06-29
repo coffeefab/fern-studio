@@ -90,7 +90,7 @@ h3{font-size:clamp(1.35rem,2.4vw,1.9rem)}
 .page-hd{background:var(--cream);padding:7rem 0 3.5rem}
 .page-hd-inner{display:flex;flex-direction:column;gap:0}
 .page-hd h1{color:var(--forest);font-size:clamp(2.6rem,5vw,4.4rem);line-height:1.08;margin-bottom:.6rem}
-.page-hd-sub{color:var(--stone);font-size:.95rem;line-height:1.8;max-width:50ch;margin-bottom:2rem}
+.page-hd-sub{color:var(--stone);font-size:.95rem;line-height:1.8;max-width:50ch;margin-bottom:0}
 
 /* Availability checker bar */
 /* Top date bar is hidden but kept in the DOM (off-screen) so its native date
@@ -425,7 +425,7 @@ input.cart-ctrl{padding-right:.4rem}
   .form-grid{grid-template-columns:1fr}
   .addr-3{grid-template-columns:1fr}
   .avail-check-bar{gap:.75rem}
-  .page-hd{padding:7rem 0 2.5rem}
+  .page-hd{padding:7rem 0 1.6rem}
 }
 @media(max-width:480px){
   .shop-grid{grid-template-columns:repeat(2,1fr);gap:.75rem}
@@ -471,7 +471,7 @@ input.cart-ctrl{padding-right:.4rem}
     <div class="page-hd-inner">
       <div class="eyebrow reveal">Browse &amp; Book</div>
       <h1 class="reveal" style="transition-delay:.08s">Our full collection</h1>
-      <p class="page-hd-sub reveal" style="transition-delay:.14s">Every item with real pricing. Select a date to see what's available.</p>
+      <p class="page-hd-sub reveal" style="transition-delay:.14s">Every item with real pricing. Check availability on any piece for your date.</p>
       <div class="avail-check-bar reveal" style="transition-delay:.2s;flex-direction:column;align-items:flex-start;gap:.5rem">
         <label>Choose your rental dates:</label>
         <!-- Booqable's native date picker — sets the rental period for the cart. -->
