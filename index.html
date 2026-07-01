@@ -515,6 +515,31 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
   .foot-grid{grid-template-columns:1fr}
 }
 
+/* ===== NEW ARRIVAL POPUP ===== */
+#promo-overlay{position:fixed;inset:0;background:rgba(28,27,20,.55);backdrop-filter:blur(4px);z-index:9000;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;transition:opacity .4s ease;pointer-events:none}
+#promo-overlay.visible{opacity:1;pointer-events:all}
+.promo-card{background:var(--ivory);border-radius:var(--r16);box-shadow:var(--shadow-lg);max-width:480px;width:100%;overflow:hidden;transform:translateY(18px);transition:transform .4s ease;position:relative}
+#promo-overlay.visible .promo-card{transform:translateY(0)}
+.promo-img-wrap{position:relative;height:220px;overflow:hidden;background:var(--cream)}
+.promo-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.promo-img-badge{position:absolute;top:1rem;left:1rem;background:var(--pink);color:var(--white);font-family:'Jost',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:.35rem .85rem;border-radius:2rem}
+.promo-body{padding:2rem 2rem 1.75rem}
+.promo-eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500;color:var(--gold);margin-bottom:.65rem}
+.promo-title{font-family:'Fraunces',serif;font-size:clamp(1.5rem,3.5vw,2rem);font-weight:400;color:var(--forest);line-height:1.1;margin-bottom:.75rem}
+.promo-title em{font-style:italic;color:var(--gold)}
+.promo-desc{color:var(--stone);font-size:.88rem;line-height:1.75;margin-bottom:1.5rem}
+.promo-actions{display:flex;align-items:center;gap:1rem}
+.promo-cta{display:inline-flex;align-items:center;justify-content:center;background:var(--forest);color:var(--ivory);padding:.75rem 1.75rem;border-radius:var(--r8);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:background var(--t),transform var(--t)}
+.promo-cta:hover{background:var(--sage);transform:translateY(-1px)}
+.promo-dismiss{background:none;border:none;color:var(--mist);font-family:'Jost',sans-serif;font-size:.78rem;cursor:pointer;padding:.2rem 0;transition:color var(--t)}
+.promo-dismiss:hover{color:var(--stone)}
+.promo-close{position:absolute;top:.85rem;right:.85rem;background:rgba(247,244,239,.85);border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;line-height:1;color:var(--charcoal);transition:background var(--t)}
+.promo-close:hover{background:var(--warm-stone)}
+@media(max-width:500px){
+  .promo-img-wrap{height:160px}
+  .promo-body{padding:1.5rem 1.4rem 1.4rem}
+}
+
 </style>
 </head>
 <body>
@@ -1813,6 +1838,26 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 </script>
+<!-- ===== NEW ARRIVAL PROMO POPUP ===== -->
+<div id="promo-overlay" role="dialog" aria-modal="true" aria-labelledby="promo-title-text">
+  <div class="promo-card">
+    <button class="promo-close" id="promoClose" aria-label="Close">&times;</button>
+    <div class="promo-img-wrap">
+      <img src="/flowerwall.jpg" alt="Fern Event Rentals — new floral pillars and frames" loading="lazy">
+      <span class="promo-img-badge">New Arrival</span>
+    </div>
+    <div class="promo-body">
+      <div class="promo-eyebrow">Just Added</div>
+      <h2 class="promo-title" id="promo-title-text">Floral Pillars <em>&amp; Frames</em></h2>
+      <p class="promo-desc">Elevate your event with our stunning new floral pillar and frame rentals — perfect for ceremonies, photo moments, and sweetheart setups. Now available for your date.</p>
+      <div class="promo-actions">
+        <a href="/rentals.html" class="promo-cta" id="promoCtaBtn">Shop Rentals</a>
+        <button class="promo-dismiss" id="promoDismiss">Maybe later</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Booqable native cart: nav Cart opens the drawer in place, count synced -->
 <script>
 (function(){
@@ -1843,6 +1888,32 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     var mob=document.getElementById('cartBadgeMobile'); if(mob){ mob.textContent=n; }
     var mobBtn=document.getElementById('navCartMobile'); if(mobBtn){ mobBtn.classList.toggle('has-items', n>0); }
   },1000);
+})();
+</script>
+<!-- Promo popup logic -->
+<script>
+(function(){
+  var overlay = document.getElementById('promo-overlay');
+  var closeBtn = document.getElementById('promoClose');
+  var dismissBtn = document.getElementById('promoDismiss');
+
+  function closePopup(){
+    overlay.classList.remove('visible');
+    overlay.addEventListener('transitionend', function(){ overlay.style.display='none'; }, { once: true });
+  }
+
+  // Show after 2.5s on every session visit
+  setTimeout(function(){
+    overlay.style.display = 'flex';
+    // Force reflow so the transition plays
+    overlay.getBoundingClientRect();
+    overlay.classList.add('visible');
+  }, 2500);
+
+  closeBtn.addEventListener('click', closePopup);
+  dismissBtn.addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closePopup(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closePopup(); });
 })();
 </script>
 
