@@ -1007,8 +1007,15 @@ function categorizeProduct(name) {
 // ===== STATE =====
 const VALID_CATS = new Set(['flower-walls','floral-arches','floral-frames','pipe-drape','wooden-backdrops','signs','tables','seating','linens']);
 const urlParams  = new URLSearchParams(window.location.search);
-const urlCat     = urlParams.get('cat');
+let urlCat       = urlParams.get('cat');
 const urlDate    = urlParams.get('date');
+// Redirect legacy 'linens' query to 'pipe-drape' so external links keep working
+if (urlCat === 'linens') {
+  urlParams.set('cat', 'pipe-drape');
+  const newUrl = location.pathname + '?' + urlParams.toString() + (location.hash || '');
+  try { history.replaceState(null, '', newUrl); } catch (e) { /* ignore replace errors */ }
+  urlCat = 'pipe-drape';
+}
 let allProducts  = [];
 let shopFilter   = VALID_CATS.has(urlCat) ? urlCat : 'flower-walls';
 let lastDate     = '';
