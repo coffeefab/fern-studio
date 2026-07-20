@@ -993,7 +993,8 @@ function subtitleFor(p) {
 function categorizeProduct(name) {
   const n = name.toLowerCase();
   if (n.includes('flower wall') || ['classic','fairytale','garden','glam','scarlet','celeste'].some(w => n.includes(w))) return 'flower-walls';
-  if (n.includes('pipe and drape') || n.includes('pipe & drape')) return 'pipe-drape';
+  // Treat several drape-related terms (and lone "pipe") as Pipe & Drape; avoid mapping linens/tables to pipe-drape
+  if ((n.includes('pipe') || n.includes('drape') || n.includes('draped') || n.includes('drapery')) && !n.includes('linen') && !n.includes('table') && !n.includes('cover')) return 'pipe-drape';
   if (n.includes('wooden') || n.includes('wood backdrop')) return 'wooden-backdrops';
   if (n.includes('floral frame') || n.includes('flower frame')) return 'floral-frames';
   if (n.includes('arch') || n.includes('side piece') || n.includes('floral spray') || n === 'the peach') return 'floral-arches';
