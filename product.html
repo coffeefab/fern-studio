@@ -287,7 +287,8 @@ const CAT_LABELS = {
   'signs':        'Neon Sign',
   'tables':       'Table',
   'seating':      'Seating',
-  'linens':       'Drapery',
+  'linens':       'Linens',
+  'pipe-drape':   'Drapery',
   'more':         'Décor',
 };
 
@@ -298,7 +299,9 @@ function categorizeProduct(name) {
   if (n.includes('neon') || ['cheers','oh baby','you + me'].some(w => n.includes(w))) return 'signs';
   if (n.includes('table') && !n.includes('linen') && !n.includes('cover')) return 'tables';
   if (n.includes('chair') || n.includes('sofa') || n.includes('peacock')) return 'seating';
-  if (n.includes('linen') || n.includes('cover') || n.includes('drap') || n.includes('pipe')) return 'linens';
+  // Treat drape-related names as Pipe & Drape; avoid mapping true linens/tables to the linens category
+  if ((n.includes('pipe') || n.includes('drape') || n.includes('drap') || n.includes('drapery') || n.includes('draped')) && !n.includes('linen') && !n.includes('table') && !n.includes('cover')) return 'pipe-drape';
+  if (n.includes('linen') || n.includes('cover')) return 'linens';
   return 'more';
 }
 
