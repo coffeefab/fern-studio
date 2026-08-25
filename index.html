@@ -1006,6 +1006,22 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
 
           <!-- ITEMS -->
           <div class="form-section-lbl">Rentals Needed</div>
+          <div class="fg full" id="fgItemType">
+            <label for="mItemType">Type of item *</label>
+            <select id="mItemType">
+              <option value="" disabled selected>Select an option…</option>
+              <option value="floral_arrangement">Floral arrangement</option>
+              <option value="floral_installation">Floral installation (walls, arches, etc.)</option>
+              <option value="tables_chairs">Tables &amp; chairs</option>
+            </select>
+          </div>
+          <div class="fg full" id="fgLocation" style="display:none">
+            <label>Indoor or outdoor event? *</label>
+            <div class="yn-group" id="locationToggle">
+              <button type="button" class="yn-btn" data-val="indoor">Indoor</button>
+              <button type="button" class="yn-btn" data-val="outdoor">Outdoor</button>
+            </div>
+          </div>
           <div class="fg full" id="fgItems">
             <label for="mItems">Items &amp; quantities *</label>
             <textarea id="mItems" placeholder="e.g. Classic White Flower Wall ×1, 5 Ft Round Tables ×8, White Resin Chairs ×80…" style="min-height:90px"></textarea>
@@ -1487,6 +1503,25 @@ document.getElementById('addr2Toggle').addEventListener('click', e => {
 });
 
 // ===== EVENT TYPE PILLS =====
+// ===== ITEM TYPE / INDOOR-OUTDOOR =====
+document.getElementById('mItemType').addEventListener('change', e => {
+  const fgLocation = document.getElementById('fgLocation');
+  const needsLocation = e.target.value === 'floral_arrangement' || e.target.value === 'floral_installation';
+  fgLocation.style.display = needsLocation ? '' : 'none';
+  if (!needsLocation) {
+    document.querySelectorAll('#locationToggle .yn-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('locationToggle').classList.remove('err-ring');
+  }
+  document.getElementById('fgItemType').classList.remove('err');
+});
+document.getElementById('locationToggle').addEventListener('click', e => {
+  const btn = e.target.closest('.yn-btn');
+  if (!btn) return;
+  document.querySelectorAll('#locationToggle .yn-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('locationToggle').classList.remove('err-ring');
+});
+
 // ===== DELIVERY TOGGLE =====
 document.getElementById('deliveryToggle').addEventListener('click', e => {
   const btn = e.target.closest('.yn-btn');
@@ -1533,6 +1568,20 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     }
   });
 
+  const itemTypeEl = document.getElementById('mItemType');
+  if (!itemTypeEl.value) {
+    document.getElementById('fgItemType').classList.add('err');
+    ok = false;
+    setTimeout(() => document.getElementById('fgItemType').classList.remove('err'), 2500);
+  }
+
+  const needsLocation = itemTypeEl.value === 'floral_arrangement' || itemTypeEl.value === 'floral_installation';
+  if (needsLocation && !document.querySelector('#locationToggle .yn-btn.active')) {
+    document.getElementById('locationToggle').classList.add('err-ring');
+    ok = false;
+    setTimeout(() => document.getElementById('locationToggle').classList.remove('err-ring'), 2500);
+  }
+
   if (!document.querySelector('#deliveryToggle .yn-btn.active')) {
     document.getElementById('deliveryToggle').classList.add('err-ring');
     ok = false;
@@ -1566,6 +1615,8 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     delivery:  document.querySelector('#deliveryToggle .yn-btn.active')?.dataset.val || '',
     dropoff:   document.getElementById('mDropoff').value,
     return:    document.getElementById('mReturn').value,
+    itemType:  document.getElementById('mItemType').value,
+    location:  document.querySelector('#locationToggle .yn-btn.active')?.dataset.val || '',
     items:     document.getElementById('mItems').value.trim(),
     notes:     document.getElementById('mNotes')?.value.trim() || '',
   };
@@ -1573,6 +1624,11 @@ document.getElementById('btnSubmit').onclick = async (e) => {
   // Submit to Web3Forms. Real fetch + JSON response so we can show actual
   // success or actual errors, not a fake "thanks" while the request failed.
   const fullAddress = [payload.addr1, payload.addr2, [payload.city, payload.state, payload.zip].filter(Boolean).join(', ')].filter(Boolean).join('\n');
+  const ITEM_TYPE_LABELS = {
+    floral_arrangement:  'Floral arrangement',
+    floral_installation: 'Floral installation (walls, arches, etc.)',
+    tables_chairs:       'Tables & chairs',
+  };
   const fields = {
     access_key: 'fed38217-a01e-46c4-87dd-f2540733c5fa',
     subject:    `New booking request from ${payload.name || 'unknown'} for ${payload.date || 'no date'}`,
@@ -1586,6 +1642,8 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     'Drop off / pickup date': payload.pickupDate,
     'Drop off / pickup time': payload.dropoff,
     'Return time':  payload.return,
+    'Type of item': ITEM_TYPE_LABELS[payload.itemType] || payload.itemType,
+    'Indoor / outdoor': payload.location ? (payload.location === 'indoor' ? 'Indoor' : 'Outdoor') : 'N/A',
     Items:          payload.items,
     Notes:          payload.notes || '(none)',
     botcheck:       '',
