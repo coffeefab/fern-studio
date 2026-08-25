@@ -1010,7 +1010,6 @@ footer{background:var(--forest);padding:4.5rem 0 2.5rem}
             <label for="mItemType">Type of item *</label>
             <select id="mItemType">
               <option value="" disabled selected>Select an option…</option>
-              <option value="floral_arrangement">Floral arrangement</option>
               <option value="floral_installation">Floral installation (walls, arches, etc.)</option>
               <option value="tables_chairs">Tables &amp; chairs</option>
             </select>
@@ -1504,14 +1503,20 @@ document.getElementById('addr2Toggle').addEventListener('click', e => {
 
 // ===== EVENT TYPE PILLS =====
 // ===== ITEM TYPE / INDOOR-OUTDOOR =====
+const ITEMS_PLACEHOLDERS = {
+  floral_installation: 'e.g. Classic White Flower Wall ×1, Greenery Arch ×1, Neon Sign Hang ×1…',
+  tables_chairs:       'e.g. 5 Ft Round Tables ×8, White Resin Chairs ×80, White Linens ×8…',
+};
+const ITEMS_PLACEHOLDER_DEFAULT = 'e.g. Classic White Flower Wall ×1, 5 Ft Round Tables ×8, White Resin Chairs ×80…';
 document.getElementById('mItemType').addEventListener('change', e => {
   const fgLocation = document.getElementById('fgLocation');
-  const needsLocation = e.target.value === 'floral_arrangement' || e.target.value === 'floral_installation';
+  const needsLocation = e.target.value === 'floral_installation';
   fgLocation.style.display = needsLocation ? '' : 'none';
   if (!needsLocation) {
     document.querySelectorAll('#locationToggle .yn-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('locationToggle').classList.remove('err-ring');
   }
+  document.getElementById('mItems').placeholder = ITEMS_PLACEHOLDERS[e.target.value] || ITEMS_PLACEHOLDER_DEFAULT;
   document.getElementById('fgItemType').classList.remove('err');
 });
 document.getElementById('locationToggle').addEventListener('click', e => {
@@ -1575,7 +1580,7 @@ document.getElementById('btnSubmit').onclick = async (e) => {
     setTimeout(() => document.getElementById('fgItemType').classList.remove('err'), 2500);
   }
 
-  const needsLocation = itemTypeEl.value === 'floral_arrangement' || itemTypeEl.value === 'floral_installation';
+  const needsLocation = itemTypeEl.value === 'floral_installation';
   if (needsLocation && !document.querySelector('#locationToggle .yn-btn.active')) {
     document.getElementById('locationToggle').classList.add('err-ring');
     ok = false;
@@ -1625,7 +1630,6 @@ document.getElementById('btnSubmit').onclick = async (e) => {
   // success or actual errors, not a fake "thanks" while the request failed.
   const fullAddress = [payload.addr1, payload.addr2, [payload.city, payload.state, payload.zip].filter(Boolean).join(', ')].filter(Boolean).join('\n');
   const ITEM_TYPE_LABELS = {
-    floral_arrangement:  'Floral arrangement',
     floral_installation: 'Floral installation (walls, arches, etc.)',
     tables_chairs:       'Tables & chairs',
   };
